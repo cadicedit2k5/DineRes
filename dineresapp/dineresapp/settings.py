@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'ckeditor',
     'ckeditor_uploader',
+    'drf_yasg',
 ]
 
 MEDIA_ROOT = '%s/dineres/static/' % BASE_DIR

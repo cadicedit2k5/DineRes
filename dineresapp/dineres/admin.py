@@ -1,8 +1,11 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Category, Dish
+from .models import Category, Dish, Order, Booking, Review, Table, Ingredient
 # Register your models here.
+
+class DineResAppAdmin(admin.AdminSite):
+    site_header = 'Hệ thống nhà hàng trực tuyển'
 
 class CategoryAdmin(admin.ModelAdmin):
 
@@ -14,5 +17,8 @@ class CategoryAdmin(admin.ModelAdmin):
                 '<img src="/static/{url}" width="120" />'.format(url=obj.image.name)
             )
 
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(Dish)
+
+admin_site = DineResAppAdmin(name='myadmin')
+
+admin_site.register(Category, CategoryAdmin)
+admin_site.register(Dish)

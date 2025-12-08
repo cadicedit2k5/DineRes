@@ -18,7 +18,7 @@ class User(AbstractUser):
     user_role = models.CharField(max_length=10, choices=Role.choices, default=Role.CUSTOMER)
 
     def __str__(self):
-        return f'{self.get_user_role_display()}: {self.user.last_name} {self.user.first_name}'
+        return f'{self.get_user_role_display()}: {self.last_name} {self.first_name}'
 
 class Chef(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
