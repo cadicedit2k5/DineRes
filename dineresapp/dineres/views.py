@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from rest_framework import viewsets
+from rest_framework import viewsets, parsers
 from rest_framework.generics import ListAPIView
 
 from dineres.models import Category
@@ -12,3 +12,4 @@ def index(request):
 class CategoryViewSet(viewsets.ViewSet, ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    parser_classes = [parsers.MultiPartParser]
