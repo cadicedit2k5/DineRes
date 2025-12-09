@@ -18,11 +18,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
+import os
+from dotenv import load_dotenv # Thêm dòng này
+
+# Load biến môi trường
+load_dotenv()
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+9drxv3vup=o$n44etl!l7omh^8gr)lw6b6ifeqfoktc0an9b^'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG') == 'True'
+
+import cloudinary
+# Configuration
+
+cloudinary.config(
+    cloud_name = "dxopigima",
+    api_key = "949398647377574",
+    api_secret = os.getenv('CLOUDINARY_SECRET'), # Click 'View API Keys' above to copy your API secret
+    secure=True
+)
+
 
 ALLOWED_HOSTS = []
 
@@ -40,6 +57,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'drf_yasg',
+    'cloudinary',
 ]
 
 MEDIA_ROOT = '%s/dineres/static/' % BASE_DIR

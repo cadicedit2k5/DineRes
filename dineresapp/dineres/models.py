@@ -1,9 +1,13 @@
+from contextlib import nullcontext
+
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 from dineresapp import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from ckeditor.fields import RichTextField
+from cloudinary.models import CloudinaryField
+
 # Create your models here.
 # USER
 class User(AbstractUser):
@@ -12,7 +16,7 @@ class User(AbstractUser):
         CUSTOMER = 'customer', 'Khách hàng'
         CHEF = 'chef', 'Đầu bếp'
 
-    avatar = models.ImageField(upload_to='users/avatars/%Y/%m', null=True, blank=True)
+    avatar = CloudinaryField('avatar', null=True)
     address = models.CharField(max_length=255, null=True, blank=True)
     phone = models.CharField(max_length=15, unique=True)
     user_role = models.CharField(max_length=10, choices=Role.choices, default=Role.CUSTOMER)
