@@ -1,5 +1,3 @@
-from contextlib import nullcontext
-
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 from dineresapp import settings
@@ -38,6 +36,7 @@ class Chef(models.Model):
 class BaseModel(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         abstract = True
@@ -65,9 +64,10 @@ class Dish(BaseModel):
     prep_time = models.IntegerField()
     is_available = models.BooleanField(default=True)
 
-
-    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    chef = models.ForeignKey(Chef, on_delete=models.PROTECT, related_name='dish', null=True)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='dish')
     ingredients = models.ManyToManyField(Ingredient, through='DishDetail')
+
     def __str__(self):
         return self.name
 
@@ -95,7 +95,6 @@ class Order(BaseModel):
         DONE = 'done', 'Hoàn thành'
         CANCEL = 'cancel', 'Hủy'
 
-    order_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     total_amount = models.DecimalField(max_digits=12, decimal_places=0, default=0)
 
@@ -103,8 +102,6 @@ class Order(BaseModel):
 
     def __str__(self):
         return f'Order #{self.pk} by {self.customer}'
-
-
 
 class OrderDetail(models.Model):
     quantity = models.IntegerField(default=1)
@@ -117,7 +114,7 @@ class OrderDetail(models.Model):
         unique_together = ('order', 'dish')
 
 # Booking
-class Table(models.Model):
+class Table(BaseModel):
     name = models.CharField(max_length=50, null=False)
     capacity = models.IntegerField()
 
@@ -127,7 +124,8 @@ class Table(models.Model):
 class Booking(BaseModel):
     class Status(models.TextChoices):
         PENDING = 'pending', 'Đang chờ'
-        CONFIRMED = 'confirmed', 'Đã xác nhận'
+        CONFIRMED = 'confirmed', 'Đã xác nhận',
+        COMPLETED = 'completed', 'Đã dùng bữa'
         CANCELLED = 'cancelled', 'Đã hủy'
 
     booking_time = models.DateTimeField()
@@ -155,13 +153,14 @@ class Transaction(BaseModel):
         FAILED = 'failed', 'Thất bại'
         REFUNDED = 'refunded', 'Hoàn tiền'
 
-    amount = models.DecimalField(max_digits=10, decimal_places=0)
+    amount = models.DecimalField(max_digits=12, decimal_places=0)
     payment_method = models.CharField(max_length=20, choices=Method.choices)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     paid_at = models.DateTimeField(null=True)
     transaction_ref = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    raw_response = models.TextField(null=True, blank=True)
 
-    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='transactions')
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='transactions')
 
     def __str__(self):
         return f"Transaction #{self.pk} - {self.get_status_display()} ({self.amount})"

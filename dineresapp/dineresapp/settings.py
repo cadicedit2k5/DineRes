@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 import os
-from dotenv import load_dotenv # Thêm dòng này
+from dotenv import load_dotenv  # Thêm dòng này
 
 # Load biến môi trường
 load_dotenv()
@@ -31,15 +31,21 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 
 import cloudinary
+
 # Configuration
 
 cloudinary.config(
-    cloud_name = "dxopigima",
-    api_key = "949398647377574",
-    api_secret = os.getenv('CLOUDINARY_SECRET'), # Click 'View API Keys' above to copy your API secret
+    cloud_name="dxopigima",
+    api_key="949398647377574",
+    api_secret=os.getenv('CLOUDINARY_SECRET'),  # Click 'View API Keys' above to copy your API secret
     secure=True
 )
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20
+}
 
 ALLOWED_HOSTS = []
 
@@ -150,3 +156,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Bao mat ckeditor 5
+SILENCED_SYSTEM_CHECKS = ['ckeditor.W001']
