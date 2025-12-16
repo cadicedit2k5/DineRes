@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from rest_framework import viewsets, parsers
+from rest_framework import viewsets, parsers, permissions
 from rest_framework.generics import ListAPIView
 
 from dineres.models import Category, Dish
@@ -21,3 +21,4 @@ class DishViewSet(viewsets.ViewSet, ListAPIView):
     serializer_class = DishSerializer
     parser_classes = [parsers.MultiPartParser]
     pagination_class = DishPagination
+    permission_classes = [permissions.IsAuthenticated]
