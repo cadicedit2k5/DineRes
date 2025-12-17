@@ -23,7 +23,7 @@ class User(AbstractUser):
         return f'{self.get_user_role_display()}: {self.last_name} {self.first_name}'
 
 class Chef(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chef')
     is_verified = models.BooleanField(default=False)
     bio = RichTextField(null=True, blank=True)
 
