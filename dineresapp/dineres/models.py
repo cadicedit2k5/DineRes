@@ -112,6 +112,22 @@ class Order(BaseModel):
     def __str__(self):
         return f'Order #{self.pk} by {self.customer}'
 
+    def clean(self):
+        if not self.pk:
+            return
+
+        old_order = Order.objects.get(pk=self.pk)
+
+        if old_order.status == self.Status.DONE and self.status == self.Status.CANCEL:
+            raise ValidationError("Món đã nấu xong không thể hùy!")
+
+        if old_order.status == self.Status.CANCEL and self.status != self.Status.CANCEL:
+            raise ValidationError("Đơn hàng đã hủy không thể khôi phục.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 class OrderDetail(models.Model):
     quantity = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     price_at_order = models.DecimalField(max_digits=10, decimal_places=0, validators=[MinValueValidator(0)])
@@ -121,6 +137,14 @@ class OrderDetail(models.Model):
 
     class Meta:
         unique_together = ('order', 'dish')
+
+    def clean(self):
+        if not self.dish.is_available:
+            raise ValidationError("Món ăn đã ngưng phục vụ!")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 # Booking
 class Table(BaseModel):
