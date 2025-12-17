@@ -1,4 +1,7 @@
-from django.core.validators import MinValueValidator, MaxValueValidator
+from time import timezone
+
+from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+from rest_framework.exceptions import ValidationError
 
 from dineresapp import settings
 from django.contrib.auth.models import AbstractUser
@@ -8,6 +11,12 @@ from cloudinary.models import CloudinaryField
 
 # Create your models here.
 # USER
+# Validate phone
+phone_regex = RegexValidator(
+    regex=r'^0\d{9,10}$',
+    message="Số điện thoại phải bắt đầu bằng số 0 và có độ dài từ 10 đến 11 số."
+)
+
 class User(AbstractUser):
     class Role(models.TextChoices):
         ADMIN = 'admin', 'Quản trị viên'
@@ -16,7 +25,7 @@ class User(AbstractUser):
 
     avatar = CloudinaryField('avatar', null=True)
     address = models.CharField(max_length=255, null=True, blank=True)
-    phone = models.CharField(max_length=15, unique=True)
+    phone = models.CharField(max_length=15, unique=True, validators=[phone_regex])
     user_role = models.CharField(max_length=10, choices=Role.choices, default=Role.CUSTOMER)
 
     def __str__(self):
@@ -51,7 +60,14 @@ class Category(BaseModel):
         return self.name
 
 class Ingredient(BaseModel):
+    class Unit(models.TextChoices):
+        GRAM = 'gram', 'Gram'
+        ML = 'ml', 'Milliliter'
+        SPOON = 'spoon', 'Thìa'
+        PIECE = 'piece', 'Cái/Quả'
+
     name = models.CharField(max_length=50, unique=True)
+    unit = models.CharField(max_length=50, choices=Unit.choices, default=Unit.GRAM)
 
     def __str__(self):
         return self.name
@@ -60,26 +76,19 @@ class Dish(BaseModel):
     name = models.CharField(max_length=50, unique=True, null=False)
     description = RichTextField()
     image = CloudinaryField(null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=0)
-    prep_time = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=0, validators=[MinValueValidator(0)])
+    prep_time = models.IntegerField(validators=[MinValueValidator(1)])
     is_available = models.BooleanField(default=True)
 
-    chef = models.ForeignKey(Chef, on_delete=models.PROTECT, related_name='dish', null=True)
-    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='dish')
+    chef = models.ForeignKey(Chef, on_delete=models.PROTECT, related_name='dishes', null=True)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='dishes')
     ingredients = models.ManyToManyField(Ingredient, through='DishDetail')
 
     def __str__(self):
         return self.name
 
 class DishDetail(models.Model):
-    class Unit(models.TextChoices):
-        GRAM = 'gram', 'Gram'
-        ML = 'ml', 'Milliliter'
-        SPOON = 'spoon', 'Thìa'
-        PIECE = 'piece', 'Cái/Quả'
-
-    amount = models.DecimalField(max_digits=6, decimal_places=2)
-    unit = models.CharField(max_length=50, choices=Unit.choices)
+    amount = models.DecimalField(max_digits=6, decimal_places=2, )
 
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT)
@@ -96,7 +105,7 @@ class Order(BaseModel):
         CANCEL = 'cancel', 'Hủy'
 
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
-    total_amount = models.DecimalField(max_digits=12, decimal_places=0, default=0)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=0, default=0, validators=[MinValueValidator(0)])
 
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='orders')
 
@@ -104,8 +113,8 @@ class Order(BaseModel):
         return f'Order #{self.pk} by {self.customer}'
 
 class OrderDetail(models.Model):
-    quantity = models.IntegerField(default=1)
-    price_at_order = models.DecimalField(max_digits=10, decimal_places=0)
+    quantity = models.IntegerField(default=1, validators=[MinValueValidator(1)])
+    price_at_order = models.DecimalField(max_digits=10, decimal_places=0, validators=[MinValueValidator(0)])
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='details')
     dish = models.ForeignKey(Dish, on_delete=models.PROTECT)
@@ -116,7 +125,7 @@ class OrderDetail(models.Model):
 # Booking
 class Table(BaseModel):
     name = models.CharField(max_length=50, null=False)
-    capacity = models.IntegerField()
+    capacity = models.IntegerField(validators=[MinValueValidator(1)])
 
     def __str__(self):
         return self.name
@@ -124,7 +133,7 @@ class Table(BaseModel):
 class Booking(BaseModel):
     class Status(models.TextChoices):
         PENDING = 'pending', 'Đang chờ'
-        CONFIRMED = 'confirmed', 'Đã xác nhận',
+        CONFIRMED = 'confirmed', 'Đã xác nhận'
         COMPLETED = 'completed', 'Đã dùng bữa'
         CANCELLED = 'cancelled', 'Đã hủy'
 
@@ -137,6 +146,14 @@ class Booking(BaseModel):
 
     def __str__(self):
         return f'Booking #{self.pk} by {self.customer}'
+
+    def clean(self):
+        if self.booking_time and self.booking_time < timezone.now():
+            raise ValidationError({'booking_time': "Thời gian đặt bàn không thể ở trong quá khứ!"})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 # Payment
 class Transaction(BaseModel):
@@ -153,7 +170,7 @@ class Transaction(BaseModel):
         FAILED = 'failed', 'Thất bại'
         REFUNDED = 'refunded', 'Hoàn tiền'
 
-    amount = models.DecimalField(max_digits=12, decimal_places=0)
+    amount = models.DecimalField(max_digits=12, decimal_places=0, validators=[MinValueValidator(0)])
     payment_method = models.CharField(max_length=20, choices=Method.choices)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     paid_at = models.DateTimeField(null=True)
