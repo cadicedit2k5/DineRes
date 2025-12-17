@@ -1,12 +1,13 @@
+from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer
-from .models import Category, User, Dish, Chef
+from .models import Category, User, Dish, Chef, Ingredient, DishDetail
 
 
 class ImageSerializer(ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
 
-        data['image'] = instance.image.url
+        data['image'] = instance.image.url if instance.image else ''
 
         return data
 
@@ -73,13 +74,38 @@ class UserSerializer(ModelSerializer):
 
         return data
 
+class IngredientSerializer(ModelSerializer):
+    class Meta:
+        model = Ingredient
+        fields = ['id', 'name', 'unit']
 
 class CategorySerializer(ImageSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ['id', 'name', 'image']
+
+class DishDetailSerializer(ModelSerializer):
+    ingredient_details = IngredientSerializer(source='ingredient', read_only=True)
+
+    ingredient_id = PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all(),
+        source='ingredient',
+        write_only=True
+    )
+
+    class Meta:
+        model = DishDetail
+        fields = ['id', 'ingredient_details', 'ingredient_id', 'amount']
 
 class DishSerializer(ImageSerializer):
+    ingredients = DishDetailSerializer(source='dishdetail_set', many=True)
+
     class Meta:
         model = Dish
-        fields = ['id', 'name', 'price', 'image', 'chef', 'category', 'ingredients', 'created_date']
+        fields = ['id', 'name', 'price', 'image', 'chef', 'category', 'ingredients']
+        extra_kwargs = {
+            'chef': {
+                'read_only': True
+            }
+        }
+

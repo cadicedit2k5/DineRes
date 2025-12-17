@@ -41,6 +41,9 @@ class Chef(models.Model):
                                     null=True,
                                     related_name='verified_chefs')
 
+    def __str__(self):
+        return f'Chef: {self.user.last_name} {self.user.first_name}'
+
 # BASE MODEL
 class BaseModel(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
@@ -88,7 +91,7 @@ class Dish(BaseModel):
         return self.name
 
 class DishDetail(models.Model):
-    amount = models.DecimalField(max_digits=6, decimal_places=2, )
+    amount = models.DecimalField(max_digits=6, decimal_places=2, validators=[MinValueValidator(0)])
 
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT)

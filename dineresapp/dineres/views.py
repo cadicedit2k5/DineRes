@@ -4,15 +4,16 @@ from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.response import Response
 
-from dineres.models import Category, Dish, User, Chef
+from dineres.models import Category, Dish, User, Chef, Ingredient
 from dineres.paginators import DishPagination
-from dineres.serializers import CategorySerializer, DishSerializer, UserSerializer, UserUpdateSerializer
+from dineres.serializers import CategorySerializer, DishSerializer, UserSerializer, UserUpdateSerializer, \
+    IngredientSerializer
 
 
 def index(request):
     return HttpResponse("Dine Res Application")
 
-class UserViewSet(viewsets.ViewSet, CreateAPIView):
+class UserViewSet(viewsets.ViewSet, CreateAPIView, ListAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
     parser_classes = [parsers.MultiPartParser]
@@ -60,14 +61,23 @@ class UserViewSet(viewsets.ViewSet, CreateAPIView):
 
 
 class CategoryViewSet(viewsets.ViewSet, ListAPIView):
-    queryset = Category.objects.all()
+    queryset = Category.objects.filter(active=True)
     serializer_class = CategorySerializer
     parser_classes = [parsers.MultiPartParser]
 
 
 class DishViewSet(viewsets.ViewSet, ListAPIView):
-    queryset = Dish.objects.all()
+    queryset = Dish.objects.filter(active=True)
     serializer_class = DishSerializer
     parser_classes = [parsers.MultiPartParser]
     pagination_class = DishPagination
     permission_classes = [permissions.IsAuthenticated]
+
+class IngredientViewSet(viewsets.ViewSet, ListAPIView, CreateAPIView):
+    queryset = Ingredient.objects.filter(active=True)
+    serializer_class = IngredientSerializer
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
