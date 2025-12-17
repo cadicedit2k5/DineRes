@@ -1,8 +1,8 @@
-from rest_framework.relations import PrimaryKeyRelatedField
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, IntegerField, CharField, JSONField
 from .models import Category, User, Dish, Chef, Ingredient, DishDetail
 
 
+# Các Serializer cơ bản
 class ImageSerializer(ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -10,6 +10,19 @@ class ImageSerializer(ModelSerializer):
         data['image'] = instance.image.url if instance.image else ''
 
         return data
+
+
+class IngredientSerializer(ModelSerializer):
+    class Meta:
+        model = Ingredient
+        fields = ['id', 'name', 'unit']
+
+
+class CategorySerializer(ImageSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'image']
+
 
 class ChefSerializer(ModelSerializer):
     class Meta:
@@ -21,8 +34,11 @@ class ChefSerializer(ModelSerializer):
             }
         }
 
+
+# --- USER SERIALIZERS ---
 class UserUpdateSerializer(ModelSerializer):
     chef = ChefSerializer(read_only=False)
+
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'avatar', 'email',
@@ -74,38 +90,41 @@ class UserSerializer(ModelSerializer):
 
         return data
 
-class IngredientSerializer(ModelSerializer):
-    class Meta:
-        model = Ingredient
-        fields = ['id', 'name', 'unit']
 
-class CategorySerializer(ImageSerializer):
-    class Meta:
-        model = Category
-        fields = ['id', 'name', 'image']
-
+# DISH & DISH DETAIL SERIALIZERS
 class DishDetailSerializer(ModelSerializer):
-    ingredient_details = IngredientSerializer(source='ingredient', read_only=True)
-
-    ingredient_id = PrimaryKeyRelatedField(
-        queryset=Ingredient.objects.all(),
-        source='ingredient',
-        write_only=True
-    )
+    id = IntegerField(source='ingredient.id')
+    name = CharField(source='ingredient.name')
+    unit = CharField(source='ingredient.unit')
 
     class Meta:
         model = DishDetail
-        fields = ['id', 'ingredient_details', 'ingredient_id', 'amount']
+        fields = ['id', 'name', 'unit', 'amount']
+
 
 class DishSerializer(ImageSerializer):
-    ingredients = DishDetailSerializer(source='dishdetail_set', many=True)
+    ingredients = JSONField(write_only=True, required=True)
 
     class Meta:
         model = Dish
-        fields = ['id', 'name', 'price', 'image', 'chef', 'category', 'ingredients']
+        fields = ['id', 'name', 'description', 'price', 'prep_time', 'category', 'image', 'chef', 'ingredients']
         extra_kwargs = {
             'chef': {
                 'read_only': True
             }
         }
 
+    def create(self, validated_data):
+        ingredients_data = validated_data.pop('ingredients', None)
+
+        request = self.context.get('request')
+        if request and hasattr(request.user, 'chef'):
+            validated_data['chef'] = request.user.chef
+
+        dish = Dish.objects.create(**validated_data)
+
+        for i in ingredients_data:
+            ingredient = Ingredient.objects.get(pk=i['id'])
+            DishDetail.objects.create(dish=dish, ingredient=ingredient, amount=i['amount'])
+
+        return dish

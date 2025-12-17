@@ -13,6 +13,7 @@ from dineres.serializers import CategorySerializer, DishSerializer, UserSerializ
 def index(request):
     return HttpResponse("Dine Res Application")
 
+# User API
 class UserViewSet(viewsets.ViewSet, CreateAPIView, ListAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
@@ -59,20 +60,7 @@ class UserViewSet(viewsets.ViewSet, CreateAPIView, ListAPIView):
                 return Response(UserSerializer(u).data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class CategoryViewSet(viewsets.ViewSet, ListAPIView):
-    queryset = Category.objects.filter(active=True)
-    serializer_class = CategorySerializer
-    parser_classes = [parsers.MultiPartParser]
-
-
-class DishViewSet(viewsets.ViewSet, ListAPIView):
-    queryset = Dish.objects.filter(active=True)
-    serializer_class = DishSerializer
-    parser_classes = [parsers.MultiPartParser]
-    pagination_class = DishPagination
-    permission_classes = [permissions.IsAuthenticated]
-
+# Ingredient API
 class IngredientViewSet(viewsets.ViewSet, ListAPIView, CreateAPIView):
     queryset = Ingredient.objects.filter(active=True)
     serializer_class = IngredientSerializer
@@ -81,3 +69,23 @@ class IngredientViewSet(viewsets.ViewSet, ListAPIView, CreateAPIView):
         if self.action == 'create':
             return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
+
+# Category API
+class CategoryViewSet(viewsets.ViewSet, ListAPIView):
+    queryset = Category.objects.filter(active=True)
+    serializer_class = CategorySerializer
+    parser_classes = [parsers.MultiPartParser]
+
+# Dish API
+class DishViewSet(viewsets.ViewSet, ListAPIView, CreateAPIView):
+    queryset = Dish.objects.filter(active=True)
+    serializer_class = DishSerializer
+    parser_classes = [parsers.MultiPartParser]
+    pagination_class = DishPagination
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
+
+
