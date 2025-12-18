@@ -128,3 +128,19 @@ class DishSerializer(ImageSerializer):
             DishDetail.objects.create(dish=dish, ingredient=ingredient, amount=i['amount'])
 
         return dish
+
+    def update(self, instance, validated_data):
+        ingredients_data = validated_data.pop('ingredients', None)
+
+        dish = super().update(instance, validated_data)
+
+        if ingredients_data:
+            # Xoa tat ca nguyen lieu cu
+            dish.dishdetail_set.all().delete()
+            for i in ingredients_data:
+                ingredient = Ingredient.objects.get(pk=i['id'])
+                DishDetail.objects.create(dish=dish, ingredient=ingredient, amount=i['amount'])
+
+        return dish
+
+
