@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions, parsers, status
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from dineres.models import Ingredient, Category, Dish
@@ -54,13 +55,15 @@ class CategoryViewSet(viewsets.ViewSet, ListAPIView):
         paginator = DishPagination()
         page = paginator.paginate_queryset(dishes, request)
 
-        if page is not None:
+        if page:
             serializer = DishSerializer(page, many=True, context={'request': request})
             return Response(paginator.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+        else:
+            return Response(DishSerializer(dishes, many=True).data, status=status.HTTP_200_OK)
 
 
 class DishViewSet(viewsets.ModelViewSet):
-    queryset = Dish.objects.filter(active=True)
+    queryset = Dish.objects.filter(active=True).select_related('category', 'chef').prefetch_related('ingredients')
     serializer_class = DishSerializer
     parser_classes = [parsers.MultiPartParser]
     pagination_class = DishPagination
@@ -70,6 +73,22 @@ class DishViewSet(viewsets.ModelViewSet):
         return filter_dish_queryset(query, self.request.query_params)
 
     def get_permissions(self):
-        if self.action == 'list':
+        if self.action in ['list', 'compare_dishes']:
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated(), IsChef()]
+
+    @action(methods=['get'], url_path='compare', detail=False)
+    def compare_dishes(self, request):
+        ids = request.query_params.get('ids')
+        print(ids)
+        if not ids:
+            return Response({'message': 'Cần cung cấp danh sách ID món ăn'}, status=status.HTTP_400_BAD_REQUEST)
+
+        id_list = [int(x.strip()) for x in ids.split(',') if x.isdigit()]
+        print(id_list)
+        dishes = (Dish.objects.filter(id__in=id_list)
+                  .select_related('category', 'chef')
+                  .prefetch_related('ingredients'))
+
+        print(dishes.all())
+        return Response(DishSerializer(dishes, many=True, context={'request': request}).data, status=status.HTTP_200_OK)

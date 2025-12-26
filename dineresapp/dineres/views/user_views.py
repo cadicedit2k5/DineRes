@@ -4,7 +4,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.response import Response
 
 from dineres.models import User, Chef
-from dineres.serializers.user_serializers import UserSerializer
+from dineres.serializers.user_serializers import UserSerializer, UserUpdateSerializer
 
 
 class UserViewSet(viewsets.ViewSet, CreateAPIView, ListAPIView):

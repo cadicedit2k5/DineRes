@@ -79,7 +79,7 @@ class Dish(BaseModel):
     name = models.CharField(max_length=50, unique=True, null=False)
     description = RichTextField()
     image = CloudinaryField(null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=0, validators=[MinValueValidator(0)])
+    price = models.DecimalField(max_digits=10, decimal_places=0, validators=[MinValueValidator(0)], db_index=True)
     prep_time = models.IntegerField(validators=[MinValueValidator(1)])
     is_available = models.BooleanField(default=True)
 
