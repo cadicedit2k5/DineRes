@@ -1,9 +1,11 @@
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters as rest_filters
 from rest_framework import viewsets, permissions, parsers, status
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView, CreateAPIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from dineres.filters import DishFilter
 from dineres.models import Ingredient, Category, Dish
 from dineres.paginators import DishPagination
 from dineres.permissions import IsChef
@@ -67,6 +69,11 @@ class DishViewSet(viewsets.ModelViewSet):
     serializer_class = DishSerializer
     parser_classes = [parsers.MultiPartParser]
     pagination_class = DishPagination
+    filter_backends = [DjangoFilterBackend, rest_filters.OrderingFilter]
+    filterset_class = DishFilter
+
+    ordering_fields = ['name', 'price', 'rating']
+    ordering = ['name']
 
     def get_queryset(self):
         query = self.queryset
