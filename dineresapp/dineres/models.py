@@ -103,8 +103,8 @@ class DishDetail(models.Model):
 class Order(BaseModel):
     class Status(models.TextChoices):
         PENDING = 'pending', 'Chờ xử lý'
-        PAID = 'paid', 'Đã thanh toán'
         DONE = 'done', 'Hoàn thành'
+        PAID = 'paid', 'Đã thanh toán'
         CANCEL = 'cancel', 'Hủy'
 
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)

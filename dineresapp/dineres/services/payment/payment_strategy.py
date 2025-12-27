@@ -216,7 +216,7 @@ class ZaloPayPaymentStrategy(PaymentStrategy):
 
 class PaymentStrategyFactory:
     @staticmethod
-    def get_strategy(method_name, payment_type):
+    def get_strategy(method_name):
         strategies = {
             "CASH": CashPaymentStrategy,
             "MOMO": MomoPaymentStrategy,
@@ -224,4 +224,4 @@ class PaymentStrategyFactory:
         }
 
         strategy = strategies.get(method_name.upper())
-        return strategy(payment_type)
+        return strategy()

@@ -1,8 +1,13 @@
-from rest_framework import viewsets, generics, permissions
-from rest_framework.decorators import action
+import uuid
 
-from dineres.models import Order
-from dineres.serializers.order_serializers import OrderSerializer
+from django.db import transaction
+from rest_framework import viewsets, generics, permissions, status, serializers
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from dineres.models import Order, Transaction, Dish, OrderDetail
+from dineres.serializers.order_serializers import OrderSerializer, PaymentSerializer, OrderInputSerializer
+from dineres.services.payment.payment_strategy import PaymentStrategyFactory
 
 
 class OrderViewSet(viewsets.ViewSet, generics.CreateAPIView):
@@ -12,8 +17,68 @@ class OrderViewSet(viewsets.ViewSet, generics.CreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    # @action(methods=["get"], detail=True, url_path='pay')
-    # def pay(self, request, pk=None):
-    #     order = self.get_object()
+    def create(self, request, *args, **kwargs):
+        details_data = request.data.get("details")
+        input_serializer = OrderInputSerializer(data=details_data, many=True)
+        input_serializer.is_valid(raise_exception=True)
+        items = input_serializer.validated_data
+        try:
+            # Su dung rollback de phong truong hop co loi
+            with transaction.atomic():
+                order = Order.objects.create(customer=request.user, total_amount=0)
+                total_amount = 0
+
+                for item in items:
+                    dish = Dish.objects.get(pk=item['dish_id'])
+                    if not dish.active:
+                        raise serializers.ValidationError(f"Món {dish.name} đang tạm ngưng phục vụ.")
+
+                    quantity = item['quantity']
+                    price = dish.price
+
+                    OrderDetail.objects.create(
+                        order=order,
+                        dish=dish,
+                        quantity=quantity,
+                        price_at_order=price
+                    )
+                    total_amount += price * quantity
+
+                order.total_amount = total_amount
+                order.save()
+
+                output_serializer = self.serializer_class(order)
+                return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+        except Dish.DoesNotExist:
+            return Response({"message": "Món ăn không tồn tại."}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+    @action(methods=["post"], detail=True, url_path='pay')
+    def pay(self, request, pk=None):
+        order = self.get_object()
+        input_serializer = PaymentSerializer(data=request.data)
+        if not input_serializer.is_valid():
+            return Response(input_serializer.errors, status=400)
+
+        payment_method = input_serializer.validated_data.get('payment_method')
+        print(payment_method)
+        ref = uuid.uuid4()
+        total_amount = order.total_amount
+
+        payment = PaymentStrategyFactory.get_strategy(payment_method)
+        result = payment.create_payment(amount=total_amount, ref=ref)
+
+        Transaction.objects.create(
+            order=order,
+            amount=total_amount,
+            payment_method=payment.get_payment_method(),
+            transaction_ref=ref
+        )
+
+        return Response(result, status=status.HTTP_201_CREATED)
+
 
 

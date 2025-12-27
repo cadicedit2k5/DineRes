@@ -4,11 +4,12 @@ from rest_framework.serializers import ModelSerializer
 
 from dineres.models import OrderDetail, Order, Transaction
 
+class OrderInputSerializer(serializers.Serializer):
+    dish_id = serializers.IntegerField()
+    quantity = serializers.IntegerField(min_value=1)
 
 class OrderDetailSerializer(ModelSerializer):
     dish_name  = CharField(source='dish.name')
-    class Meta:
-        model = OrderDetail
     class Meta:
         model = OrderDetail
         fields = ['dish_name', 'quantity', 'price_at_order']
@@ -21,4 +22,3 @@ class OrderSerializer(ModelSerializer):
 
 class PaymentSerializer(serializers.Serializer):
     payment_method = serializers.ChoiceField(choices=Transaction.Method.choices)
-    transaction_ref = serializers.CharField(max_length=255, required=False, allow_blank=True)
