@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from dineres.filters import DishFilter
 from dineres.models import Ingredient, Category, Dish
 from dineres.paginators import DishPagination
-from dineres.permissions import IsChef
+from dineres.permissions import IsVerifiedChef
 from dineres.serializers.food_serializers import IngredientSerializer, CategorySerializer, DishSerializer
 from dineres.serializers.review_serializers import ReviewSerializer
 
@@ -63,7 +63,7 @@ class DishViewSet(viewsets.ModelViewSet):
             return [permissions.AllowAny()]
         elif self.action in ['reiviews']:
             return [permissions.IsAuthenticated()]
-        return [permissions.IsAuthenticated(), IsChef()]
+        return [permissions.IsAuthenticated(), IsVerifiedChef()]
 
     @action(methods=['get'], url_path='compare', detail=False)
     def compare_dishes(self, request):
