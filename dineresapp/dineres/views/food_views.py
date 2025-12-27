@@ -1,10 +1,12 @@
 from unicodedata import category
 
+from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters as rest_filters
 from rest_framework import viewsets, permissions, parsers, status
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from dineres.filters import DishFilter
@@ -22,7 +24,7 @@ class IngredientViewSet(viewsets.ViewSet, ListAPIView, CreateAPIView):
     def get_permissions(self):
         if self.action == 'list':
             return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated()]
+        return [IsVerifiedChef()]
 
 
 class CategoryViewSet(viewsets.ViewSet, ListAPIView):
@@ -48,22 +50,25 @@ class CategoryViewSet(viewsets.ViewSet, ListAPIView):
 
 
 class DishViewSet(viewsets.ModelViewSet):
-    queryset = Dish.objects.filter(active=True).select_related('category', 'chef').prefetch_related('ingredients')
+    queryset = Dish.objects.filter(active=True).select_related('category').prefetch_related('dish_details')
     serializer_class = DishSerializer
-    parser_classes = [parsers.MultiPartParser]
+    parser_classes = [parsers.MultiPartParser, parsers.JSONParser]
     pagination_class = DishPagination
     filter_backends = [DjangoFilterBackend, rest_filters.OrderingFilter]
     filterset_class = DishFilter
 
-    ordering_fields = ['name', 'price', 'rating']
+    ordering_fields = ['name', 'price', 'avg_rating']
     ordering = ['name']
+
+    def get_queryset(self):
+        return self.queryset.annotate(avg_rating=Avg('reviews__rating'))
 
     def get_permissions(self):
         if self.action in ['list', 'compare_dishes']:
             return [permissions.AllowAny()]
-        elif self.action in ['reiviews']:
+        elif self.action in ['reviews']:
             return [permissions.IsAuthenticated()]
-        return [permissions.IsAuthenticated(), IsVerifiedChef()]
+        return [IsVerifiedChef()]
 
     @action(methods=['get'], url_path='compare', detail=False)
     def compare_dishes(self, request):

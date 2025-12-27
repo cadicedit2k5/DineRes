@@ -93,7 +93,7 @@ class Dish(BaseModel):
 class DishDetail(models.Model):
     amount = models.DecimalField(max_digits=6, decimal_places=2, validators=[MinValueValidator(0)])
 
-    dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, related_name='dish_details')
     ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT)
 
     class Meta:

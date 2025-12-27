@@ -56,7 +56,7 @@ class UserViewSet(viewsets.ViewSet, CreateAPIView):
         if not pending_chefs.exists():
             return Response({"message": "Không có yêu cầu trở thành đầu bếp nào đang chờ duyệt."}, status=status.HTTP_200_OK)
 
-        pending_chefs_user = User.objects.filter(id__in=pending_chefs.values_list('user__id', flat=True))
+        pending_chefs_user = User.objects.filter(pk__in=pending_chefs.values_list('user__id', flat=True))
         serializer = UserSerializer(pending_chefs_user, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
