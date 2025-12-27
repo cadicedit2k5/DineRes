@@ -19,6 +19,3 @@ class OrderSerializer(ModelSerializer):
     class Meta:
         model = Order
         fields = ['id', 'created_date', 'status', 'total_amount', 'details']
-
-class PaymentSerializer(serializers.Serializer):
-    payment_method = serializers.ChoiceField(choices=Transaction.Method.choices)

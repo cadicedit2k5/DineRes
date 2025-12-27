@@ -4,7 +4,6 @@ CLOUDINARY_SECRET='Rz11LKp2r043ufe6d8KODeI1qb0'
 CLIENTR_ID='4xulCmaS0K8S114ggVd5QY2wN37P8JDSo3lJNqsd'
 CLIENT_SECRET='ODG4BLmqcGobhxIjZuyrEcwRn5RYh0tKvElkaDBpspINLQGnCcLPnvL4y2OzJWLItcVgsT1NTPekTYGnrSP8qquKseg4GG5ajulrqno9BvIZaqk4INTGwU2qnkPNNGrA'
 
-
 MOMO_ACCESS_KEY='F8BBA842ECF85'
 MOMO_SECRET_KEY='K951B6PE1waDMi640xX08PD3vg6EkVlz'
 
@@ -13,4 +12,4 @@ ZLP_MERCHANT_KEY1='sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn'
 ZLP_MERCHANT_KEY2='trMrHtvjo6myautxDUiAcYsVtaeQ8nhf'
 ZLP_MERCHANT_ENDPOINT='https://sb-openapi.zalopay.vn/v2'
 ZLP_MERCHANT_GATEWAY_ENDPOINT='https://sbgateway.zalopay.vn/'
-ZLP_REDIRECT_URL='https://paleological-pachydermatously-linnie.ngrok-free.dev/api/ipn/zalopay/'
+ZLP_REDIRECT_URL='https://uniramous-earline-colorational.ngrok-free.dev/api/ipn/zalopay/'

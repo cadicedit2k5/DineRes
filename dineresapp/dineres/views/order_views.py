@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from dineres.models import Order, Transaction, Dish, OrderDetail
-from dineres.serializers.order_serializers import OrderSerializer, PaymentSerializer, OrderInputSerializer
+from dineres.serializers.order_serializers import OrderSerializer, OrderInputSerializer
 from dineres.services.payment.payment_strategy import PaymentStrategyFactory
 
 
@@ -55,30 +55,6 @@ class OrderViewSet(viewsets.ViewSet, generics.CreateAPIView):
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-    @action(methods=["post"], detail=True, url_path='pay')
-    def pay(self, request, pk=None):
-        order = self.get_object()
-        input_serializer = PaymentSerializer(data=request.data)
-        if not input_serializer.is_valid():
-            return Response(input_serializer.errors, status=400)
-
-        payment_method = input_serializer.validated_data.get('payment_method')
-        print(payment_method)
-        ref = uuid.uuid4()
-        total_amount = order.total_amount
-
-        payment = PaymentStrategyFactory.get_strategy(payment_method)
-        result = payment.create_payment(amount=total_amount, ref=ref)
-
-        Transaction.objects.create(
-            order=order,
-            amount=total_amount,
-            payment_method=payment.get_payment_method(),
-            transaction_ref=ref
-        )
-
-        return Response(result, status=status.HTTP_201_CREATED)
 
 
 

@@ -38,7 +38,7 @@ class PaymentStrategy(ABC):
 class CashPaymentStrategy(PaymentStrategy):
     def create_payment(self, amount, ref):
         return {
-            "payUrl": "http://localhost:5000/",
+            "payUrl": "https://uniramous-earline-colorational.ngrok-free.dev/api/ipn/cash",
             "ref": ref
         }
 
@@ -136,6 +136,7 @@ class MomoPaymentStrategy(PaymentStrategy):
     def get_payment_method(self):
         return Transaction.Method.MOMO
 
+
 class ZaloPayPaymentStrategy(PaymentStrategy):
     def __init__(self):
         self.app_id = os.getenv("ZLP_MERCHANT_APP_ID")
@@ -158,7 +159,7 @@ class ZaloPayPaymentStrategy(PaymentStrategy):
         inputData = {
             "app_id": int(self.app_id),
             "app_user": "OkeOU",
-            "app_trans_id": str(ref),
+            "app_trans_id": f"{datetime.now().strftime('%y%m%d')}_{str(ref).replace('-', '')}",
             "app_time": int(datetime.now().timestamp() * 1000),
             "expire_duration_seconds": 900,
             "description": f"Giao dịch thanh toán cho {ref}",
@@ -177,13 +178,16 @@ class ZaloPayPaymentStrategy(PaymentStrategy):
             inputData["embed_data"],
             inputData["item"],
         ])
-        
+
         inputData["mac"] = self.get_mac(data, self.key1)
 
+        print(inputData)
+
         try:
-            response = requests.post(self.endpoint, json=inputData)
+            response = requests.post(self.endpoint + "/create", json=inputData)
             if response.status_code == 200:
-                return response.json()
+                payUrl = response.json().get("order_url")
+                return {"payUrl": payUrl}
             else:
                 return {'payUrl': None, 'err_msg': response.text}
         except Exception as e:
