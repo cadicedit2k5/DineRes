@@ -213,7 +213,6 @@ class Transaction(BaseModel):
 class Review(BaseModel):
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = RichTextField(null=True, blank=True)
-    review_at = models.DateTimeField(auto_now_add=True)
 
-    dish = models.ForeignKey('Dish', on_delete=models.CASCADE)
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, related_name='reviews')
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
