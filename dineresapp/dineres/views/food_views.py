@@ -79,8 +79,8 @@ class DishViewSet(viewsets.ModelViewSet):
 
         id_list = [int(x.strip()) for x in ids.split(',') if x.isdigit()]
         print(id_list)
-        dishes = (Dish.objects.filter(id__in=id_list)
-                  .select_related('category', 'chef')
+        dishes = (self.get_queryset().filter(id__in=id_list)
+                  .select_related('category')
                   .prefetch_related('ingredients'))
 
         print(dishes.all())

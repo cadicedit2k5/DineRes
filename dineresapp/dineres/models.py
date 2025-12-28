@@ -99,6 +99,21 @@ class DishDetail(models.Model):
     class Meta:
         unique_together = ('dish', 'ingredient')
 
+class Combo(BaseModel):
+    name = models.CharField(max_length=50, unique=True, null=False)
+    price = models.DecimalField(max_digits=10, decimal_places=0, validators=[MinValueValidator(0)])
+
+    dishes = models.ManyToManyField(Dish, through='ComboDetail')
+
+class ComboDetail(models.Model):
+    quantity = models.IntegerField(default=1, validators=[MinValueValidator(1)])
+
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, related_name='details')
+    combo = models.ForeignKey(Combo, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('dish', 'combo')
+
 # ORDER
 class Order(BaseModel):
     class Status(models.TextChoices):
