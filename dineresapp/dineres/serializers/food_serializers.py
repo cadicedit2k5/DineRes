@@ -60,6 +60,8 @@ class DishSerializer(ImageSerializer):
         if request and hasattr(request.user, 'chef'):
             validated_data['chef'] = request.user.chef
 
+        print(validated_data)
+
         with transaction.atomic():
             dish = Dish.objects.create(**validated_data)
 

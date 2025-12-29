@@ -22,3 +22,14 @@ class IsVerifiedChef(BasePermission):
             return True
 
         return False
+
+class IsUserOwner(BasePermission):
+    def has_permission(self, request, view):
+        return request.user and request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        if hasattr(obj, 'user'):
+            return request.user == obj.user
+
+        if hasattr(obj, 'customer'):
+            return request.user == obj.customer

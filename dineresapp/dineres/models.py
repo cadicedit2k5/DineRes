@@ -1,5 +1,7 @@
 from time import timezone
 
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from rest_framework.exceptions import ValidationError
 
@@ -231,3 +233,22 @@ class Review(BaseModel):
 
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, related_name='reviews')
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+class Notification(BaseModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
+
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    is_readed = models.BooleanField(default=False)
+
+    # Giaỉ pháp lưu trữ geniric foreign key
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        ordering = ['-created_date']
+        indexes = [
+            models.Index(fields=['user', 'is_readed']), # Danh chi muc phuc hop vi can ca hai thang
+        ]
+

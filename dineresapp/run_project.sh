@@ -16,6 +16,23 @@ python manage.py shell  <<EOF
 from dineres.models import Category, Ingredient, Dish, DishDetail, User, Chef
 from django.contrib.auth import get_user_model
 
+# Tạo admin
+admin_user = User.objects.create_superuser(
+            username="admin",
+            email="admin@gmail.com",
+            password="Admin@123"
+        )
+admin_user.user_role = 'admin'
+admin_user.first_name = "Super"
+admin_user.last_name = "Manager"
+admin_user.save()
+
+Chef.objects.create(
+            user=admin_user,
+            bio="Quản trị hệ thống cũng biết nấu ăn.",
+            is_verified=True # Admin thì tự duyệt chính mình luôn
+        )
+
 # 2. Tạo User & Chef
 # Tạo user cho đầu bếp
 chef_user, _ = User.objects.get_or_create(

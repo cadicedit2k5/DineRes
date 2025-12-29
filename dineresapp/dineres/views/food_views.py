@@ -10,11 +10,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from dineres.filters import DishFilter
-from dineres.models import Ingredient, Category, Dish
+from dineres.models import Ingredient, Category, Dish, Notification
 from dineres.paginators import DishPagination
 from dineres.permissions import IsVerifiedChef
 from dineres.serializers.food_serializers import IngredientSerializer, CategorySerializer, DishSerializer
 from dineres.serializers.review_serializers import ReviewSerializer
+from dineres.services.notification_services import NotificationService
 
 
 class IngredientViewSet(viewsets.ViewSet, ListAPIView, CreateAPIView):
@@ -32,21 +33,21 @@ class CategoryViewSet(viewsets.ViewSet, ListAPIView):
     serializer_class = CategorySerializer
     parser_classes = [parsers.MultiPartParser]
 
-    @action(methods=['get'], url_path='dishes', detail=True)
-    def get_dishes(self, request, pk=None):
-        category = self.get_object()
-        dishes_queryset = (Dish.objects.filter(category=category, active=True).
-                           select_related('category', 'chef').
-                           prefetch_related('ingredients'))
-        filtered_dishes = DishFilter(request.query_params, queryset=dishes_queryset).qs
-        paginator = DishPagination()
-        page = paginator.paginate_queryset(filtered_dishes, request)
-
-        if page:
-            serializer = DishSerializer(page, many=True, context={'request': request})
-            return Response(paginator.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
-        else:
-            return Response(DishSerializer(filtered_dishes, many=True, context={'request': request}).data, status=status.HTTP_200_OK)
+    # @action(methods=['get'], url_path='dishes', detail=True)
+    # def get_dishes(self, request, pk=None):
+    #     category = self.get_object()
+    #     dishes_queryset = (Dish.objects.filter(category=category, active=True).
+    #                        select_related('category', 'chef').
+    #                        prefetch_related('ingredients'))
+    #     filtered_dishes = DishFilter(request.query_params, queryset=dishes_queryset).qs
+    #     paginator = DishPagination()
+    #     page = paginator.paginate_queryset(filtered_dishes, request)
+    #
+    #     if page:
+    #         serializer = DishSerializer(page, many=True, context={'request': request})
+    #         return Response(paginator.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+    #     else:
+    #         return Response(DishSerializer(filtered_dishes, many=True, context={'request': request}).data, status=status.HTTP_200_OK)
 
 
 class DishViewSet(viewsets.ModelViewSet):
@@ -89,7 +90,7 @@ class DishViewSet(viewsets.ModelViewSet):
     @action(methods=['post', 'get'], detail=True, url_path='reviews')
     def reviews(self, request, pk=None):
         dish = self.get_object()
-        if request.method == 'POST':
+        if request.method.__eq__('POST'):
             serializer = ReviewSerializer(data={
                 "customer": request.user.pk,
                 "dish": self.get_object().pk,
@@ -98,6 +99,14 @@ class DishViewSet(viewsets.ModelViewSet):
             })
             serializer.is_valid(raise_exception=True)
             c = serializer.save()
+
+            NotificationService.create_notification(
+                user=dish.chef.user,
+                title="Món ăn nhận được đánh giá mới",
+                message=f"{request.user} vừa đánh giá {c.rating} sao cho món ăn {dish}",
+                target_object=c
+            )
+
             return Response(ReviewSerializer(c).data, status=status.HTTP_201_CREATED)
 
 
