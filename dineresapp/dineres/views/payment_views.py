@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from dineres.models import Order, Transaction
 from dineres.serializers.payment_serializers import CreatePaymentSerializer
-from dineres.services.payment.payment_strategy import PaymentStrategyFactory, PaymentStrategy
+from dineres.services.payment_strategy import PaymentStrategyFactory
 
 
 class CreatePaymentViewSet(viewsets.ViewSet, generics.CreateAPIView):
@@ -27,12 +27,12 @@ class CreatePaymentViewSet(viewsets.ViewSet, generics.CreateAPIView):
                 total_amount = order.total_amount
                 ref = uuid.uuid4()
                 payment = PaymentStrategyFactory.get_strategy(payment_method)
-                result = payment.create_payment(amount=total_amount, ref=ref)
-
                 Transaction.objects.create(order=order,
                                            amount=total_amount,
                                            payment_method=payment_method,
                                            transaction_ref=ref)
+
+                result = payment.create_payment(amount=total_amount, ref=ref)
                 return Response(result, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -45,22 +45,30 @@ class PaymentIPNViewSet(APIView):
             payment = PaymentStrategyFactory.get_strategy(method)
             data = request.data
             payment.process_payment(data)
-            return Response({"success": True}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    def get(self, request, method):
-        try:
-            data = request.query_params.dict()
             return Response(
                 {
                     "message": "Giao dịch đã được ghi nhận.",
-                    "detail": "Bạn có thể quay lại ứng dụng để kiểm tra đơn hàng.",
                     "data": data
                 },
                 status=status.HTTP_200_OK
             )
         except Exception as e:
-            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, method):
+        data = request.query_params.dict()
+        payment = PaymentStrategyFactory.get_strategy(method)
+        payment.process_payment(data)
+        return Response(
+            {
+                "message": "Giao dịch đã được ghi nhận.",
+                "data": data
+            },
+            status=status.HTTP_200_OK
+        )
+        # try:
+        #
+        # except Exception as e:
+        #     return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 

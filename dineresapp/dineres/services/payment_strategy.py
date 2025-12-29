@@ -4,10 +4,13 @@ import urllib
 import requests
 import hmac
 import hashlib
+from django.db import transaction
 from abc import abstractmethod, ABC
 from datetime import datetime
 
-from dineres.models import Transaction
+from django.utils import timezone
+
+from dineres.models import Transaction, Order
 
 
 class PaymentStrategy(ABC):
@@ -33,12 +36,22 @@ class PaymentStrategy(ABC):
             self.update_db(ref, status)
 
     def update_db(self, ref, status):
-        pass
+        with transaction.atomic():
+            tran = Transaction.objects.select_related('order').get(transaction_ref=ref)
+            tran.status = status
+            if status == Transaction.Status.SUCCESS:
+                tran.paid_at = timezone.now()
+
+                order = tran.order
+                if order.status != Order.Status.PAID:
+                    Order.objects.filter(pk=order.pk).update(status=Order.Status.PAID)
+            tran.save()
+
 
 class CashPaymentStrategy(PaymentStrategy):
     def create_payment(self, amount, ref):
         return {
-            "payUrl": "https://uniramous-earline-colorational.ngrok-free.dev/api/ipn/cash",
+            "payUrl": f"{os.getenv('SERVER_URL')}/api/ipn/cash",
             "ref": ref
         }
 
@@ -57,8 +70,8 @@ class MomoPaymentStrategy(PaymentStrategy):
         self.accessKey = os.getenv("MOMO_ACCESS_KEY")
         self.secretKey = os.getenv("MOMO_SECRET_KEY")
         self.endpoint = "https://test-payment.momo.vn/v2/gateway/api/create"
-        self.ipnUrl = f"https://uniramous-earline-colorational.ngrok-free.dev/api/ipn/momo"
-        self.redirectUrl = "https://uniramous-earline-colorational.ngrok-free.dev/api/ipn/momo"
+        self.ipnUrl = f"{os.getenv('SERVER_URL')}/api/ipn/momo"
+        self.redirectUrl = f"{os.getenv('SERVER_URL')}/api/ipn/momo"
 
     def create_payment(self, amount, ref):
         partnerCode = "MOMO"
@@ -144,7 +157,7 @@ class ZaloPayPaymentStrategy(PaymentStrategy):
         self.key2 = os.getenv("ZLP_MERCHANT_KEY2")
         self.endpoint = os.getenv("ZLP_MERCHANT_ENDPOINT")
         self.gateway_endpoint = os.getenv("ZLP_MERCHANT_GATEWAY_ENDPOINT")
-        self.redirect_url = os.getenv("ZLP_REDIRECT_URL")
+        self.redirect_url = f"{os.getenv("SERVER_URL")}/api/ipn/zlpay"
 
     def get_mac(self, data, key):
         mac = hmac.new(
@@ -180,8 +193,7 @@ class ZaloPayPaymentStrategy(PaymentStrategy):
         ])
 
         inputData["mac"] = self.get_mac(data, self.key1)
-
-        print(inputData)
+        Transaction.objects.filter(transaction_ref=ref).update(transaction_ref=inputData["app_trans_id"])
 
         try:
             response = requests.post(self.endpoint + "/create", json=inputData)
@@ -211,7 +223,7 @@ class ZaloPayPaymentStrategy(PaymentStrategy):
         return Transaction.Method.ZLPAY
 
     def get_payment_status(self, data):
-        ref = data['app_trans_id']
+        ref = data['apptransid']
 
         if data['status'] == '1':
             return ref, Transaction.Status.SUCCESS

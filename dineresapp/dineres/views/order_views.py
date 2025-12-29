@@ -1,13 +1,10 @@
-import uuid
-
 from django.db import transaction
 from rest_framework import viewsets, generics, permissions, status, serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from dineres.models import Order, Transaction, Dish, OrderDetail
+from dineres.models import Order, Dish, OrderDetail
 from dineres.serializers.order_serializers import OrderSerializer, OrderInputSerializer
-from dineres.services.payment.payment_strategy import PaymentStrategyFactory
 
 
 class OrderViewSet(viewsets.ViewSet, generics.CreateAPIView):
@@ -55,6 +52,8 @@ class OrderViewSet(viewsets.ViewSet, generics.CreateAPIView):
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
+    @action(methods=['patch'], detail=True, url_path='done')
+    def done_order(self, pk=None):
+        Order.objects.filter(pk=pk).update(status=Order.Status.DONE)
 
 
