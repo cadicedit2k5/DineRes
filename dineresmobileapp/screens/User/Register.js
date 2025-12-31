@@ -6,6 +6,7 @@ import Apis, { endpoints } from '../../utils/Apis'
 import { useNavigation } from '@react-navigation/native'
 import * as ImagePicker from 'expo-image-picker';
 import { ScrollView } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Register = () => {
   const info = [{
@@ -116,47 +117,49 @@ const Register = () => {
     }
 
   return (
-    <ScrollView style={{ padding: 20 }}>
-            <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 20 }}>Đăng ký người dùng</Text>
-            
-            {info.map(i => (
-                <TextInput
-                    key={i.field}
-                    label={i.title}
-                    value={user[i.field]}
-                    secureTextEntry={i.secureTextEntry}
-                    right={<TextInput.Icon icon={i.icon} />}
-                    onChangeText={(t) => setUser({...user, [i.field]: t})}
-                    onFocus={() => setErr(false)}
-                    style={{ marginBottom: 10 }}
-                />
-            ))}
+    <SafeAreaView>
+      <ScrollView style={{ padding: 20 }}>
+        <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 20 }}>Đăng ký người dùng</Text>
+        
+        {info.map(i => (
+            <TextInput
+                key={i.field}
+                label={i.title}
+                value={user[i.field]}
+                secureTextEntry={i.secureTextEntry}
+                right={<TextInput.Icon icon={i.icon} />}
+                onChangeText={(t) => setUser({...user, [i.field]: t})}
+                onFocus={() => setErr(false)}
+                style={{ marginBottom: 10 }}
+            />
+        ))}
 
-            <HelperText type="error" visible={err}>
-                Mật khẩu KHÔNG khớp!
-            </HelperText>
+        <HelperText type="error" visible={err}>
+            Mật khẩu KHÔNG khớp!
+        </HelperText>
 
-            <TouchableOpacity onPress={pickImage} style={{ marginBottom: 20, alignItems: 'center' }}>
-                <Text style={{ color: 'blue', marginBottom: 5 }}>Chọn ảnh đại diện...</Text>
-                {user.avatar ? (
-                    <Image source={{ uri: user.avatar.uri }} style={{ width: 100, height: 100, borderRadius: 20 }} />
-                ) : (
-                    <Text style={{ fontStyle: 'italic', color: 'gray' }}>Chưa chọn ảnh</Text>
-                )}
-            </TouchableOpacity>
+        <TouchableOpacity onPress={pickImage} style={{ marginBottom: 20, alignItems: 'center' }}>
+            <Text style={{ color: 'blue', marginBottom: 5 }}>Chọn ảnh đại diện...</Text>
+            {user.avatar ? (
+                <Image source={{ uri: user.avatar.uri }} style={{ width: 100, height: 100, borderRadius: 20 }} />
+            ) : (
+                <Text style={{ fontStyle: 'italic', color: 'gray' }}>Chưa chọn ảnh</Text>
+            )}
+        </TouchableOpacity>
 
-            <Button 
-                loading={loading} 
-                disabled={loading} 
-                mode="contained" 
-                onPress={register} 
-            >
-                Đăng ký
-            </Button>
-            <Text>Đã có tài khoản? <TouchableOpacity onPress={() => nav.navigate("Login")}>
-              <Text>Đăng nhập</Text>
-              </TouchableOpacity></Text>
-        </ScrollView>
+        <Button 
+            loading={loading} 
+            disabled={loading} 
+            mode="contained" 
+            onPress={register} 
+        >
+            Đăng ký
+        </Button>
+        <Text>Đã có tài khoản? <TouchableOpacity onPress={() => nav.navigate("Login")}>
+          <Text>Đăng nhập</Text>
+          </TouchableOpacity></Text>
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 

@@ -7,6 +7,7 @@ import {CLIENT_ID, CLIENT_SECRET} from "@env"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native';
 import { MyUserContext } from '../../utils/contexts/MyContexts';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Login = () => {
   const info = [{
@@ -79,38 +80,40 @@ const Login = () => {
   }
   
   return (
-    <ScrollView style={{ padding: 20 }}>
-      <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 20 }}>Đăng nhập</Text>
-      
-      {info.map(i => (
-          <TextInput
-              key={i.field}
-              label={i.title}
-              value={user[i.field]}
-              secureTextEntry={i.secureTextEntry}
-              right={<TextInput.Icon icon={i.icon} />}
-              onChangeText={(t) => setUser({...user, [i.field]: t})}
-              onFocus={() => setErr(false)}
-              style={{ marginBottom: 10 }}
-          />
-      ))}
+    <SafeAreaView>
+      <ScrollView style={{ padding: 20 }}>
+        <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 20 }}>Đăng nhập</Text>
+        
+        {info.map(i => (
+            <TextInput
+                key={i.field}
+                label={i.title}
+                value={user[i.field]}
+                secureTextEntry={i.secureTextEntry}
+                right={<TextInput.Icon icon={i.icon} />}
+                onChangeText={(t) => setUser({...user, [i.field]: t})}
+                onFocus={() => setErr(false)}
+                style={{ marginBottom: 10 }}
+            />
+        ))}
 
-      <HelperText type="error" visible={err}>
-          Sai tên đăng nhập hoặc mật khẩu!
-      </HelperText>
+        <HelperText type="error" visible={err}>
+            Sai tên đăng nhập hoặc mật khẩu!
+        </HelperText>
 
-      <Button 
-          loading={loading} 
-          disabled={loading} 
-          mode="contained" 
-          onPress={login} 
-      >
-          Đăng nhập
-      </Button>
-      <Text>Chưa có tài khoản? <TouchableOpacity onPress={() => nav.navigate("Register")}>
-                                <Text>Đăng ký</Text>
-                              </TouchableOpacity></Text>
-  </ScrollView>
+        <Button 
+            loading={loading} 
+            disabled={loading} 
+            mode="contained" 
+            onPress={login} 
+        >
+            Đăng nhập
+        </Button>
+        <Text>Chưa có tài khoản? <TouchableOpacity onPress={() => nav.navigate("Register")}>
+                                  <Text>Đăng ký</Text>
+                                </TouchableOpacity></Text>
+    </ScrollView>
+  </SafeAreaView>
   )
 }
 

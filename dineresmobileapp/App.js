@@ -22,6 +22,9 @@ import {
 } from '@expo-google-fonts/roboto';
 
 import { MD3LightTheme, PaperProvider, configureFonts } from 'react-native-paper';
+import Booking from "./screens/Home/Booking";
+import EditProfile from "./screens/User/EditProfile";
+import Register from "./screens/User/Register";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +35,8 @@ const StackNavigator = () => {
       {!user && <Stack.Screen name="Login" component={Login} options={{title: "Dang nhap"}} />}
       <Stack.Screen name="Home" component={TabNavigator} options={{title: "Trang chu"}} />
       <Stack.Screen name="DishDetail" component={DishDetail} options={{title: "Chi tiet"}} />
+      <Stack.Screen name="EditProfile" component={EditProfile} options={{title: "Chinh sua ho so"}} />
+      <Stack.Screen name="Register" component={Register} options={{title: "Dang ky"}} />
     </Stack.Navigator>
   );
 };
@@ -42,9 +47,10 @@ const TabNavigator = () => {
   const [user,] = useContext(MyUserContext);
   return (
     <Tab.Navigator screenOptions={{headerShown: false}}>
-      <Tab.Screen name="Home" component={Home} options={{ title: 'Trang chủ', tabBarIcon: () => <Icon color="blue" source="home" size={30}/> }} />
-      <Tab.Screen name="Food" component={Food} options={{ title: 'Món ăn', tabBarIcon: () => <Icon color="blue" source="food" size={30}/> }} />
-      {user && <Tab.Screen name="User" component={User} options={{ title: 'Người dùng', tabBarIcon: () => <Icon color="blue" source="account" size={30}/> }}/>}
+      <Tab.Screen name="Home" component={Home} options={{ title: 'Trang chủ', tabBarIcon: () => <Icon color="black" source="home" size={30}/> }} />
+      <Tab.Screen name="Food" component={Food} options={{ title: 'Món ăn', tabBarIcon: () => <Icon color="black" source="food" size={30}/> }} />
+      <Tab.Screen name="Booking" component={Booking} options={{ title: 'Đặt bàn', tabBarIcon: () => <Icon color="black" source="receipt-text-edit" size={30}/> }} />
+      {user && <Tab.Screen name="User" component={User} options={{ title: 'Người dùng', tabBarIcon: () => <Icon color="black" source="account" size={30}/> }}/>}
     </Tab.Navigator>
   );
 }

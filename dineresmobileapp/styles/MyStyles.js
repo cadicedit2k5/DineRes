@@ -21,7 +21,7 @@ export default StyleSheet.create({
     }, avatar: {
         width: 120,
         height: 120,
-        borderRadius: 50
+        borderRadius: 100
     }, title: {
         fontSize: 30,
         fontWeight: "bold",
