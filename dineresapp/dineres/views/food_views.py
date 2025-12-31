@@ -65,7 +65,7 @@ class DishViewSet(viewsets.ModelViewSet):
         return self.queryset.annotate(avg_rating=Avg('reviews__rating'))
 
     def get_permissions(self):
-        if self.action in ['list', 'compare_dishes']:
+        if self.action in ['list', 'compare_dishes', 'retrieve']:
             return [permissions.AllowAny()]
         elif self.action in ['reviews']:
             return [permissions.IsAuthenticated()]

@@ -3,6 +3,7 @@ from dineres.models import Dish
 
 class DishFilter(filters.FilterSet):
     q = filters.CharFilter(field_name='name', lookup_expr='icontains')
+    cate_id = filters.NumberFilter(field_name='category_id')
     min_price = filters.NumberFilter(field_name='price', lookup_expr='gte')
     max_price = filters.NumberFilter(field_name='price', lookup_expr='lte')
     max_prep_time = filters.NumberFilter(field_name='prep_time', lookup_expr='lte')
