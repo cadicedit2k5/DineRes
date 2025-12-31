@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
-import { ScrollView, Text, View } from 'react-native'
-import Apis, { endpoints } from '../../utils/Apis';
+import { useContext, useState } from 'react'
+import { ScrollView, Text } from 'react-native'
+import Apis, { authApis, endpoints } from '../../utils/Apis';
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import {CLIENT_ID, CLIENT_SECRET} from "@env"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native';
+import { MyUserContext } from '../../utils/contexts/MyContexts';
 
 const Login = () => {
   const info = [{
@@ -20,9 +21,10 @@ const Login = () => {
     }];
 
     const [user, setUser] = useState({});
-        const [loading, setLoading] = useState(false);
-        const [err, setErr] = useState(false);
-        const nav = useNavigation();
+    const [loading, setLoading] = useState(false);
+    const [err, setErr] = useState(false);
+    const nav = useNavigation();
+    const [, dispatch] = useContext(MyUserContext);
 
     const validate = () => {
       setErr(false);
@@ -47,9 +49,18 @@ const Login = () => {
 
         if (res.status === 200) {
           console.log(res.data);
-          const accessToken = res.data.access_token;
+          await AsyncStorage.setItem("access-token", res.data.access_token);
+          await AsyncStorage.setItem("refresh-token", res.data.refresh_token);
 
-          await AsyncStorage.setItem("access-token", accessToken);
+          setTimeout(async () => {
+            // let user = await authApis(res.data.access_token).get(endpoints['current-user']);
+            // console.info(user.data)
+            // await AsyncStorage.setItem('user', user.data);
+            dispatch({
+              "type": "login",
+              "payload": user.data,
+            });
+          }, 500)
 
           nav.navigate("Home");
         }else {
@@ -68,6 +79,7 @@ const Login = () => {
       }
     }
   }
+  
   return (
     <ScrollView style={{ padding: 20 }}>
       <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 20 }}>Đăng nhập</Text>

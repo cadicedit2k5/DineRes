@@ -7,6 +7,7 @@ export const endpoints = {
   "dish-detail": (dishId) => `/dishes/${dishId}/`,
   "register": "/users/",
   "login": "/o/token/",
+  "refresh-login": "/o/refresh/",
   "current-user": "/users/current-user/",
 };
 
