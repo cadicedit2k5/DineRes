@@ -4,7 +4,7 @@ import Apis, { endpoints } from "../utils/Apis";
 import { Card, Searchbar, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 
-const Dishes = () => {
+const Dishes = ({cateId}) => {
   const [dishes, setDishes] = useState([]);
   const [q, setQ] = useState("");
   const nav = useNavigation();
@@ -16,13 +16,23 @@ const Dishes = () => {
       url = `${url}&q=${q}`
     }
 
+    if (cateId) {
+      url = `${url}&cate_id=${cateId}`
+    }
+
+    console.info(url);
+
     const res = await Apis.get(url);
     setDishes(res.data.results);
   };
 
   useEffect(() => {
-    loadDishes();
-  }, []);
+    let timer = setTimeout(() => {
+      loadDishes();
+    }, 500)
+
+    return () => clearTimeout(timer);
+  }, [q, cateId]);
 
   return (
     <>

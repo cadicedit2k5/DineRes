@@ -53,16 +53,14 @@ const Login = () => {
           await AsyncStorage.setItem("refresh-token", res.data.refresh_token);
 
           setTimeout(async () => {
-            // let user = await authApis(res.data.access_token).get(endpoints['current-user']);
-            // console.info(user.data)
-            // await AsyncStorage.setItem('user', user.data);
+            let u = await authApis(res.data.access_token).get(endpoints['current-user']);
+            console.info(u.data)
             dispatch({
               "type": "login",
-              "payload": user.data,
+              "payload": u.data,
             });
+            nav.navigate("Home");
           }, 500)
-
-          nav.navigate("Home");
         }else {
           setErr(true);
         }

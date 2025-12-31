@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./screens/Home/Home";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import DishDetail from "./screens/Home/DishDetail";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Icon } from "react-native-paper";
@@ -13,6 +13,15 @@ import Apis, { authApis, endpoints } from "./utils/Apis";
 import { MyUserContext } from "./utils/contexts/MyContexts";
 import User from "./screens/User/User";
 import {CLIENT_ID, CLIENT_SECRET} from "@env";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { 
+  useFonts, 
+  Roboto_400Regular, 
+  Roboto_700Bold,
+  Roboto_500Medium 
+} from '@expo-google-fonts/roboto';
+
+import { MD3LightTheme, PaperProvider, configureFonts } from 'react-native-paper';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,7 +29,7 @@ const StackNavigator = () => {
   const [user, ] = useContext(MyUserContext);
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      {user && <Stack.Screen name="Login" component={Login} options={{title: "Dang nhap"}} />}
+      {!user && <Stack.Screen name="Login" component={Login} options={{title: "Dang nhap"}} />}
       <Stack.Screen name="Home" component={TabNavigator} options={{title: "Trang chu"}} />
       <Stack.Screen name="DishDetail" component={DishDetail} options={{title: "Chi tiet"}} />
     </Stack.Navigator>
@@ -40,8 +49,25 @@ const TabNavigator = () => {
   );
 }
 
+// 2. CẤU HÌNH THEME ROBOTO
+const fontConfig = {
+  fontFamily: 'Roboto_400Regular', // Font mặc định cho toàn app
+};
+
+const theme = {
+  ...MD3LightTheme,
+  fonts: configureFonts({config: fontConfig}),
+};
+
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
+
+  // 3. LOAD CÁC BIẾN THỂ CỦA ROBOTO
+  const [fontsLoaded] = useFonts({
+    Roboto_400Regular,
+    Roboto_500Medium,
+    Roboto_700Bold,
+  });
 
   const checkLogin = async () => {
     const accessToken = await AsyncStorage.getItem("access-token");
@@ -57,9 +83,9 @@ const App = () => {
         console.info("Token oke! Dang nhap thanh cong");
       }
     } catch (error) {
-        console.error("Lỗi check login:", ex.message);
+        console.error("Lỗi check login:", error.message);
 
-        if (error.respone.status == 401) {
+        if (error.response.status == 401) {
           console.error("Token hết hạn, đang thử refresh...");
           await tryRefreshToken();
         }
@@ -108,12 +134,21 @@ const App = () => {
     checkLogin();
   }, [])
 
+  // 4. CHỜ FONT TẢI XONG
+  if (!fontsLoaded) {
+    return null; 
+  }
+
   return (
-    <MyUserContext.Provider value={[user, dispatch]}>
-      <NavigationContainer>
-        <StackNavigator/>
-      </NavigationContainer>
-    </MyUserContext.Provider>
+    <SafeAreaProvider>
+      <PaperProvider theme={theme}>
+        <MyUserContext.Provider value={[user, dispatch]}>
+          <NavigationContainer >
+            <StackNavigator />
+          </NavigationContainer>
+        </MyUserContext.Provider>
+        </PaperProvider>
+    </SafeAreaProvider>
   );
 };
 

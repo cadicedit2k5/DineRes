@@ -3,7 +3,7 @@ import { TouchableOpacity, View } from "react-native";
 import Apis, { endpoints } from "../utils/Apis";
 import { Chip } from "react-native-paper";
 
-const Categories = () => {
+const Categories = ({setCateId}) => {
   const [cates, setCates] = useState([]);
 
   const loadCates = async () => {
@@ -17,8 +17,13 @@ const Categories = () => {
 
   return (
     <View>
+      <TouchableOpacity onPress={() => setCateId(null)}>
+        <Chip icon="label">Tất cả</Chip>
+      </TouchableOpacity>
       {cates.map((cate) => (
-          <Chip key={cate.id} icon="label">{cate.name}</Chip>
+          <TouchableOpacity key={cate.id} onPress={() => setCateId(cate.id)}>
+            <Chip icon="label">{cate.name}</Chip>
+          </TouchableOpacity>
       ))}
     </View>
   );

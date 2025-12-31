@@ -9,6 +9,7 @@ export const endpoints = {
   "login": "/o/token/",
   "refresh-login": "/o/refresh/",
   "current-user": "/users/current-user/",
+  "user-notify": "/notifications/"
 };
 
 export const authApis = (token) => {
