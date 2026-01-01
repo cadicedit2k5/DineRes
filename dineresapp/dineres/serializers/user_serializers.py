@@ -41,9 +41,7 @@ class UserSerializer(ModelSerializer):
         bio = validated_data.pop('bio', None)
 
         for k, v in validated_data.items():
-            if k == 'password':
-                instance.set_password(v)
-            elif k in ['first_name', 'last_name', 'avatar', 'email', 'phone', 'address']:
+            if k in ['first_name', 'last_name', 'avatar', 'email', 'phone', 'address']:
                 setattr(instance, k, v)
 
         instance.save()

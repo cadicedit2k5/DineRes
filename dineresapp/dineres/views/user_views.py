@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import check_password
 from rest_framework import viewsets, parsers, permissions, status
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
@@ -32,6 +33,24 @@ class UserViewSet(viewsets.ViewSet, CreateAPIView):
                 serializer.save()
                 return Response(UserSerializer(u).data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['post'], url_path='change-password', detail=False)
+    def change_password(self, request):
+        u = request.user
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        if not old_password or not new_password:
+            return Response({"message": "Vui lòng nhập đầy đủ mật khẩu cũ và mới"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not check_password(old_password, u.password):
+            return Response({"message": "Mật khẩu cũ không chính xác"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        u.set_password(new_password)
+        u.save()
+
+        return Response({"message": "Đổi mật khẩu thành công!"}, status=status.HTTP_200_OK)
 
     @action(methods=['post'], url_path='apply-chef', detail=False)
     def apply_chef(self, request):
