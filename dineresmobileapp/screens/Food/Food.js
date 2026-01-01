@@ -1,16 +1,12 @@
 import Header from '../../components/Layout/Header'
-import Categories from '../../components/Categories'
 import Dishes from '../../components/Dishes'
-import { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Food = () => {
-    const [cateId, setCateId] = useState();
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1}}>
         <Header />
-        <Categories setCateId={setCateId}/>
-        <Dishes cateId={cateId}/>
+        <Dishes/>
     </SafeAreaView>
   )
 }

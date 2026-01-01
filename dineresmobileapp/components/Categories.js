@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Apis, { endpoints } from "../utils/Apis";
 
-const Categories = ({setCateId}) => {
+const Categories = ({setCate}) => {
   const [cates, setCates] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -15,8 +15,8 @@ const Categories = ({setCateId}) => {
     setCates(allCates);
   };
 
-  const handlePress = (id, index) => {
-    setCateId(id);
+  const handlePress = (item, index) => {
+    setCate(item);
     setSelectedIndex(index);
   }
 
@@ -35,7 +35,8 @@ const Categories = ({setCateId}) => {
           <View style={styles.itemSeparator} />
         }
         style={{
-          margin: 10
+          marginHorizontal: 10,
+          marginBottom: 10,
         }}
         renderItem={({item, index}) => 
         <TouchableOpacity 
@@ -44,10 +45,11 @@ const Categories = ({setCateId}) => {
           ...styles.tabItem,
           borderColor: selectedIndex === index ? "#ee6a0dff" : "gold"
         }} 
-        onPress={() => handlePress(item.id, index)}>
-          {item.image && <Image style={{width: 20, height: 20}} source={{uri: item.image}}/>}
+        onPress={() => handlePress(item, index)}>
+          {item.image && <Image style={{width: 20, height: 20, marginRight: 7}} source={{uri: item.image}}/>}
           <Text style={{
-            color: selectedIndex === index ? "#ee6a0dff" : "black"
+            fontWeight: 500,
+            color: selectedIndex === index ? "#d25801ff" : "#111"
           }}>{item.name}</Text>
         </TouchableOpacity>}
       >
@@ -65,7 +67,7 @@ const styles = StyleSheet.create({
   tabItem: {
     display: "flex",
     flexDirection: "row",
-    borderWidth: 1,
+    borderWidth: 1.75,
     borderStyle: "solid",
     borderRadius: 20,
     paddingHorizontal: 12, 

@@ -71,6 +71,11 @@ const User = () => {
         },
         {
             icon: "contacts-outline",
+            name: "Ứng tuyển đầu bếp",   
+            action: () => console.log("Apply Chef"),
+        },
+        {
+            icon: "contacts-outline",
             name: "Liên hệ",   
             action: () => console.log("Contact"),
         },

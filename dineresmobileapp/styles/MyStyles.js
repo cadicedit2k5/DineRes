@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 export default StyleSheet.create({
     container: {
         backgroundColor: "white",
-        marginTop: 20
+        marginTop: 10
     },
     row: {
         flexDirection: "row",
@@ -14,18 +14,14 @@ export default StyleSheet.create({
     bg: {
       backgroundColor: "#F6F4EF"
     },
-    margin: {
-        margin: 5
-    }, padding: {
-        padding: 5
-    }, avatar: {
+     avatar: {
         width: 120,
         height: 120,
         borderRadius: 100
-    }, title: {
-        fontSize: 30,
-        fontWeight: "bold",
-        color: "blue",
-        alignSelf: "center"
+    }, title :{
+        fontSize: 20,
+        fontWeight: "600",
+        color: "black",
+        padding: 10
     }
 });

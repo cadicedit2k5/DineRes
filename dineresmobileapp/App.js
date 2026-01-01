@@ -1,11 +1,11 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./screens/Home/Home";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
-import DishDetail from "./screens/Home/DishDetail";
+import DishDetail from "./screens/Food/DishDetail";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Icon } from "react-native-paper";
 import Login from "./screens/User/Login";
-import Food from "./screens/Home/Food";
+import Food from "./screens/Food/Food";
 import { useContext, useEffect, useReducer } from "react";
 import MyUserReducer from "./utils/reducers/MyUserReducer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,7 +22,7 @@ import {
 } from '@expo-google-fonts/roboto';
 
 import { MD3LightTheme, PaperProvider, configureFonts } from 'react-native-paper';
-import Booking from "./screens/Home/Booking";
+import Booking from "./screens/Booking/Booking";
 import EditProfile from "./screens/User/EditProfile";
 import Register from "./screens/User/Register";
 import ChangePassword from "./screens/User/ChangePassword";
