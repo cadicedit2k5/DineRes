@@ -22,8 +22,6 @@ const Header = () => {
   const loadNotification = async () => {
     const accessToken = await AsyncStorage.getItem("access-token")
     const res = await authApis(accessToken).get(endpoints['user-notify']);
-
-    console.info(res.data.results);
     setNotifys(res.data.results);
   }
 

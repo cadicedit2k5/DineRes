@@ -54,8 +54,8 @@ const TabNavigator = () => {
     <Tab.Navigator screenOptions={
       {headerShown: false,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: "#f39c12",
-        tabBarInactiveTintColor: "#999",
+        tabBarActiveTintColor: "#ffa008ff",
+        tabBarInactiveTintColor: "#000",
         tabBarStyle: {
           borderTopLeftRadius: 50,
           borderTopRightRadius: 50,
