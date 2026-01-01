@@ -25,6 +25,9 @@ import { MD3LightTheme, PaperProvider, configureFonts } from 'react-native-paper
 import Booking from "./screens/Home/Booking";
 import EditProfile from "./screens/User/EditProfile";
 import Register from "./screens/User/Register";
+import ChangePassword from "./screens/User/ChangePassword";
+import { Text, View } from "react-native";
+import TabBarIcon from "./components/Layout/TabBarIcon";
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +40,7 @@ const StackNavigator = () => {
       <Stack.Screen name="DishDetail" component={DishDetail} options={{title: "Chi tiet"}} />
       <Stack.Screen name="EditProfile" component={EditProfile} options={{title: "Chinh sua ho so"}} />
       <Stack.Screen name="Register" component={Register} options={{title: "Dang ky"}} />
+      <Stack.Screen name="ChangePassword" component={ChangePassword} options={{title: "Thay doi mat khau"}} />
     </Stack.Navigator>
   );
 };
@@ -46,11 +50,31 @@ const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
   const [user,] = useContext(MyUserContext);
   return (
-    <Tab.Navigator screenOptions={{headerShown: false}}>
-      <Tab.Screen name="Home" component={Home} options={{ title: 'Trang chủ', tabBarIcon: () => <Icon color="black" source="home" size={30}/> }} />
-      <Tab.Screen name="Food" component={Food} options={{ title: 'Món ăn', tabBarIcon: () => <Icon color="black" source="food" size={30}/> }} />
-      <Tab.Screen name="Booking" component={Booking} options={{ title: 'Đặt bàn', tabBarIcon: () => <Icon color="black" source="receipt-text-edit" size={30}/> }} />
-      {user && <Tab.Screen name="User" component={User} options={{ title: 'Người dùng', tabBarIcon: () => <Icon color="black" source="account" size={30}/> }}/>}
+    <Tab.Navigator screenOptions={
+      {headerShown: false,
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: "#f39c12",
+        tabBarInactiveTintColor: "#999",
+        tabBarStyle: {
+          borderTopLeftRadius: 50,
+          borderTopRightRadius: 50,
+          borderBottomLeftRadius: 50,
+          borderBottomRightRadius: 50,
+          marginHorizontal: 10,
+          height: 80,
+          position: "absolute",
+          bottom: 25,
+        },
+        tabBarIconStyle: {
+          height: 80,
+          width: "100%"
+        }
+      }
+      }>
+      <Tab.Screen name="Home" component={Home} options={{ title: 'Trang chủ', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color}/>}}/>
+      <Tab.Screen name="Food" component={Food} options={{ title: 'Món ăn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="food" label="Đồ ăn" />}} />
+      <Tab.Screen name="Booking" component={Booking} options={{ title: 'Đặt bàn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="receipt-text-edit" label="Đặt bàn" /> }} />
+      {user && <Tab.Screen name="User" component={User} options={{ title: 'Người dùng', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="account" label="Tôi" /> }}/>}
     </Tab.Navigator>
   );
 }

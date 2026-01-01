@@ -1,7 +1,9 @@
-import { ScrollView, Text } from 'react-native'
+import { ScrollView, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Header from '../../components/Layout/Header'
 import MyStyles from '../../styles/MyStyles'
+import { Icon } from 'react-native-paper'
+import TabBarIcon from '../../components/Layout/TabBarIcon'
 
 const Home = () => {
   return (
@@ -9,6 +11,7 @@ const Home = () => {
       <Header />
       <ScrollView style={[MyStyles.container, MyStyles.margin]}>
         <Text>Home</Text>
+        <TabBarIcon />
       </ScrollView>
     </SafeAreaView>
   )
