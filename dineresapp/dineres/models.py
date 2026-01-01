@@ -64,6 +64,12 @@ class Category(BaseModel):
     def __str__(self):
         return self.name
 
+class IngredientType(BaseModel):
+    name = models.CharField(max_length=50, unique=True, null=False)
+
+    def __str__(self):
+        return self.name
+
 class Ingredient(BaseModel):
     class Unit(models.TextChoices):
         GRAM = 'gram', 'Gram'
@@ -73,6 +79,7 @@ class Ingredient(BaseModel):
 
     name = models.CharField(max_length=50, unique=True)
     unit = models.CharField(max_length=50, choices=Unit.choices, default=Unit.GRAM)
+    type = models.ForeignKey(IngredientType, on_delete=models.PROTECT, related_name='ingredients', null=True)
 
     def __str__(self):
         return self.name

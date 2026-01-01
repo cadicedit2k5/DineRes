@@ -13,25 +13,28 @@ python manage.py createsuperuser --no-input || echo "SuperUser đã tồn tại!
 
 echo "=== Chèn dữ liệu mẫu ==="
 python manage.py shell  <<EOF
-from dineres.models import Category, Ingredient, Dish, DishDetail, User, Chef
+from dineres.models import Category, Ingredient, Dish, DishDetail, User, Chef, IngredientType
 from django.contrib.auth import get_user_model
+import random
 
-# Tạo admin
-admin_user = User.objects.create_superuser(
-            username="admin",
-            email="admin@gmail.com",
-            password="Admin@123"
-        )
+User = get_user_model()
+
+# --- 1. XỬ LÝ ADMIN USER (AN TOÀN) ---
+if User.objects.filter(username="admin").exists():
+    admin_user = User.objects.get(username="admin")
+else:
+    admin_user = User.objects.create_superuser("admin", "admin@gmail.com", "Admin@123")
+
 admin_user.user_role = 'admin'
 admin_user.first_name = "Super"
 admin_user.last_name = "Manager"
 admin_user.save()
 
-Chef.objects.create(
-            user=admin_user,
-            bio="Quản trị hệ thống cũng biết nấu ăn.",
-            is_verified=True # Admin thì tự duyệt chính mình luôn
-        )
+#Chef.objects.create(
+#            user=admin_user,
+#            bio="Quản trị hệ thống cũng biết nấu ăn.",
+#            is_verified=True # Admin thì tự duyệt chính mình luôn
+#        )
 
 # 2. Tạo User & Chef
 # Tạo user cho đầu bếp
@@ -59,50 +62,291 @@ chef_profile, _ = Chef.objects.get_or_create(
 )
 
 # 3. Tạo Category
-c1, _ = Category.objects.get_or_create(name='Món Chính')
-c2, _ = Category.objects.get_or_create(name='Khai Vị')
-c3, _ = Category.objects.get_or_create(name='Đồ Uống')
+sample_categories = [
+    {
+        "name": "Khai Vị",
+        "description": "<p>Những món ăn nhẹ nhàng, tinh tế giúp kích thích vị giác để bắt đầu bữa tiệc hoàn hảo. Bao gồm gỏi, súp và các món cuốn.</p>"
+    },
+    {
+        "name": "Hải Sản",
+        "description": "<p>Tuyển chọn từ những nguyên liệu tươi ngon nhất biển cả: Tôm hùm, Cua Cà Mau, Mực ống và các loại ốc hương vị đậm đà.</p>"
+    },
+    {
+        "name": "Món Nướng",
+        "description": "<p>Thịt bò Mỹ, sườn non và rau củ được tẩm ướp sốt đặc biệt, nướng trên than hoa giữ trọn hương vị khói đặc trưng.</p>"
+    },
+    {
+        "name": "Lẩu",
+        "description": "<p>Nước dùng hầm từ xương trong 24h, kết hợp cùng các loại nấm quý, thịt bò Wagyu và rau xanh hữu cơ.</p>"
+    },
+    {
+        "name": "Món Chay",
+        "description": "<p>Thực đơn thanh đạm, tốt cho sức khỏe với nguyên liệu 100% từ thực vật, giàu dinh dưỡng và chất xơ.</p>"
+    },
+    {
+        "name": "Món Chính (Gà & Vịt)",
+        "description": "<p>Các món chế biến từ gia cầm như Gà đồi nướng lu, Vịt quay Bắc Kinh da giòn, Gà hấp lá chanh.</p>"
+    },
+    {
+        "name": "Món Chính (Bò & Heo)",
+        "description": "<p>Bò lúc lắc khoai tây chiên, Sườn heo nướng mật ong và các món thịt hầm tiêu chuẩn 5 sao.</p>"
+    },
+    {
+        "name": "Cơm & Mì",
+        "description": "<p>Cơm chiên dương châu, Mì xào giòn hải sản, Cơm niêu Singapore nóng hổi đậm đà hương vị Á Đông.</p>"
+    },
+    {
+        "name": "Tráng Miệng",
+        "description": "<p>Kết thúc bữa ăn ngọt ngào với Chè hạt sen, Bánh Plan, Kem trái cây nhiệt đới hoặc Trái cây tươi theo mùa.</p>"
+    },
+    {
+        "name": "Đồ Uống",
+        "description": "<p>Các loại nước ép trái cây tươi, soda Ý, trà thảo mộc giải nhiệt và các loại bia ướp lạnh sảng khoái.</p>"
+    },
+    {
+        "name": "Set Combo Gia Đình",
+        "description": "<p>Tiết kiệm hơn với các combo thiết kế riêng cho nhóm 4-6 người, đầy đủ từ khai vị đến tráng miệng.</p>"
+    },
+    {
+        "name": "Món Đặc Biệt",
+        "description": "<p>Những món ăn Signature do chính bếp trưởng 5 sao sáng tạo và chế biến, chỉ có tại nhà hàng.</p>"
+    }
+]
+
+for item in sample_categories:
+    obj, created = Category.objects.get_or_create(
+        name=item["name"],
+        defaults={"description": item["description"]}
+    )
 
 # 4. Tạo Ingredient
-i1, _ = Ingredient.objects.get_or_create(name='Thịt Bò Mỹ', defaults={'unit': 'kg'})
-i2, _ = Ingredient.objects.get_or_create(name='Bánh Phở', defaults={'unit': 'kg'})
-i3, _ = Ingredient.objects.get_or_create(name='Hành Tây', defaults={'unit': 'kg'})
-i4, _ = Ingredient.objects.get_or_create(name='Trứng Gà', defaults={'unit': 'piece'})
-i5, _ = Ingredient.objects.get_or_create(name='Bột Mì', defaults={'unit': 'gram'})
+types_data = {
+    'meat': "Thịt & Gia cầm",
+    'seafood': "Hải sản",
+    'vegetable': "Rau củ quả",
+    'spice': "Gia vị sốt",
+    'dry_spice': "Gia vị khô",
+    'starch': "Tinh bột",
+    'other': "Khác"
+}
+
+for slug, name in types_data.items():
+    obj, created = IngredientType.objects.get_or_create(
+        name=name,
+    )
+
+GRAM = Ingredient.Unit.GRAM
+ML = Ingredient.Unit.ML
+SPOON = Ingredient.Unit.SPOON
+PIECE = Ingredient.Unit.PIECE
+
+ingredients_data = [
+    # --- THỊT & GIA CẦM ---
+    {"name": "Thịt bò Mỹ ba chỉ", "unit": GRAM, "type": types_data["meat"]},
+    {"name": "Thịt bò Wagyu", "unit": GRAM, "type": types_data["meat"]},
+    {"name": "Sườn non heo", "unit": GRAM, "type": types_data["meat"]},
+    {"name": "Thịt nạc vai heo", "unit": GRAM, "type": types_data["meat"]},
+    {"name": "Gà ta nguyên con", "unit": GRAM, "type": types_data["meat"]},
+    {"name": "Ức gà phi lê", "unit": GRAM, "type": types_data["meat"]},
+    {"name": "Đùi gà góc tư", "unit": PIECE, "type": types_data["meat"]},
+    {"name": "Vịt cỏ", "unit": GRAM, "type": types_data["meat"]},
+    {"name": "Thịt cừu", "unit": GRAM, "type": types_data["meat"]},
+
+    # --- HẢI SẢN ---
+    {"name": "Tôm sú", "unit": GRAM, "type": types_data["seafood"]},
+    {"name": "Tôm hùm Alaska", "unit": GRAM, "type": types_data["seafood"]},
+    {"name": "Mực ống tươi", "unit": GRAM, "type": types_data["seafood"]},
+    {"name": "Bạch tuộc", "unit": GRAM, "type": types_data["seafood"]},
+    {"name": "Cua Cà Mau", "unit": GRAM, "type": types_data["seafood"]},
+    {"name": "Cá hồi Nauy", "unit": GRAM, "type": types_data["seafood"]},
+    {"name": "Cá chém phi lê", "unit": GRAM, "type": types_data["seafood"]},
+    {"name": "Nghêu/Sò", "unit": GRAM, "type": types_data["seafood"]},
+    {"name": "Hàu sữa", "unit": PIECE, "type": types_data["seafood"]},
+
+    # --- RAU CỦ QUẢ ---
+    {"name": "Rau muống", "unit": GRAM, "type": types_data["vegetable"]},
+    {"name": "Cải thìa", "unit": GRAM, "type": types_data["vegetable"]},
+    {"name": "Xà lách", "unit": GRAM, "type": types_data["vegetable"]},
+    {"name": "Cà chua", "unit": GRAM, "type": types_data["vegetable"]},
+    {"name": "Khoai tây", "unit": GRAM, "type": types_data["vegetable"]},
+    {"name": "Cà rốt", "unit": GRAM, "type": types_data["vegetable"]},
+    {"name": "Nấm đông cô", "unit": GRAM, "type": types_data["vegetable"]},
+    {"name": "Nấm kim châm", "unit": GRAM, "type": types_data["vegetable"]},
+    {"name": "Hành tây", "unit": GRAM, "type": types_data["vegetable"]},
+    {"name": "Tỏi", "unit": GRAM, "type": types_data["vegetable"]},
+    {"name": "Ớt hiểm", "unit": GRAM, "type": types_data["vegetable"]},
+    {"name": "Chanh tươi", "unit": PIECE, "type": types_data["vegetable"]},
+    {"name": "Hành lá", "unit": GRAM, "type": types_data["vegetable"]},
+    {"name": "Ngò rí", "unit": GRAM, "type": types_data["vegetable"]},
+
+    # --- GIA VỊ & SỐT (Lỏng) ---
+    {"name": "Nước mắm cốt", "unit": ML, "type": types_data["spice"]},
+    {"name": "Nước tương (Xì dầu)", "unit": ML, "type": types_data["spice"]},
+    {"name": "Dầu ăn", "unit": ML, "type": types_data["spice"]},
+    {"name": "Dầu hào", "unit": ML, "type": types_data["spice"]},
+    {"name": "Dầu mè", "unit": ML, "type": types_data["spice"]},
+    {"name": "Giấm gạo", "unit": ML, "type": types_data["spice"]},
+    {"name": "Sữa tươi không đường", "unit": ML, "type": types_data["spice"]},
+    {"name": "Nước cốt dừa", "unit": ML, "type": types_data["spice"]},
+    {"name": "Rượu vang nấu ăn", "unit": ML, "type": types_data["spice"]},
+
+    # --- GIA VỊ KHÔ & BỘT ---
+    {"name": "Muối tinh", "unit": GRAM, "type": types_data["dry_spice"]},
+    {"name": "Đường cát trắng", "unit": GRAM, "type": types_data["dry_spice"]},
+    {"name": "Đường phèn", "unit": GRAM, "type": types_data["dry_spice"]},
+    {"name": "Hạt nêm", "unit": GRAM, "type": types_data["dry_spice"]},
+    {"name": "Bột ngọt (Mì chính)", "unit": GRAM, "type": types_data["dry_spice"]},
+    {"name": "Tiêu đen xay", "unit": GRAM, "type": types_data["dry_spice"]},
+    {"name": "Bột năng", "unit": GRAM, "type": types_data["dry_spice"]},
+    {"name": "Bột chiên giòn", "unit": GRAM, "type": types_data["dry_spice"]},
+    {"name": "Ngũ vị hương", "unit": SPOON, "type": types_data["dry_spice"]},
+
+    # --- TINH BỘT ---
+    {"name": "Gạo nếp cái hoa vàng", "unit": GRAM, "type": types_data["starch"]},
+    {"name": "Gạo ST25", "unit": GRAM, "type": types_data["starch"]},
+    {"name": "Mì trứng", "unit": GRAM, "type": types_data["starch"]},
+    {"name": "Bún tươi", "unit": GRAM, "type": types_data["starch"]},
+    {"name": "Bánh phở", "unit": GRAM, "type": types_data["starch"]},
+    {"name": "Trứng gà", "unit": PIECE, "type": types_data["starch"]},
+    {"name": "Trứng vịt muối", "unit": PIECE, "type": types_data["starch"]},
+    {"name": "Đậu hũ non", "unit": PIECE, "type": types_data["starch"]},
+]
+for item in ingredients_data:
+    type_obj = IngredientType.objects.filter(name__icontains=item["type"]).first()
+
+    if type_obj:
+        Ingredient.objects.get_or_create(
+            name=item["name"],
+            defaults={
+                "unit": item["unit"],
+                "type": type_obj
+            }
+        )
 
 # 5. Tạo Dish
 img_url = 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg'
-d1, created = Dish.objects.get_or_create(
-    name='Phở Bò Đặc Biệt',
-    defaults={
-        'description': 'Phở bò tái nạm gầu gân.',
-        'price': 65000,
-        'prep_time': 15,
-        'category': c1,
-        'chef': chef_profile,
-        'image': img_url,
-        'is_available': True
-    }
-)
+menu_data = {
+    "Khai Vị": [
+        ("Gỏi Ngó Sen Tôm Thịt", 85000, "Vị chua ngọt giòn tan của ngó sen kết hợp tôm thịt tươi."),
+        ("Chả Giò Rế Hải Sản", 75000, "Lớp vỏ rế giòn rụm, nhân hải sản đậm đà."),
+        ("Súp Cua Bắp Mỹ", 65000, "Súp nóng hổi, ngọt thanh từ thịt cua và bắp."),
+        ("Salad Rong Nho", 95000, "Rong nho biển tươi mát sốt mè rang."),
+        ("Khoai Tây Chiên Bơ Tỏi", 55000, "Khoai tây chiên vàng ươm thơm lừng mùi bơ tỏi.")
+    ],
+    "Hải Sản": [
+        ("Tôm Hùm Nướng Phô Mai", 1250000, "Tôm hùm Alaska nướng phô mai Mozzarella béo ngậy."),
+        ("Cua Cà Mau Rang Me", 450000, "Cua gạch son xào sốt me chua ngọt đậm đà."),
+        ("Mực Ống Hấp Hành Gừng", 180000, "Mực tươi giòn ngọt, thơm ấm vị gừng."),
+        ("Ốc Hương Rang Muối Ớt", 220000, "Ốc hương loại 1 rang muối ớt cay nồng."),
+        ("Hàu Nướng Mỡ Hành", 25000, "Hàu sữa béo múp nướng mỡ hành đậu phộng (giá/con).")
+    ],
+    "Món Nướng": [
+        ("Bò Tảng Nướng Sốt Tiêu", 350000, "Thịt bò nguyên tảng nướng mềm mọng."),
+        ("Sườn Cừu Nướng Mông Cổ", 420000, "Sườn cừu tẩm ướp gia vị đặc trưng không gây mùi."),
+        ("Ba Chỉ Heo Nướng Mật Ong", 150000, "Ba chỉ heo nướng cháy cạnh sốt mật ong."),
+        ("Gà Nướng Muối Ớt", 190000, "Gà ta nướng da giòn, thịt dai ngọt."),
+        ("Rau Củ Nướng Thập Cẩm", 90000, "Các loại rau củ Đà Lạt nướng dầu ô liu.")
+    ],
+    "Lẩu": [
+        ("Lẩu Thái Tomyum", 350000, "Nước lẩu chua cay chuẩn vị Thái cùng hải sản."),
+        ("Lẩu Nấm Chim Câu", 400000, "Nước dùng thanh đạm hầm từ 10 loại nấm quý."),
+        ("Lẩu Cua Đồng Hải Sản", 380000, "Riêu cua đồng béo ngậy ăn kèm hải sản tươi."),
+        ("Lẩu Bò Wagyu", 850000, "Thịt bò Wagyu nhúng lẩu Nhật Sukiyaki."),
+        ("Lẩu Gà Lá Giang", 320000, "Vị chua thanh của lá giang giải nhiệt cực tốt.")
+    ],
+    "Món Chay": [
+        ("Đậu Hũ Tứ Xuyên Chay", 85000, "Đậu hũ non sốt cay nồng đưa cơm."),
+        ("Nấm Kho Tộ", 90000, "Nấm đùi gà và nấm đông cô kho tiêu đậm đà."),
+        ("Canh Chua Bạc Hà Chay", 70000, "Canh chua kiểu miền Tây với thơm và đậu bắp."),
+        ("Cơm Chiên Gạo Lứt Rau Củ", 95000, "Món ăn healthy giàu chất xơ."),
+        ("Mì Xào Giòn Chay", 85000, "Mì chiên giòn rụm xào cùng rau củ thập cẩm.")
+    ],
+    "Món Chính (Gà & Vịt)": [
+        ("Gà Hấp Lá Chanh", 250000, "Gà ta hấp da vàng óng, chấm muối tiêu chanh."),
+        ("Vịt Quay Bắc Kinh", 450000, "Da vịt quay giòn tan, thịt mềm ngọt."),
+        ("Cánh Gà Chiên Nước Mắm", 120000, "Cánh gà chiên giòn sốt mắm tỏi ớt."),
+        ("Gà Nấu Cari Ấn Độ", 150000, "Cari gà béo ngậy nước cốt dừa ăn kèm bánh mì."),
+        ("Vịt Om Sấu", 280000, "Vị chua thanh mát của sấu tươi miền Bắc.")
+    ],
+    "Món Chính (Bò & Heo)": [
+        ("Bò Lúc Lắc Khoai Tây", 180000, "Bò cắt vuông xào lửa lớn mềm mọng."),
+        ("Thịt Kho Tàu Trứng Muối", 120000, "Thịt ba chỉ kho rục với nước dừa tươi."),
+        ("Sườn Xào Chua Ngọt", 130000, "Sườn non chiên giòn sốt chua ngọt bắt cơm."),
+        ("Bò Bít Tết Sốt Vang", 220000, "Thăn ngoại bò Úc áp chảo sốt rượu vang đỏ."),
+        ("Heo Quay Bì Giòn", 160000, "Thịt heo quay da giòn tan chấm nước tương tỏi ớt.")
+    ],
+    "Cơm & Mì": [
+        ("Cơm Chiên Cá Mặn", 110000, "Cơm chiên tơi xốp thơm lừng vị cá mặn."),
+        ("Mì Xào Bò Cải Ngồng", 120000, "Mì trứng xào thịt bò mềm và cải ngồng xanh."),
+        ("Hủ Tiếu Xào Hải Sản", 130000, "Hủ tiếu mềm dai xào tôm mực."),
+        ("Cơm Niêu Singapore", 140000, "Cơm cháy giòn rụm đáy nồi sốt thịt băm."),
+        ("Miến Xào Cua Bể", 180000, "Miến dong dai ngon xào thịt cua bể gỡ sẵn.")
+    ],
+    "Tráng Miệng": [
+        ("Chè Hạt Sen Long Nhãn", 45000, "Chè thanh mát bổ dưỡng, hạt sen bở tơi."),
+        ("Bánh Flan Caramel", 35000, "Bánh flan mềm mịn béo ngậy trứng sữa."),
+        ("Trái Cây Dĩa Thập Cẩm", 80000, "Trái cây nhiệt đới tươi ngon theo mùa."),
+        ("Kem Dừa Thái Lan", 55000, "Kem dừa đặt trong trái dừa xiêm."),
+        ("Rau Câu Sơn Thủy", 30000, "Rau câu giòn nhiều tầng màu sắc đẹp mắt.")
+    ],
+    "Đồ Uống": [
+        ("Trà Đào Cam Sả", 55000, "Trà đào miếng giòn ngọt thơm mùi sả."),
+        ("Cafe Sữa Đá Sài Gòn", 35000, "Cafe pha phin đậm đà truyền thống."),
+        ("Sinh Tố Bơ Riêng", 65000, "Bơ sáp dẻo béo ngậy xay cùng sữa đặc."),
+        ("Nước Ép Dưa Hấu", 45000, "Nước ép nguyên chất thanh mát."),
+        ("Mojito Chanh Bạc Hà", 75000, "Soda chanh bạc hà mát lạnh sảng khoái.")
+    ],
+    "Set Combo Gia Đình": [
+        ("Combo Lẩu Nướng 4 Người", 699000, "Tiết kiệm 20% với set lẩu nướng đầy đặn."),
+        ("Combo Hải Sản Biển Đông", 999000, "Đại tiệc hải sản tươi sống cho 6 người."),
+        ("Combo Cơm Gia Đình", 450000, "Bữa cơm chuẩn vị mẹ nấu: Canh, mặn, xào."),
+        ("Combo Ăn Vặt", 299000, "Tổng hợp các món khai vị và ăn chơi."),
+        ("Combo Tiệc Nhỏ", 1200000, "Thiết kế riêng cho tiệc sinh nhật nhóm nhỏ.")
+    ],
+    "Món Đặc Biệt": [
+        ("Bò Dát Vàng 24K", 2500000, "Trải nghiệm thượng lưu với bò dát vàng."),
+        ("Tôm Hùm Sốt Bơ Tỏi", 1500000, "Món Signature của bếp trưởng."),
+        ("Súp Vi Cá Bào Ngư", 890000, "Món ăn đại bổ từ nguyên liệu quý hiếm."),
+        ("Gan Ngỗng Áp Chảo", 650000, "Gan ngỗng Pháp béo ngậy tan trong miệng."),
+        ("Cá Tuyết Hấp Tương", 750000, "Cá tuyết trắng ngần, thịt dai ngọt tự nhiên.")
+    ]
+}
 
-d2, created = Dish.objects.get_or_create(
-    name='Bánh Mì Ốp La',
-    defaults={
-        'description': 'Bữa sáng nhanh gọn.',
-        'price': 25000,
-        'prep_time': 5,
-        'category': c2,
-        'chef': chef_profile,
-        'image': img_url,
-        'is_available': True
-    }
-)
+for cat_name, dishes in menu_data.items():
+    category = Category.objects.filter(name=cat_name).first()
+
+    if not category:
+        category = Category.objects.filter(name__icontains=cat_name).first()
+
+    if category:
+        for dish_info in dishes:
+            name, price, desc = dish_info
+
+            dish, created = Dish.objects.get_or_create(
+                name=name,
+                defaults={
+                    "price": price,
+                    "description": desc,
+                    "prep_time": random.randint(15, 45),
+                    "is_available": True,
+                    "category": category,
+                    "image": img_url,
+                },
+                chef=chef_profile
+            )
 
 # 6. Tạo DishDetail
-DishDetail.objects.get_or_create(dish=d1, ingredient=i1, defaults={'amount': 0.2})
-DishDetail.objects.get_or_create(dish=d1, ingredient=i2, defaults={'amount': 0.3})
-
-DishDetail.objects.get_or_create(dish=d2, ingredient=i4, defaults={'amount': 2})
+if created:
+    all_ingredients = list(Ingredient.objects.all())
+    if all_ingredients:
+        # Random 3-5 nguyên liệu cho món ăn
+        random_ingredients = random.sample(all_ingredients, min(len(all_ingredients), random.randint(3, 5)))
+        for ing in random_ingredients:
+            DishDetail.objects.create(
+                dish=dish,
+                ingredient=ing,
+                amount=random.randint(10, 500)
+            )
 print("-> Đã tạo dữ liệu mẫu thành công!")
 
 EOF
