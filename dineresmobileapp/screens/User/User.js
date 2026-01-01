@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MyStyles from '../../styles/MyStyles'
 import { authApis, endpoints } from '../../utils/Apis'
-import * as ImagePicker from 'expo-image-picker';
+import { pickImage } from '../../utils/ImageUtils'
 
 const User = () => {
     const defaultAvatarUrl = 'https://res.cloudinary.com/dxopigima/image/upload/v1767193541/user_u8yhks.png'
@@ -25,44 +25,35 @@ const User = () => {
         }, 200)
     }
 
-    const pickImage = async () => {
-        let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (status !== 'granted') {
-            alert("Permissions denied!");
-        } else {
-            const result = await ImagePicker.launchImageLibraryAsync();
-            if (!result.canceled) {
-                try {
-                    const avatar =  result.assets[0];
-                    const form = new FormData();
-                    form.append("avatar", {
-                        uri: avatar.uri,
-                        name: avatar.fileName || "avatar.jpg",
-                        type: avatar.mimeType || "image/jpeg"
-                    })
-                    const token = await AsyncStorage.getItem("access-token");
-                    
-                    const res = await authApis(token).patch(
-                        endpoints['current-user'],
-                        form,
-                        {
-                            headers: {
-                                "Content-Type": "multipart/form-data",
-                            }
+    const changeAvatar = async () => {
+        const avatar = await pickImage();
+        console.info(avatar)
+        if (avatar) {
+            try {
+                const form = new FormData();
+                form.append("avatar", avatar);
+                const token = await AsyncStorage.getItem("access-token");
+                
+                const res = await authApis(token).patch(
+                    endpoints['current-user'],
+                    form,
+                    {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
                         }
-                    )
+                    }
+                )
 
-                    if (res.status === 200) {
+                if (res.status === 200) {
                     console.info(res.data);
                     dispatch({
                         "type": "login",
                         "payload": res.data
                     });
+                    alert("Cập nhật thành công!");
                 }
-                } catch (error) {
-                    console.error(error)
-                }
+            } catch (error) {
+                console.error("Lỗi API:", error);
             }
         }
     }
@@ -76,7 +67,7 @@ const User = () => {
         {
             icon: "key-variant",
             name: "Thay đổi mật khẩu",   
-            action: () => console.log("Change pass"),
+            action: () => nav.navigate("ChangePassword"),
         },
         {
             icon: "contacts-outline",
@@ -103,7 +94,7 @@ const User = () => {
                 icon="account-edit"
                 size={30}
                 iconColor='white'
-                onPress={pickImage}
+                onPress={changeAvatar}
             />
         </View>
         <Text style={[style.profileTitle, {marginTop: 30}]}>{`${user.first_name} ${user.last_name}`}</Text>

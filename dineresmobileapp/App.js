@@ -13,7 +13,7 @@ import Apis, { authApis, endpoints } from "./utils/Apis";
 import { MyUserContext } from "./utils/contexts/MyContexts";
 import User from "./screens/User/User";
 import {CLIENT_ID, CLIENT_SECRET} from "@env";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 import { 
   useFonts, 
   Roboto_400Regular, 
@@ -49,6 +49,7 @@ const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
   const [user,] = useContext(MyUserContext);
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator screenOptions={
       {headerShown: false,
@@ -63,7 +64,7 @@ const TabNavigator = () => {
           marginHorizontal: 10,
           height: 80,
           position: "absolute",
-          bottom: 25,
+          bottom: insets.bottom,
         },
         tabBarIconStyle: {
           height: 80,

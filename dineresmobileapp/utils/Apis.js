@@ -9,6 +9,7 @@ export const endpoints = {
   "login": "/o/token/",
   "refresh-login": "/o/refresh/",
   "current-user": "/users/current-user/",
+  "change-password": "/users/change-password/",
   "user-notify": "/notifications/"
 };
 

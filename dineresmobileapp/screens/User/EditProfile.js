@@ -6,6 +6,7 @@ import { authApis, endpoints } from '../../utils/Apis';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MyUserContext } from '../../utils/contexts/MyContexts';
 import { useNavigation } from '@react-navigation/native';
+import GoBack from '../../components/Layout/GoBack';
 
 const EditProfile = () => {
     const info = [{
@@ -83,6 +84,7 @@ const EditProfile = () => {
 
   return (
     <SafeAreaView>
+        <GoBack />
         <ScrollView style={{ padding: 20 }}>
             <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 20 }}>Chỉnh sửa hồ sơ</Text>
             

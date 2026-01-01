@@ -4,9 +4,9 @@ import { Text } from 'react-native'
 import { Button, HelperText, TextInput } from 'react-native-paper'
 import Apis, { endpoints } from '../../utils/Apis'
 import { useNavigation } from '@react-navigation/native'
-import * as ImagePicker from 'expo-image-picker';
 import { ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { pickImage } from '../../utils/ImageUtils'
 
 const Register = () => {
   const info = [{
@@ -46,16 +46,11 @@ const Register = () => {
     const [err, setErr] = useState(false);
     const nav = useNavigation();
 
-    const pickImage = async () => {
-        let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const chooseAvatar = async () => {
+        const avatar = await pickImage();
 
-        if (status !== 'granted') {
-            alert("Permissions denied!");
-        } else {
-            const result = await ImagePicker.launchImageLibraryAsync();
-            if (!result.canceled) {
-                setUser({...user, "avatar": result.assets[0]})
-            }
+        if (avatar) {
+          setUser({...user, "avatar" : avatar})
         }
     }
 
@@ -77,15 +72,7 @@ const Register = () => {
           const form = new FormData();
           for (let key in user){
             if (key !== 'confirm') {
-              if (key === 'avatar') {
-                form.append(key, {
-                  uri: user.avatar.uri,
-                  name: user.avatar.fileName || "avatar.jpg",
-                  type: user.avatar.mimeType || "image/jpeg"
-                });
-              }else {
                 form.append(key, user[key]);
-              }
             }
           }
 
@@ -138,7 +125,7 @@ const Register = () => {
             Mật khẩu KHÔNG khớp!
         </HelperText>
 
-        <TouchableOpacity onPress={pickImage} style={{ marginBottom: 20, alignItems: 'center' }}>
+        <TouchableOpacity onPress={chooseAvatar} style={{ marginBottom: 20, alignItems: 'center' }}>
             <Text style={{ color: 'blue', marginBottom: 5 }}>Chọn ảnh đại diện...</Text>
             {user.avatar ? (
                 <Image source={{ uri: user.avatar.uri }} style={{ width: 100, height: 100, borderRadius: 20 }} />
