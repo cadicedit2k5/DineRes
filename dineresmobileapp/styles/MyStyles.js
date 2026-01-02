@@ -18,10 +18,11 @@ export default StyleSheet.create({
         width: 120,
         height: 120,
         borderRadius: 100
-    }, title :{
-        fontSize: 20,
-        fontWeight: "600",
-        color: "black",
-        padding: 10
+    },title: { 
+        fontSize: 24,
+        textAlign: 'center',
+        margin: 10,
+        fontWeight: 'bold', 
+        color: 'black' 
     }
 });

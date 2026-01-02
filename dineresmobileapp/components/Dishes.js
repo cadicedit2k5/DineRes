@@ -32,7 +32,6 @@ const Dishes = () => {
     try {
       setLoading(true);
       const res = await Apis.get(url);
-      console.log(res.data)
     setDishes(res.data.results);
     } catch (error) {
       console.error(error)
@@ -109,7 +108,7 @@ const Dishes = () => {
                   contentStyle={{ height: 30}}
                   labelStyle={{ fontSize: 12, color: "#ee6a0dff", marginVertical: 0 }}
                   style={styles.addButton}
-                  onPress={() => console.log(tabBarHeight)}
+                  onPress={() => nav.navigate("DishDetail", {"dishId": item.id})}
                 >
                   Thêm
                 </Button>

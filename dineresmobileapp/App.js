@@ -28,6 +28,7 @@ import Register from "./screens/User/Register";
 import ChangePassword from "./screens/User/ChangePassword";
 import { Text, View } from "react-native";
 import TabBarIcon from "./components/Layout/TabBarIcon";
+import ApplyChef from "./screens/User/ApplyChef";
 
 const Stack = createNativeStackNavigator();
 
@@ -41,6 +42,7 @@ const StackNavigator = () => {
       <Stack.Screen name="EditProfile" component={EditProfile} options={{title: "Chinh sua ho so"}} />
       <Stack.Screen name="Register" component={Register} options={{title: "Dang ky"}} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} options={{title: "Thay doi mat khau"}} />
+      <Stack.Screen name="ApplyChef" component={ApplyChef} options={{title: "Ung tuyen dau bep"}} />
     </Stack.Navigator>
   );
 };

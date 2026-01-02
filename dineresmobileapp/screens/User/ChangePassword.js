@@ -91,7 +91,6 @@ const ChangePassword = () => {
                             setUser({...user, [i.field]: t});
                             if(err[i.field]) setErr({...err, [i.field]: null});
                         }}
-                        style={{ marginBottom: 10 }}
                         error={err[i.field]}
                     />
                     <HelperText type='error' visible={err[i.field]}>

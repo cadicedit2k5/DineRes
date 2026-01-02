@@ -70,9 +70,9 @@ const User = () => {
             action: () => nav.navigate("ChangePassword"),
         },
         {
-            icon: "contacts-outline",
+            icon: "chef-hat",
             name: "Ứng tuyển đầu bếp",   
-            action: () => console.log("Apply Chef"),
+            action: () => nav.navigate("ApplyChef"),
         },
         {
             icon: "contacts-outline",

@@ -10,6 +10,7 @@ export const endpoints = {
   "refresh-login": "/o/refresh/",
   "current-user": "/users/current-user/",
   "change-password": "/users/change-password/",
+  "apply-chef": "/users/apply-chef/",
   "user-notify": "/notifications/"
 };
 
