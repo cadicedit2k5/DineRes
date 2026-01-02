@@ -57,7 +57,7 @@ const Header = () => {
 
       <View style={MyStyles.row}>
         <IconButton
-        icon="chat"
+        icon="cart"
         size={20}
         onPress={() => console.log("Pressed")}
         />

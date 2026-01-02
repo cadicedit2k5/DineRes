@@ -29,6 +29,7 @@ import ChangePassword from "./screens/User/ChangePassword";
 import { Text, View } from "react-native";
 import TabBarIcon from "./components/Layout/TabBarIcon";
 import ApplyChef from "./screens/User/ApplyChef";
+import Chat from "./screens/Chat/Chat";
 
 const Stack = createNativeStackNavigator();
 
@@ -77,6 +78,7 @@ const TabNavigator = () => {
       <Tab.Screen name="Home" component={Home} options={{ title: 'Trang chủ', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color}/>}}/>
       <Tab.Screen name="Food" component={Food} options={{ title: 'Món ăn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="food" label="Đồ ăn" />}} />
       <Tab.Screen name="Booking" component={Booking} options={{ title: 'Đặt bàn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="receipt-text-edit" label="Đặt bàn" /> }} />
+      <Tab.Screen name="Chat" component={Chat} options={{ title: 'Chat', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="chat-processing" label="Chat" /> }} />
       {user && <Tab.Screen name="User" component={User} options={{ title: 'Người dùng', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="account" label="Tôi" /> }}/>}
     </Tab.Navigator>
   );

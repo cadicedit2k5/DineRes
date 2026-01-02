@@ -1,19 +1,16 @@
 import { useNavigation } from '@react-navigation/native'
-import React from 'react'
-import { Button } from 'react-native-paper'
+import { IconButton } from 'react-native-paper'
 
 const GoBack = () => {
     const nav = useNavigation();
   return (
-    <Button 
-        icon="arrow-left"
-        mode="text"
-        contentStyle={{justifyContent: "flex-start", marginVertical: 5}}
-        onPress={() => nav.goBack()}
-        textColor='black'
-    >
-        Quay lại
-    </Button>
+    <IconButton 
+        icon="arrow-left" 
+        mode="contained" 
+        containerColor="rgba(255,255,255,0.8)" 
+        iconColor="#000"
+        onPress={() => nav.goBack()} 
+    />
   )
 }
 

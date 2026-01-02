@@ -242,7 +242,7 @@ const Dishes = () => {
                   <Text style={styles.title} numberOfLines={1}>{item.name}</Text>
                 </TouchableOpacity>
                 <Text style={styles.price}>
-                  {item.price ? item.price.toLocaleString('vi-VN') : 0}đ
+                  {item.price ? parseInt(item.price).toLocaleString('vi-VN') : 0}đ
                 </Text>
               </View>
     
