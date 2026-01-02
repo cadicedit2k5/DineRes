@@ -32,10 +32,11 @@ class DishDetailSerializer(ModelSerializer):
 class DishSerializer(ImageSerializer):
     ingredients = JSONField(write_only=True, required=True)
     rating = SerializerMethodField()
+    review_count = SerializerMethodField()
 
     class Meta:
         model = Dish
-        fields = ['id', 'name', 'description', 'price', 'prep_time', 'category', 'image', 'rating', 'chef', 'ingredients']
+        fields = ['id', 'name', 'description', 'price', 'prep_time', 'category', 'image', 'rating', 'review_count', 'chef', 'ingredients']
         extra_kwargs = {
             'chef': {
                 'read_only': True
@@ -44,6 +45,9 @@ class DishSerializer(ImageSerializer):
 
     def get_rating(self, instance):
         return round(instance.avg_rating, 1) if instance.avg_rating else 0
+
+    def get_review_count(self, instance):
+        return instance.review_count if instance.review_count else 0
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

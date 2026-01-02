@@ -1,6 +1,6 @@
 from unicodedata import category
 
-from django.db.models import Avg
+from django.db.models import Avg, Count
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters as rest_filters
 from rest_framework import viewsets, permissions, parsers, status
@@ -62,7 +62,7 @@ class DishViewSet(viewsets.ModelViewSet):
     ordering = ['name']
 
     def get_queryset(self):
-        return self.queryset.annotate(avg_rating=Avg('reviews__rating'))
+        return self.queryset.annotate(avg_rating=Avg('reviews__rating'), review_count=Count('reviews'))
 
     def get_permissions(self):
         if self.action in ['list', 'compare_dishes', 'retrieve']:
