@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Header from '../../components/Layout/Header'
 import MyStyles from '../../styles/MyStyles'
 import TabBarIcon from '../../components/Layout/TabBarIcon'
-import { Button, Icon } from 'react-native-paper'
+import { Button, Icon, TextInput } from 'react-native-paper'
 
 const Home = () => {
   return (
@@ -11,10 +11,6 @@ const Home = () => {
       <Header />
       <ScrollView>
         <Text>Home</Text>
-
-        <TouchableOpacity activeOpacity={0.9}>
-      
-    </TouchableOpacity>
 
       </ScrollView>
     </SafeAreaView>

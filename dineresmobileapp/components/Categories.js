@@ -35,15 +35,15 @@ const Categories = ({setCate}) => {
           <View style={styles.itemSeparator} />
         }
         style={{
-          marginHorizontal: 10,
-          marginBottom: 10,
+          margin: 10,
         }}
         renderItem={({item, index}) => 
         <TouchableOpacity 
         key={index}
         style={{
           ...styles.tabItem,
-          borderColor: selectedIndex === index ? "#ee6a0dff" : "gold"
+          borderColor: selectedIndex === index ? "#ee6a0dff" : "gold",
+          backgroundColor: selectedIndex === index ? "white": "#fcf4e7ff"
         }} 
         onPress={() => handlePress(item, index)}>
           {item.image && <Image style={{width: 20, height: 20, marginRight: 7}} source={{uri: item.image}}/>}
