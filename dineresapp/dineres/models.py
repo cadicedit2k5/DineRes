@@ -37,6 +37,8 @@ class Chef(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chef')
     is_verified = models.BooleanField(default=False)
     bio = RichTextField(null=True, blank=True)
+    experience = models.IntegerField(default=0)
+    specialty = models.CharField(max_length=255, null=True, blank=True)
 
     verified_by = models.ForeignKey(settings.AUTH_USER_MODEL,
                                     on_delete=models.SET_NULL,

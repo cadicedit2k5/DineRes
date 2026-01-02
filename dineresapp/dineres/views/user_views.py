@@ -53,16 +53,15 @@ class UserViewSet(viewsets.ViewSet, CreateAPIView):
     def apply_chef(self, request):
         u = request.user
         bio = request.data.get('bio')
-
-        if not bio:
-            return Response({"message": "Vui lòng cung cấp thông tin về bản thân"}, status=status.HTTP_400_BAD_REQUEST)
+        specialty = request.data.get('specialty')
+        experience = request.data.get('experience')
 
         if hasattr(u, 'chef'):
             if u.user_role == User.Role.CHEF and u.chef.is_verified:
                 return Response({"message": "Bạn đã là đầu bếp!!!"}, status=status.HTTP_400_BAD_REQUEST)
             return Response({"message": "Đã gửi yêu cầu trở thành đầu bếp trc đó!!!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        Chef.objects.create(user=u, bio=bio)
+        Chef.objects.create(user=u, bio=bio, specialty=specialty, experience=experience)
         return Response({"message": "Gửi yêu cầu đăng ký đầu bếp thành công!!!"}, status=status.HTTP_201_CREATED)
 
     @action(methods=['get'], url_path='pending-chefs', detail=False)
