@@ -1,5 +1,5 @@
-from time import timezone
-
+# from time import timezone
+from django.utils import timezone
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator

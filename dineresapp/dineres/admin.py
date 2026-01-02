@@ -25,6 +25,7 @@ admin_site = DineResAppAdmin(name='myadmin')
 
 admin_site.register(Category, CategoryAdmin)
 admin_site.register(Dish)
+admin_site.register(User)
 admin_site.register(Order)
 admin_site.register(Booking)
 admin_site.register(Review)
