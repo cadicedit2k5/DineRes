@@ -15,7 +15,7 @@ class OrderViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIVie
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return self.queryset.filter(customer=self.request.user).order_by('-created_at');
+        return self.queryset.filter(customer=self.request.user).order_by('-created_date');
 
     def create(self, request, *args, **kwargs):
         details_data = request.data.get("details")

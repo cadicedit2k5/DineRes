@@ -65,11 +65,6 @@ const User = () => {
             icon: "information-outline",
             name: "Về chúng tôi",   
             action: () => console.log("About"),
-        },
-        {
-            icon: "chef-hat",
-            name: "Ứng tuyển đầu bếp",
-            action: () => nav.navigate("ApplyChef"),
         }
     ]
     if (user) {
@@ -83,6 +78,16 @@ const User = () => {
                     icon: "key-variant",
                     name: "Thay đổi mật khẩu",
                     action: () => nav.navigate("ChangePassword"),
+                },
+                {
+                    icon: "chef-hat",
+                    name: "Ứng tuyển đầu bếp",
+                    action: () => nav.navigate("ApplyChef"),
+                },
+                {
+                    icon: "clipboard-text-clock-outline",
+                    name: "My Orders",
+                    action: () => nav.navigate("MyOrders"),
                 })
             icons.push(
                 {
