@@ -20,6 +20,7 @@ const Dishes = () => {
   const [sortField, setSortField] = useState("");
   const [sortDir, setSortDir] = useState("");
   const [filters, setFilters] = useState([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(false);
 
   const sortList = [
     {
@@ -112,7 +113,7 @@ const Dishes = () => {
     }, 500)
 
     return () => clearTimeout(timer);
-  }, [q, cate, page]);
+  }, [q, cate, page, refreshTrigger]);
 
   useEffect(() => {
     console.log("field", sortField);
@@ -121,7 +122,7 @@ const Dishes = () => {
 
   useEffect(()=> {
     setPage(1);
-  }, [q, cate])
+  }, [q, cate, refreshTrigger])
 
   const loadMore = () => {
     if (page > 0 && !loading && dishes.length > 0) {
@@ -130,8 +131,9 @@ const Dishes = () => {
   }
 
   const handleFilter = () => {
+    setDishes([]);
+    setRefreshTrigger(!refreshTrigger);
     closeMenu();
-    loadDishes();
   }
 
   return (

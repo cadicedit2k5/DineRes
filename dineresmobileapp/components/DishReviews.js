@@ -1,8 +1,8 @@
-import { Alert, StyleSheet, Text, View } from 'react-native'
+import { Alert, StyleSheet, View} from 'react-native'
 import { useContext, useEffect, useState } from 'react'
 import ForceLogin from './Layout/ForceLogin'
 import InputText from './Layout/InputText'
-import { Avatar, Divider, IconButton } from 'react-native-paper'
+import { Avatar, Divider, IconButton, Text } from 'react-native-paper'
 import MyButton from './Layout/MyButton'
 import { MyUserContext } from '../utils/contexts/MyContexts'
 import Apis, { authApis, endpoints } from '../utils/Apis'
@@ -13,21 +13,43 @@ const DishReviews = ({dishId}) => {
     const [rating, setRating] = useState(0);
     const [loading, setLoading] = useState(false);
     const [user, ] = useContext(MyUserContext);
+    const [page, setPage] = useState(1);
 
     const loadComments = async () => {
-        try {
-        if (dishId) {
-            const res = await Apis.get(endpoints['dish-reviews'](dishId));
-            setComments(res.data.results);
+        const url = endpoints['dish-reviews'](dishId);
+
+        if (page) {
+            url = `${url}?page=${page}`;
         }
+
+        try {
+            setLoading(true);
+            if (dishId) {
+                const res = await Apis.get(url);
+
+                if (!res.data.next) {
+                    setPage(0);
+                }
+
+                if (page === 1) {
+                    setComments(res.data.results);
+                }else if (page > 1) {
+                    setComments([...comments, res.data.result]);
+                }
+                
+                setComments(res.data.results);
+            }
         } catch (error) {
-        console.error("Lỗi:", error);
+            console.error("Lỗi:", error);
+        }
+        finally {
+            setLoading(false);
         }
     }
 
     useEffect(() => {
         loadComments();
-    }, [dishId]);
+    }, [dishId, page]);
 
     const handleReview = async () => {
         if (rating === 0) {
@@ -56,6 +78,12 @@ const DishReviews = ({dishId}) => {
             console.error(error);
         }finally {
             setLoading(false);
+        }
+    }
+
+    const loadMore = async () => {
+        if (page > 0 && !loading && comments.length > 0) {
+            setPage(page + 1);
         }
     }
   return (
@@ -105,7 +133,7 @@ const DishReviews = ({dishId}) => {
                     padding: 20,
                     gap: 20
                 }}>
-                    <Avatar.Image size={80} source={{uri : c.customer.image ? c.customer.image : 'https://res.cloudinary.com/dxopigima/image/upload/v1767193541/user_u8yhks.png'}}/>
+                    <Avatar.Image size={80} source={{uri : c.customer.avatar ? c.customer.avatar : 'https://res.cloudinary.com/dxopigima/image/upload/v1767193541/user_u8yhks.png'}}/>
                     <View style={{flex: 1, justifyContent: "center", gap: 10}}>
                         <Text style={{fontWeight: "bold"}}>{c.customer.username}</Text>
                         <Text style={styles.metaText}>{c.comment}</Text>
