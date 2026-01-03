@@ -39,8 +39,8 @@ const StackNavigator = () => {
   const [user, ] = useContext(MyUserContext);
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      {!user && <Stack.Screen name="Login" component={Login} options={{title: "Dang nhap"}} />}
       <Stack.Screen name="Home" component={TabNavigator} options={{title: "Trang chu"}} />
+      {!user && <Stack.Screen name="Login" component={Login} options={{title: "Dang nhap"}} />}
       <Stack.Screen name="DishDetail" component={DishDetail} options={{title: "Chi tiet"}} />
       <Stack.Screen name="EditProfile" component={EditProfile} options={{title: "Chinh sua ho so"}} />
       <Stack.Screen name="Register" component={Register} options={{title: "Dang ky"}} />
@@ -84,7 +84,7 @@ const TabNavigator = () => {
       <Tab.Screen name="Food" component={Food} options={{ title: 'Món ăn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="food" label="Đồ ăn" />}} />
       <Tab.Screen name="Booking" component={Booking} options={{ title: 'Đặt bàn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="receipt-text-edit" label="Đặt bàn" /> }} />
       <Tab.Screen name="Chat" component={Chat} options={{ title: 'Chat', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="chat-processing" label="Chat" /> }} />
-      {user && <Tab.Screen name="User" component={User} options={{ title: 'Người dùng', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="account" label="Tôi" /> }}/>}
+      <Tab.Screen name="User" component={User} options={{ title: 'Người dùng', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="account" label="Tôi" /> }}/>
     </Tab.Navigator>
   );
 }

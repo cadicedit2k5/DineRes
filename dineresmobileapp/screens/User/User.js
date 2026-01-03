@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native'
 import { Button, IconButton } from 'react-native-paper'
 import { MyUserContext } from '../../utils/contexts/MyContexts'
@@ -58,22 +58,7 @@ const User = () => {
         }
     }
 
-    const icons = [
-        {
-            icon: "square-edit-outline",
-            name: "Chỉnh sửa hồ sơ",
-            action: () => nav.navigate("EditProfile"),
-        },
-        {
-            icon: "key-variant",
-            name: "Thay đổi mật khẩu",   
-            action: () => nav.navigate("ChangePassword"),
-        },
-        {
-            icon: "chef-hat",
-            name: "Ứng tuyển đầu bếp",   
-            action: () => nav.navigate("ApplyChef"),
-        },
+    let icons = [
         {
             icon: "contacts-outline",
             name: "Liên hệ",   
@@ -84,26 +69,57 @@ const User = () => {
             name: "Về chúng tôi",   
             action: () => console.log("About"),
         },
-        {
-            icon: "logout",
-            name: "Đăng xuất",
-            action: logout,
-        },
     ]
+    if (user) {
+            icons.unshift(
+                {
+                    icon: "square-edit-outline",
+                    name: "Chỉnh sửa hồ sơ",
+                    action: () => nav.navigate("EditProfile")
+                },
+                {
+                    icon: "key-variant",
+                    name: "Thay đổi mật khẩu",
+                    action: () => nav.navigate("ChangePassword"),
+                },
+                {
+                    icon: "chef-hat",
+                    name: "Ứng tuyển đầu bếp",
+                    action: () => nav.navigate("ApplyChef"),
+                })
+            icons.push(
+                {
+                    icon: "logout",
+                    name: "Đăng xuất",
+                    action: logout,
+                }
+            )
+        }else {
+            icons.push(
+                {
+                    icon: "login",
+                    name: "Đăng nhập",
+                    action: () => nav.navigate("Login"),
+                }
+            )
+        }
   return (
     <SafeAreaView style={[{alignItems: "center"}, {width: "100%"}]}>
         <Text style={style.profileTitle}>Hồ sơ người dùng</Text>
-        <View style={style.profileAvatar}>
-            <Image style={MyStyles.avatar} source={{uri: (user.avatar) ? user.avatar : defaultAvatarUrl}}/>
-            <IconButton style={style.changeAvatarBtn}
-                icon="account-edit"
-                size={30}
-                iconColor='white'
-                onPress={changeAvatar}
-            />
-        </View>
+        {user &&
+            <View style={style.profileAvatar}>
+                <Image style={MyStyles.avatar} source={{uri: (user) ? user.avatar : defaultAvatarUrl}}/>
+                <IconButton style={style.changeAvatarBtn}
+                    icon="account-edit"
+                    size={30}
+                    iconColor='white'
+                    onPress={changeAvatar}
+                />
+            </View>
+        }
+        {user && 
         <Text style={[style.profileTitle, {marginTop: 30}]}>{`${user.first_name} ${user.last_name}`}</Text>
-
+        }
         <View style={{width: "100%", marginTop: 10, paddingHorizontal: 10}}>
             {icons.map((i, index) =>
                 <Button 
