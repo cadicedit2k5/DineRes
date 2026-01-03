@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, ScrollView, Image, StyleSheet, StatusBar } from 'react-native';
+import { View, ScrollView, Image, StyleSheet, StatusBar, useWindowDimensions } from 'react-native';
 import { Text, Icon, Divider, Avatar, ActivityIndicator } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
 import GoBack from '../../components/Layout/GoBack';
@@ -9,6 +9,7 @@ import QuantityChange from '../../components/Layout/QuantityChange';
 import MyButton from '../../components/Layout/MyButton';
 import Rating from '../../components/Layout/Rating';
 import DishReviews from '../../components/DishReviews';
+import RenderHTML from 'react-native-render-html';
 
 const DishDetail = () => {
     const route = useRoute();
@@ -16,6 +17,8 @@ const DishDetail = () => {
     const [dish, setDish] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(false);
+
+    const {width} = useWindowDimensions();
 
     const loadDishDetail = async () => {
       try {
@@ -128,7 +131,11 @@ const DishDetail = () => {
 
                     {/* Mô tả */}
                     <Text variant="titleMedium" style={styles.sectionTitle}>Mô tả</Text>
-                    <Text style={styles.description}>{dish.description}</Text>
+                    <RenderHTML
+                        contentWidth={width}
+                        source={{ 'html': dish.description }}
+                        baseStyle={styles.description}
+                    />
 
                     {/* Thành phần nguyên liệu */}
                     <Text variant="titleMedium" style={[styles.sectionTitle, { marginTop: 20 }]}>Nguyên liệu chính</Text>

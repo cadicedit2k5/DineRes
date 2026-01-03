@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FlatList, Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, StyleSheet, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import Apis, { endpoints } from "../utils/Apis";
 import { ActivityIndicator, Button, Divider, Modal, Portal, RadioButton, Searchbar, Text, TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
@@ -7,6 +7,7 @@ import Categories from "./Categories";
 import MyStyles from "../styles/MyStyles";
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Rating from "./Layout/Rating";
+import RenderHTML from "react-native-render-html";
 
 const Dishes = () => {
   const [cate, setCate] = useState(null);
@@ -21,6 +22,8 @@ const Dishes = () => {
   const [sortDir, setSortDir] = useState("");
   const [filters, setFilters] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(false);
+
+  const {width} = useWindowDimensions();
 
   const sortList = [
     {
@@ -250,9 +253,17 @@ const Dishes = () => {
               </View>
     
               {/* Mô tả */}
-              <Text style={styles.description} numberOfLines={2}>
-                {item.description}
-              </Text>
+              <View style={{ height: 36, overflow: 'hidden' }}> 
+                  <RenderHTML
+                      contentWidth={width}
+                      source={{ 'html': item.description }}
+                      baseStyle={{
+                          color: '#666',
+                          fontSize: 12,
+                          lineHeight: 18
+                      }}
+                  />
+              </View>
     
               {/*Đánh giá*/}
               <View style={styles.footerRow}>
