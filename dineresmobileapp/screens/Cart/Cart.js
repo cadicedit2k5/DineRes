@@ -9,6 +9,7 @@ import MyButton from '../../components/Layout/MyButton';
 import MyStyles from '../../styles/MyStyles';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { authApis, endpoints } from '../../utils/Apis';
 
 const Cart = () => {
     const [cart, setCart] = useState([]);
@@ -32,10 +33,34 @@ const Cart = () => {
     }, [])
 
     const handleOrder = async () => {
+        const details = [];
+        for (let item of cart) {
+            details.push({
+                "dish_id": item.id,
+                "quantity": item.quantity
+            })
+        }
+        console.info(details);
         try {
-            
+            setLoading(true);
+            const token = await AsyncStorage.getItem("access-token");
+
+            if (token) {
+                const res = await authApis(token).post(endpoints['orders'],
+                    {
+                        "details": details
+                    }
+                );
+
+                if (res.status === 201) {
+                    Alert.alert("Thông báo", "Đã đặt thành công!!!");
+                    setCart([]);
+                }
+            }
         } catch (error) {
-            
+            console.error(error);
+        }finally {
+            setLoading(false);
         }
     }
 
@@ -169,7 +194,7 @@ const Cart = () => {
                 <MyButton 
                     btnLabel="Đặt ngay"
                     loading={loading}
-                    onPress={() => console.log("Dat ngay")}
+                    onPress={handleOrder}
                 />
             </View>
         </View>

@@ -7,12 +7,15 @@ from dineres.models import Order, Dish, OrderDetail
 from dineres.serializers.order_serializers import OrderSerializer, OrderInputSerializer
 
 
-class OrderViewSet(viewsets.ViewSet, generics.CreateAPIView):
+class OrderViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIView):
     # Lay ten khach hang dung 1 lan
     # Lay order details dung 1 lan va hien thi lun dish trong order do
     queryset = Order.objects.filter(active=True).select_related().prefetch_related('customer').prefetch_related('details__dish')
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return self.queryset.filter(customer=self.request.user).order_by('-created_at');
 
     def create(self, request, *args, **kwargs):
         details_data = request.data.get("details")
