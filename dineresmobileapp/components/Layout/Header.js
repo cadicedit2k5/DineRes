@@ -61,11 +61,12 @@ const Header = () => {
         size={20}
         onPress={() => nav.navigate("Cart")}
         />
+        {user && 
         <IconButton
           icon="bell"
           size={20}
           onPress={showModal}
-        />
+        />}
       </View>
     </View>
   );

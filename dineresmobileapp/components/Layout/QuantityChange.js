@@ -1,5 +1,4 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
 import { IconButton } from 'react-native-paper'
 
 const QuantityChange = ({quantity, increaseQty, decreaseQty}) => {

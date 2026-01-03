@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native'
 import { Button, IconButton } from 'react-native-paper'
 import { MyUserContext } from '../../utils/contexts/MyContexts'

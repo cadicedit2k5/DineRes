@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Image, TouchableOpacity, View } from 'react-native'
+import { Image, TouchableOpacity } from 'react-native'
 import { Text } from 'react-native'
 import { Button, HelperText, TextInput } from 'react-native-paper'
 import Apis, { endpoints } from '../../utils/Apis'

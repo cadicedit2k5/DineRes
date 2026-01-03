@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { Button, IconButton, Modal, Portal, Card, Avatar } from 'react-native-paper';
+import { IconButton, Modal, Portal, Card, Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GoBack from '../../components/Layout/GoBack';

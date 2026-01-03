@@ -1,17 +1,14 @@
-import { useContext, useEffect, useState } from 'react';
-import { View, ScrollView, Image, StyleSheet, TouchableOpacity, StatusBar, Alert } from 'react-native';
-import { Text, Button, Icon, IconButton, Divider, Chip, Avatar, ActivityIndicator } from 'react-native-paper';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useEffect, useState } from 'react';
+import { View, ScrollView, Image, StyleSheet, StatusBar } from 'react-native';
+import { Text, Icon, Divider, Avatar, ActivityIndicator } from 'react-native-paper';
+import { useRoute } from '@react-navigation/native';
 import GoBack from '../../components/Layout/GoBack';
-import Apis, { authApis, endpoints } from '../../utils/Apis';
+import Apis, { endpoints } from '../../utils/Apis';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import QuantityChange from '../../components/Layout/QuantityChange';
 import MyButton from '../../components/Layout/MyButton';
 import Rating from '../../components/Layout/Rating';
-import InputText from '../../components/Layout/InputText';
-import { MyUserContext } from '../../utils/contexts/MyContexts';
-import MyStyles from '../../styles/MyStyles';
-import ForceLogin from '../../components/Layout/ForceLogin';
+import DishReviews from '../../components/DishReviews';
 
 const DishDetail = () => {
     const route = useRoute();
@@ -19,11 +16,6 @@ const DishDetail = () => {
     const [dish, setDish] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(false);
-    const [comment, setComment] = useState("");
-    const [comments, setComments] = useState([]);
-    const [rating, setRating] = useState(0);
-    const [user, dispatch] = useContext(MyUserContext);
-    const nav = useNavigation();
 
     const loadDishDetail = async () => {
       try {
@@ -36,20 +28,10 @@ const DishDetail = () => {
       }
     };
 
-    const loadComments = async () => {
-        try {
-        if (dishId) {
-            const res = await Apis.get(endpoints['dish-reviews'](dishId));
-            setComments(res.data.results);
-        }
-      } catch (error) {
-        console.error("Lỗi:", error);
-      }
-    }
+    
 
     useEffect(() => {
       loadDishDetail();
-      loadComments();
     }, [dishId]);
 
     const handleAddToCart = async () => {
@@ -77,36 +59,6 @@ const DishDetail = () => {
             setLoading(false);
         }
     }   
-
-    const handleReview = async () => {
-        if (rating === 0) {
-            Alert.alert("Thông báo", "Vui lòng chọn số sao để đánh giá!");
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const token = await AsyncStorage.getItem("access-token");
-
-            if (token) {
-                const res = await authApis(token).post(endpoints['dish-reviews'](dishId),
-                    {
-                        "comment": comment,
-                        "rating": rating,
-                    }
-                )
-
-                if (res.status === 201) {
-                    setComments([res.data, ...comments]);
-                    Alert.alert("Thông báo", "Dánh giá món ăn thành công!!");
-                }
-            }
-        } catch (error) {
-            console.error(error);
-        }finally {
-            setLoading(false);
-        }
-    }
 
     if (dish === null) {
       return (
@@ -190,59 +142,7 @@ const DishDetail = () => {
                         ))}
                     </View>
 
-                    {/* Review */}
-                    <Text variant='titleMedium' style={[styles.sectionTitle, {marginTop: 20}]}>Viết đánh giá</Text>
-                    {user === null ? 
-                    <ForceLogin
-                        next_params={{"dishId": dishId}}
-                        next_screen={"DishDetail"}
-                    />
-                    : <>
-                    <View style={{display: "flex", gap: 10}}>
-                        <InputText 
-                            label={"Nhập gì đó ..."}
-                            value={comment}
-                            onChangeText={(t) => setComment(t)}
-                            multiline={true}
-                        />
-                        {/* đánh giá của khách */}
-                        <View style={[styles.metaRow, {marginHorizontal: 50}]}>
-                            {[1, 2, 3, 4, 5].map((star, key) => 
-                                <IconButton 
-                                    key={key}
-                                    icon="star"
-                                    iconColor={star <= rating ? "gold" : "gray"}
-                                    onPress={() => setRating(star)}
-                                />
-                            )}
-                        </View>
-                    </View>
-                    <MyButton 
-                        btnLabel={"Gửi"}
-                        loading={loading}
-                        onPress={handleReview}
-                    />
-                    </>}
-
-                    <Divider style={{ width: "100%", height: 1, marginVertical: 20 }}/>
-
-                    <View>
-                        <Text variant='titleMedium' style={[styles.sectionTitle, {marginBottom: 10}]}>Đánh giá trước đây</Text>
-                        {comments.map((c, key) => 
-                            <View key={key} style={{flexDirection: "row",
-                                borderBottomWidth: 1,
-                                borderColor: "#999",
-                                padding: 20,
-                                gap: 20
-                            }}>
-                                <Avatar.Image size={80} source={{uri : c.customer.image ? c.customer.image : 'https://res.cloudinary.com/dxopigima/image/upload/v1767193541/user_u8yhks.png'}}/>
-                                <View style={{flex: 1, justifyContent: "center", gap: 10}}>
-                                    <Text style={{fontWeight: "bold"}}>{c.customer.username}</Text>
-                                    <Text style={styles.metaText}>{c.comment}</Text>
-                                </View>
-                            </View>
-                        )}
-                    </View>
+                    <DishReviews dishId={dishId}/>
                     
                 </ScrollView>
             </View>

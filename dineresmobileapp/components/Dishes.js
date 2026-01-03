@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { FlatList, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import Apis, { endpoints } from "../utils/Apis";
-import { ActivityIndicator, Button, Divider, Icon, Menu, Modal, Portal, RadioButton, Searchbar, Text, TextInput } from "react-native-paper";
+import { ActivityIndicator, Button, Divider, Modal, Portal, RadioButton, Searchbar, Text, TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import Categories from "./Categories";
 import MyStyles from "../styles/MyStyles";
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import InputText from "./Layout/InputText";
 import Rating from "./Layout/Rating";
 
 const Dishes = () => {

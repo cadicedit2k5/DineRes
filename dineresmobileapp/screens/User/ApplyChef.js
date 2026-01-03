@@ -15,7 +15,7 @@ const ApplyChef = () => {
     const [profile, setProfile] = useState({})
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState({});
-    const [user, dispatch] = useContext(MyUserContext);
+    const [user, ] = useContext(MyUserContext);
     const nav = useNavigation();
 
     const infos = [{
