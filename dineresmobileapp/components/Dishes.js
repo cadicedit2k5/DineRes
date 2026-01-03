@@ -7,6 +7,7 @@ import Categories from "./Categories";
 import MyStyles from "../styles/MyStyles";
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import InputText from "./Layout/InputText";
+import Rating from "./Layout/Rating";
 
 const Dishes = () => {
   const [cate, setCate] = useState(null);
@@ -124,7 +125,7 @@ const Dishes = () => {
   }, [q, cate])
 
   const loadMore = () => {
-    if (page > 0 && !loading) {
+    if (page > 0 && !loading && dishes.length > 0) {
       setPage(page + 1);
     }
   }
@@ -220,6 +221,7 @@ const Dishes = () => {
         <FlatList 
         data={dishes} 
         onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
         contentContainerStyle={{
           paddingBottom: tabBarHeight + 15
         }}
@@ -253,11 +255,10 @@ const Dishes = () => {
     
               {/*Đánh giá*/}
               <View style={styles.footerRow}>
-                <View style={styles.ratingContainer}>
-                  <Icon source="star" color="#FFD700" size={16} />
-                  <Text style={styles.ratingText}>{item.rating}</Text>
-                  <Text style={styles.reviewCount}>({item.review_count})</Text>
-                </View>
+                <Rating 
+                  rating={item.rating}
+                  review_count={item.review_count}
+                />
     
                 <Button
                   icon="plus"
@@ -366,25 +367,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF8E1',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  ratingText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#333',
-    marginLeft: 4,
-  },
-  reviewCount: {
-    fontSize: 10,
-    color: '#888',
-    marginLeft: 2,
   },
   addButton: {
     borderColor: "#ee6a0dff",

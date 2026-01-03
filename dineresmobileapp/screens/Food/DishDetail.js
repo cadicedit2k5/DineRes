@@ -7,6 +7,7 @@ import Apis, { endpoints } from '../../utils/Apis';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import QuantityChange from '../../components/Layout/QuantityChange';
 import MyButton from '../../components/Layout/MyButton';
+import Rating from '../../components/Layout/Rating';
 
 const DishDetail = () => {
     const route = useRoute();
@@ -95,10 +96,10 @@ const DishDetail = () => {
 
                     {/* Dòng 2: Rating và Thời gian */}
                     <View style={styles.metaRow}>
-                        <View style={styles.metaItem}>
-                            <Icon source="star" color="#FFD700" size={20} />
-                            <Text style={styles.metaText}>{dish.rating} ({dish.review_count} đánh giá)</Text>
-                        </View>
+                        <Rating 
+                            rating={dish.rating}
+                            review_count={`${dish.review_count} đánh giá`}
+                        />
                         <View style={styles.metaItem}>
                             <Icon source="clock-outline" color="#666" size={20} />
                             <Text style={styles.metaText}>{dish.prep_time} phút</Text>

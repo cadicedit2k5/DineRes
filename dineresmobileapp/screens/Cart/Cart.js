@@ -8,10 +8,12 @@ import QuantityChange from '../../components/Layout/QuantityChange';
 import MyButton from '../../components/Layout/MyButton';
 import MyStyles from '../../styles/MyStyles';
 import { Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const Cart = () => {
     const [cart, setCart] = useState([]);
     const [loading, setLoading] = useState(false);
+    const nav = useNavigation();
 
     const loadCart = async () => {
         try {
@@ -159,15 +161,15 @@ const Cart = () => {
                 <MyButton
                     btnLabel="So sánh"
                     loading={loading}
-                    onPress={() => console.log("So sánh")}
+                    onPress={() => nav.navigate("CompareDish", {"dishes": cart})}
                 />
             </View>
             
             <View style={{ flex: 1 }}>
                 <MyButton 
-                    btnLabel="Thanh toán"
+                    btnLabel="Đặt ngay"
                     loading={loading}
-                    onPress={() => console.log("thanh toan")}
+                    onPress={() => console.log("Dat ngay")}
                 />
             </View>
         </View>
