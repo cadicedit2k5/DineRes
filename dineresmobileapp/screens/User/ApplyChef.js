@@ -93,10 +93,8 @@ const ApplyChef = () => {
                     {infos.map(item =>
                     <View key={item.field}>
                         <InputText 
-                          key={item.field}
-                          value={profile}
-                          field={item.field}
-                          setValue={setProfile}
+                          value={profile[item.field]}
+                          setValue={(t) => setProfile({...profile, [item.field]: t})}
                           label={item.title}
                           multiline={item.multiline}
                           error={err[item.field]}

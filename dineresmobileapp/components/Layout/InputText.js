@@ -3,9 +3,8 @@ import { TextInput } from 'react-native-paper';
 
 const InputText = ({ 
     label, 
-    field, 
     value, 
-    setValue,
+    onChangeText,
     secureTextEntry = false, 
     ...props
 }) => {
@@ -15,8 +14,8 @@ const InputText = ({
     <TextInput
         mode="outlined"
         label={label}
-        value={value[field]}
-        onChangeText={(t) => setValue({...value, [field]: t})}
+        value={value}
+        onChangeText={onChangeText}
         secureTextEntry={secureTextEntry && !showPass}
         right={secureTextEntry ? (
             <TextInput.Icon 

@@ -68,7 +68,7 @@ class DishViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'compare_dishes', 'retrieve']:
             return [permissions.AllowAny()]
         elif self.action in ['reviews']:
-            return [permissions.IsAuthenticated()]
+            return [permissions.IsAuthenticatedOrReadOnly()]
         return [IsVerifiedChef()]
 
     @action(methods=['get'], url_path='compare', detail=False)
