@@ -20,9 +20,6 @@ const User = () => {
         dispatch({
             "type": "logout",
         })
-        setTimeout(() => {
-            nav.navigate("Login");
-        }, 200)
     }
 
     const changeAvatar = async () => {
@@ -69,6 +66,11 @@ const User = () => {
             name: "Về chúng tôi",   
             action: () => console.log("About"),
         },
+        {
+            icon: "chef-hat",
+            name: "Ứng tuyển đầu bếp",
+            action: () => nav.navigate("ApplyChef"),
+        }
     ]
     if (user) {
             icons.unshift(
@@ -81,11 +83,6 @@ const User = () => {
                     icon: "key-variant",
                     name: "Thay đổi mật khẩu",
                     action: () => nav.navigate("ChangePassword"),
-                },
-                {
-                    icon: "chef-hat",
-                    name: "Ứng tuyển đầu bếp",
-                    action: () => nav.navigate("ApplyChef"),
                 })
             icons.push(
                 {
@@ -104,7 +101,7 @@ const User = () => {
             )
         }
   return (
-    <SafeAreaView style={[{alignItems: "center"}, {width: "100%"}]}>
+    <SafeAreaView style={{alignItems: "center", width: "100%", backgroundColor: "white", flex: 1}}>
         <Text style={style.profileTitle}>Hồ sơ người dùng</Text>
         {user &&
             <View style={style.profileAvatar}>

@@ -11,6 +11,7 @@ import Rating from '../../components/Layout/Rating';
 import InputText from '../../components/Layout/InputText';
 import { MyUserContext } from '../../utils/contexts/MyContexts';
 import MyStyles from '../../styles/MyStyles';
+import ForceLogin from '../../components/Layout/ForceLogin';
 
 const DishDetail = () => {
     const route = useRoute();
@@ -37,9 +38,8 @@ const DishDetail = () => {
 
     const loadComments = async () => {
         try {
-            const token = await AsyncStorage.getItem("access-token");
-        if (dishId && token) {
-            const res = await authApis(token).get(endpoints['dish-reviews'](dishId));
+        if (dishId) {
+            const res = await Apis.get(endpoints['dish-reviews'](dishId));
             setComments(res.data.results);
         }
       } catch (error) {
@@ -192,9 +192,11 @@ const DishDetail = () => {
 
                     {/* Review */}
                     <Text variant='titleMedium' style={[styles.sectionTitle, {marginTop: 20}]}>Viết đánh giá</Text>
-                    {user === null ? <Text>
-                        Vui lòng <TouchableOpacity onPress={() => nav.navigate("Login", {"next": "DishDetail"})}>Đăng nhập</TouchableOpacity> để viết đánh giá.
-                    </Text> 
+                    {user === null ? 
+                    <ForceLogin
+                        next_params={{"dishId": dishId}}
+                        next_screen={"DishDetail"}
+                    />
                     : <>
                     <View style={{display: "flex", gap: 10}}>
                         <InputText 

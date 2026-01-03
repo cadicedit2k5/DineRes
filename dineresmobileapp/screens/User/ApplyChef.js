@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { ScrollView, Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { Button, Text, HelperText } from 'react-native-paper';
 import { authApis, endpoints } from '../../utils/Apis';
@@ -8,11 +8,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import GoBack from '../../components/Layout/GoBack';
 import MyStyles from '../../styles/MyStyles';
 import InputText from '../../components/Layout/InputText';
+import { MyUserContext } from '../../utils/contexts/MyContexts';
+import ForceLogin from '../../components/Layout/ForceLogin';
 
 const ApplyChef = () => {
     const [profile, setProfile] = useState({})
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState({});
+    const [user, dispatch] = useContext(MyUserContext);
     const nav = useNavigation();
 
     const infos = [{
@@ -90,31 +93,38 @@ const ApplyChef = () => {
                         Trở thành đối tác của chúng tôi để chia sẻ những món ăn tuyệt vời của bạn.
                     </Text>
 
-                    {infos.map(item =>
-                    <View key={item.field}>
-                        <InputText 
-                          value={profile[item.field]}
-                          setValue={(t) => setProfile({...profile, [item.field]: t})}
-                          label={item.title}
-                          multiline={item.multiline}
-                          error={err[item.field]}
-                          onFocus={() => setErr({})}
-                        />
-                        <HelperText type='error' visible={err[item.field]}>
-                            {err[item.field]}
-                        </HelperText>
-                      </View>
-                      )}
+                    {user == null ? 
+                      <ForceLogin
+                        next_screen={"ApplyChef"}
+                      />
+                    : <>
+                      {infos.map(item =>
+                        <View key={item.field}>
+                            <InputText 
+                              value={profile[item.field]}
+                              onChangeText={(t) => setProfile({...profile, [item.field]: t})}
+                              label={item.title}
+                              multiline={item.multiline}
+                              error={err[item.field]}
+                              onFocus={() => setErr({})}
+                            />
+                            <HelperText type='error' visible={err[item.field]}>
+                                {err[item.field]}
+                            </HelperText>
+                          </View>
+                          )}
 
-                    <Button 
-                        mode="contained" 
-                        onPress={handleSubmit} 
-                        loading={loading}
-                        disabled={loading}
-                        style={{ backgroundColor: '#ee6a0dff', paddingVertical: 5 }}
-                    >
-                        Gửi Hồ Sơ
-                    </Button>
+                        <Button 
+                            mode="contained" 
+                            onPress={handleSubmit} 
+                            loading={loading}
+                            disabled={loading}
+                            style={{ backgroundColor: '#ee6a0dff', paddingVertical: 5 }}
+                        >
+                            Gửi Hồ Sơ
+                        </Button>
+                      </>}
+                    
 
                 </ScrollView>
             </KeyboardAvoidingView>

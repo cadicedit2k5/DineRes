@@ -9,7 +9,7 @@ import { TouchableOpacity } from 'react-native';
 import { MyUserContext } from '../../utils/contexts/MyContexts';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const Login = () => {
+const Login = ({route}) => {
   const info = [{
         title: "Tên đăng nhập",
         field: "username",
@@ -60,7 +60,14 @@ const Login = () => {
               "type": "login",
               "payload": u.data,
             });
-            nav.navigate("Home");
+            const next_screen = route?.params.next_screen;
+            const next_params = route?.params.next_params;
+
+            if (next_screen) {
+              nav.navigate(next_screen, next_params);
+            }else {
+              nav.navigate("Home");
+            }
           }, 500)
         }else {
           setErr(true);
