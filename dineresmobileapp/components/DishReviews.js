@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, View} from 'react-native'
+import { Alert, StyleSheet, Touchable, TouchableOpacity, View} from 'react-native'
 import { useContext, useEffect, useState } from 'react'
 import ForceLogin from './Layout/ForceLogin'
 import InputText from './Layout/InputText'
@@ -6,6 +6,9 @@ import { Avatar, Divider, IconButton, Text } from 'react-native-paper'
 import MyButton from './Layout/MyButton'
 import { MyUserContext } from '../utils/contexts/MyContexts'
 import Apis, { authApis, endpoints } from '../utils/Apis'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import moment from "moment";
+import 'moment/locale/vi';
 
 const DishReviews = ({dishId}) => {
     const [comment, setComment] = useState("");
@@ -16,28 +19,20 @@ const DishReviews = ({dishId}) => {
     const [page, setPage] = useState(1);
 
     const loadComments = async () => {
-        const url = endpoints['dish-reviews'](dishId);
-
-        if (page) {
-            url = `${url}?page=${page}`;
-        }
-
+        let url = `${endpoints['dish-reviews'](dishId)}?page=${page}`;
+        console.log(url);
         try {
             setLoading(true);
-            if (dishId) {
-                const res = await Apis.get(url);
+            const res = await Apis.get(url);
 
-                if (!res.data.next) {
-                    setPage(0);
-                }
+            if (!res.data.next) {
+                setPage(0);
+            }
 
-                if (page === 1) {
-                    setComments(res.data.results);
-                }else if (page > 1) {
-                    setComments([...comments, res.data.result]);
-                }
-                
+            if (page === 1) {
                 setComments(res.data.results);
+            }else if (page > 1) {
+                setComments([...comments, ...res.data.results]);
             }
         } catch (error) {
             console.error("Lỗi:", error);
@@ -48,9 +43,22 @@ const DishReviews = ({dishId}) => {
     }
 
     useEffect(() => {
-        loadComments();
+        let timer = setTimeout(() => {
+            if (page > 0){
+                loadComments();
+            }
+        }, 500)
+
+        return (() => clearTimeout(timer));
     }, [dishId, page]);
 
+    const loadMore = async () => {
+        if (page > 0 && !loading && comments.length > 0) {
+            setPage(page + 1);
+        }else {
+            Alert.alert("thông não", "Hết đánh giá rồi!!!");
+        }
+    }
     const handleReview = async () => {
         if (rating === 0) {
             Alert.alert("Thông báo", "Vui lòng chọn số sao để đánh giá!");
@@ -78,12 +86,6 @@ const DishReviews = ({dishId}) => {
             console.error(error);
         }finally {
             setLoading(false);
-        }
-    }
-
-    const loadMore = async () => {
-        if (page > 0 && !loading && comments.length > 0) {
-            setPage(page + 1);
         }
     }
   return (
@@ -137,10 +139,24 @@ const DishReviews = ({dishId}) => {
                     <View style={{flex: 1, justifyContent: "center", gap: 10}}>
                         <Text style={{fontWeight: "bold"}}>{c.customer.username}</Text>
                         <Text style={styles.metaText}>{c.comment}</Text>
+                        <Text>{moment(c.created_date).fromNow()}</Text>
                     </View>
                 </View>
             )}
         </View>
+
+        <TouchableOpacity
+            onPress={loadMore}
+            style={{
+                flex: 1,
+                alignItems: "center",
+                marginVertical: 10
+            }}
+        ><Text style={{
+            color: "#f56c27ff",
+            fontWeight: "bold",
+            fontSize: 16
+        }} >Tải thêm</Text></TouchableOpacity>
     </View>
   )
 }
