@@ -59,7 +59,7 @@ const Header = () => {
         <IconButton
         icon="cart"
         size={20}
-        onPress={() => console.log("Pressed")}
+        onPress={() => nav.navigate("Cart")}
         />
         <IconButton
           icon="bell"

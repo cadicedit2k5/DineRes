@@ -24,5 +24,16 @@ export default StyleSheet.create({
         margin: 10,
         fontWeight: 'bold', 
         color: 'black' 
+    },
+    subTitle: { 
+        fontSize: 20,
+        textAlign: 'center',
+        margin: 10,
+        fontWeight: 'bold', 
+        color: 'black' 
+    },
+    price: {
+        fontWeight: 'bold',
+        color: '#ee6a0dff',
     }
 });

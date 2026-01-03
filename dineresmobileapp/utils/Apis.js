@@ -5,13 +5,16 @@ export const endpoints = {
   "categories": "/categories/",
   "dishes": "/dishes/",
   "dish-detail": (dishId) => `/dishes/${dishId}/`,
+
   "register": "/users/",
   "login": "/o/token/",
   "refresh-login": "/o/refresh/",
   "current-user": "/users/current-user/",
   "change-password": "/users/change-password/",
   "apply-chef": "/users/apply-chef/",
-  "user-notify": "/notifications/"
+  "user-notify": "/notifications/",
+
+  "order": "/orders"
 };
 
 export const authApis = (token) => {

@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
 import { View, ScrollView, Image, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
 import { Text, Button, Icon, IconButton, Divider, Chip, Avatar, ActivityIndicator } from 'react-native-paper';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import GoBack from '../../components/Layout/GoBack';
 import Apis, { endpoints } from '../../utils/Apis';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import QuantityChange from '../../components/Layout/QuantityChange';
+import MyButton from '../../components/Layout/MyButton';
 
 const DishDetail = () => {
     const route = useRoute();
     const dishId = route?.params?.dishId;
-    const nav = useNavigation();
     const [dish, setDish] = useState(null);
     const [quantity, setQuantity] = useState(1);
+    const [loading, setLoading] = useState(false);
 
     const loadDishDetail = async () => {
       try {
@@ -26,6 +29,32 @@ const DishDetail = () => {
     useEffect(() => {
       loadDishDetail();
     }, [dishId]);
+
+    const handleAddToCart = async () => {
+        try {
+            setLoading(true);
+            const jsonValue = await AsyncStorage.getItem('cart');
+            let cart = jsonValue != null ? JSON.parse(jsonValue) : [];
+
+            const existingItem = cart.find(item => item.id === dish.id);
+
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    ...dish,
+                    quantity: quantity
+                });
+            }
+
+            const newJsonValue = JSON.stringify(cart);
+            await AsyncStorage.setItem('cart', newJsonValue);
+        } catch (error) {
+            console.error(error);
+        }finally {
+            setLoading(false);
+        }
+    }   
 
     if (dish === null) {
       return (
@@ -113,20 +142,17 @@ const DishDetail = () => {
 
             {/* 3. FOOTER: ĐẶT HÀNG (Dính dưới đáy) */}
             <View style={styles.footer}>
-                <View style={styles.qtyContainer}>
-                    <IconButton icon="minus" size={20} onPress={decreaseQty} mode="contained-tonal" />
-                    <Text style={styles.qtyText}>{quantity}</Text>
-                    <IconButton icon="plus" size={20} onPress={increaseQty} mode="contained" containerColor="#ee6a0dff" iconColor="#fff" />
-                </View>
+                <QuantityChange 
+                    quantity={quantity}
+                    increaseQty={increaseQty}
+                    decreaseQty={decreaseQty}
+                />
                 
-                <Button 
-                    mode="contained" 
-                    style={styles.addToCartBtn} 
-                    contentStyle={{ height: 50 }}
-                    onPress={() => console.log('Add to cart')}
-                >
-                    Thêm • {(parseInt(dish.price) * quantity).toLocaleString('vi-VN')}đ
-                </Button>
+                <MyButton 
+                    loading={loading}
+                    btnLabel={`Thêm • ${(parseInt(dish.price) * quantity).toLocaleString('vi-VN')}đ`}
+                    onPress={handleAddToCart}
+                />
             </View>
         </View>
     );
@@ -233,20 +259,6 @@ const styles = StyleSheet.create({
         borderTopColor: '#f0f0f0',
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: "space-between"
     },
-    qtyContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginRight: 15,
-    },
-    qtyText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginHorizontal: 12,
-    },
-    addToCartBtn: {
-        flex: 1,
-        backgroundColor: '#ee6a0dff',
-        borderRadius: 12,
-    }
 });

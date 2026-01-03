@@ -30,6 +30,7 @@ import { Text, View } from "react-native";
 import TabBarIcon from "./components/Layout/TabBarIcon";
 import ApplyChef from "./screens/User/ApplyChef";
 import Chat from "./screens/Chat/Chat";
+import Cart from "./screens/Cart/Cart";
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +45,8 @@ const StackNavigator = () => {
       <Stack.Screen name="Register" component={Register} options={{title: "Dang ky"}} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} options={{title: "Thay doi mat khau"}} />
       <Stack.Screen name="ApplyChef" component={ApplyChef} options={{title: "Ung tuyen dau bep"}} />
+      <Stack.Screen name="Cart" component={Cart} options={{title: "Don dat hang"}} />
+
     </Stack.Navigator>
   );
 };
