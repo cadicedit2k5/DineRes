@@ -3,7 +3,7 @@ import Header from '../../components/Layout/Header'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Tables from '../../components/Tables'
 
-const Booking = () => {
+const Table = () => {
   return (
     <SafeAreaView>
         <Header/>
@@ -12,4 +12,4 @@ const Booking = () => {
   )
 }
 
-export default Booking
+export default Table

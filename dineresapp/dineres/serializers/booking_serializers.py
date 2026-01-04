@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
@@ -22,6 +24,26 @@ class BookingSerializer(serializers.ModelSerializer):
         booking = Booking.objects.create(**validated_data)
         booking.tables.add(table)
         return booking
+
+    def validate(self, data):
+        booking_time = data['booking_time']
+        table = data['table']
+
+        start = booking_time - timedelta(minutes=90)
+        end = booking_time + timedelta(minutes=90)
+
+        exists = Booking.objects.filter(
+            tables=table,
+            booking_time__range=(start, end),
+            status__in=['pending', 'confirmed']
+        ).exists()
+
+        if exists:
+            raise serializers.ValidationError(
+                'Bàn này đã được đặt.'
+            )
+
+        return data
 
 class BookingDetailSerializer(serializers.ModelSerializer):
     table = serializers.SerializerMethodField()

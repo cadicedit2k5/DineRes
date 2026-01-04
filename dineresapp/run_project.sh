@@ -13,7 +13,7 @@ python manage.py createsuperuser --no-input || echo "SuperUser đã tồn tại!
 
 echo "=== Chèn dữ liệu mẫu ==="
 python manage.py shell  <<EOF
-from dineres.models import Category, Ingredient, Dish, DishDetail, User, Chef, IngredientType
+from dineres.models import Category, Ingredient, Dish, DishDetail, User, Chef, IngredientType, Table
 from django.contrib.auth import get_user_model
 import random
 
@@ -347,6 +347,32 @@ if created:
                 ingredient=ing,
                 amount=random.randint(10, 500)
             )
+
+#7. Tạo Table
+tables = [
+  {"name": "Bàn 1", "capacity": 4},
+  {"name": "Bàn 2", "capacity": 4},
+  {"name": "Bàn 3", "capacity": 4},
+  {"name": "Bàn 4", "capacity": 4},
+  {"name": "Bàn 5", "capacity": 6},
+  {"name": "Bàn 6", "capacity": 6},
+  {"name": "Bàn 7", "capacity": 6},
+  {"name": "Bàn 8", "capacity": 6},
+  {"name": "Bàn 9", "capacity": 8},
+  {"name": "Bàn 10", "capacity": 8},
+  {"name": "Bàn 11", "capacity": 8},
+  {"name": "Bàn 12", "capacity": 8},
+  {"name": "Bàn 13", "capacity": 10},
+  {"name": "Bàn 14", "capacity": 10},
+  {"name": "Bàn 15", "capacity": 10},
+  {"name": "Bàn 16", "capacity": 10}
+]
+
+for item in tables:
+    Table.objects.get_or_create(
+        name=item["name"],
+        defaults={"capacity": item["capacity"]}
+    )
 print("-> Đã tạo dữ liệu mẫu thành công!")
 
 EOF

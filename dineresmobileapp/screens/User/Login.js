@@ -47,7 +47,7 @@ const Login = ({route}) => {
             "Content-Type": "multipart/form-data"
           }
         });
-
+        console.log(res.data);
         if (res.status === 200) {
           console.log(res.data);
           await AsyncStorage.setItem("access-token", res.data.access_token);

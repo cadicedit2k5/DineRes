@@ -53,7 +53,8 @@ REST_FRAMEWORK = {
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    'uniramous-earline-colorational.ngrok-free.dev'
+    'uniramous-earline-colorational.ngrok-free.dev',
+    'aplitic-catabolically-tuyet.ngrok-free.dev',
 ]
 
 # Application definition
