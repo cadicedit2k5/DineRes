@@ -68,7 +68,7 @@ const App = () => {
           return;
       }
 
-      const res = await Apis.post(endpoints['refresh-login'], {
+      const res = await Apis.post(endpoints['login'], {
         "refresh_token": refreshToken,
         "grant_type": "refresh_token",
         "client_id": CLIENT_ID,

@@ -5,6 +5,7 @@ from rest_framework.serializers import ModelSerializer
 
 from dineres.models import Ingredient, Category, DishDetail, Dish
 from dineres.serializers.general_serializers import ImageSerializer
+from dineres.serializers.user_serializers import ChefInfoSerializer
 
 
 class IngredientSerializer(ModelSerializer):
@@ -22,7 +23,7 @@ class CategorySerializer(ImageSerializer):
 class DishDetailSerializer(ModelSerializer):
     id = IntegerField(source='ingredient.id')
     name = CharField(source='ingredient.name')
-    unit = CharField(source='ingredient.unit')
+    unit = CharField(source='ingredient.get_unit_display')
 
     class Meta:
         model = DishDetail
@@ -54,6 +55,8 @@ class DishSerializer(ImageSerializer):
 
         if hasattr(instance, 'ingredients'):
             data['ingredients'] = DishDetailSerializer(instance.dish_details, many=True).data
+
+        data['chef'] = ChefInfoSerializer(instance.chef).data
 
         return data
 

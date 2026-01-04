@@ -76,6 +76,7 @@ class Ingredient(BaseModel):
     class Unit(models.TextChoices):
         GRAM = 'gram', 'Gram'
         ML = 'ml', 'Milliliter'
+        KG = 'kg', 'Kilogram'
         SPOON = 'spoon', 'Thìa'
         PIECE = 'piece', 'Cái/Quả'
 

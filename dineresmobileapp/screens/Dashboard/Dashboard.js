@@ -2,16 +2,21 @@ import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Header from '../../components/Layout/Header'
 import { Icon, Surface, Text } from 'react-native-paper'
+import MyStyles from '../../styles/MyStyles'
+import { useNavigation } from '@react-navigation/native'
 
 const Dashboard = () => {
+  const nav = useNavigation();
+
   const dashboards = [
     {
-      "icon": "plus",
-      "label": "Thêm món ăn"
+      "icon": "food-outline",
+      "label": "Quản lý món ăn",
+      "action": () => {nav.navigate("FoodDashboard")}
     },
     {
-      "icon": "food-outline",
-      "label": "Quản lý món ăn"
+      "icon": "shaker-outline",
+      "label": "Quản lý nguyên liệu"
     },
     {
       "icon": "book-open-blank-variant-outline",
@@ -34,11 +39,14 @@ const Dashboard = () => {
   return (
     <SafeAreaView>
       <Header />
+      <Text style={MyStyles.title}>Dashboard</Text>
       <ScrollView contentContainerStyle={{alignItems: "center", marginTop: 30}}>
         <View style={{width: "90%" ,flexDirection: "row", flexWrap: "wrap", alignItems: "center"}}>
 
           {dashboards.map((item,key) => 
-            <TouchableOpacity key={key} activeOpacity={0.925} style={[styles.dashboardContainer]}>
+            <TouchableOpacity key={key} activeOpacity={0.925} 
+            onPress={item.action}
+            style={[styles.dashboardContainer]}>
               <Surface style={styles.surface}  elevation={1}>
                 <Icon source={item.icon} size={40}/>
                 <Text variant='titleSmall' style={{
@@ -63,7 +71,7 @@ const styles = StyleSheet.create({
     width: "50%"
   },
   surface: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     paddingVertical: 30,
     margin: 10,
     backgroundColor: "white",

@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { View, ScrollView, Image, StyleSheet, StatusBar, useWindowDimensions } from 'react-native';
 import { Text, Icon, Divider, Avatar, ActivityIndicator } from 'react-native-paper';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import GoBack from '../../components/Layout/GoBack';
 import Apis, { endpoints } from '../../utils/Apis';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,6 +10,7 @@ import MyButton from '../../components/Layout/MyButton';
 import Rating from '../../components/Layout/Rating';
 import DishReviews from '../../components/DishReviews';
 import RenderHTML from 'react-native-render-html';
+import { ViewModeContext } from '../../utils/contexts/MyContexts';
 
 const DishDetail = () => {
     const route = useRoute();
@@ -17,6 +18,8 @@ const DishDetail = () => {
     const [dish, setDish] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [isCustomerView] = useContext(ViewModeContext);
+    const nav = useNavigation();
 
     const {width} = useWindowDimensions();
 
@@ -120,10 +123,10 @@ const DishDetail = () => {
 
                     {/* Thông tin Đầu bếp (Chef) */}
                     <View style={styles.chefRow}>
-                        <Avatar.Image size={40} source={{ uri: 'https://i.pravatar.cc/150?img=12' }} />
+                        <Avatar.Image size={40} source={{ uri: dish.chef.avatar || 'https://i.pravatar.cc/150?img=12' }} />
                         <View style={{ marginLeft: 12, flex: 1 }}>
-                            <Text style={{ fontWeight: 'bold' }}>Đầu bếp chính</Text>
-                            <Text variant="bodySmall" style={{ color: '#666' }}>Chuyên món Á</Text>
+                            <Text style={{ fontWeight: 'bold' }}>{dish.chef.full_name}</Text>
+                            <Text variant="bodySmall" style={{ color: '#666' }}>{dish.chef.specialty}</Text>
                         </View>
                     </View>
 
@@ -156,7 +159,8 @@ const DishDetail = () => {
 
             {/* 3. FOOTER: ĐẶT HÀNG (Dính dưới đáy) */}
             <View style={styles.footer}>
-                <QuantityChange 
+                {isCustomerView ? <>
+                    <QuantityChange 
                     quantity={quantity}
                     increaseQty={increaseQty}
                     decreaseQty={decreaseQty}
@@ -167,6 +171,11 @@ const DishDetail = () => {
                     btnLabel={`Thêm • ${(parseInt(dish.price) * quantity).toLocaleString('vi-VN')}đ`}
                     onPress={handleAddToCart}
                 />
+                </>: <MyButton 
+                    loading={loading}
+                    btnLabel={"Chỉnh sửa"}
+                    onPress={() => nav.navigate("EditDish", {"dish": dish})}
+                />}
             </View>
         </View>
     );
@@ -273,6 +282,6 @@ const styles = StyleSheet.create({
         borderTopColor: '#f0f0f0',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: "space-between"
+        justifyContent: "center"
     },
 });
