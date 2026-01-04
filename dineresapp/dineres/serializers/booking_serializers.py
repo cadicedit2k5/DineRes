@@ -8,7 +8,7 @@ from dineres.models import Table, Booking
 class TableSerializer(ModelSerializer):
     class Meta:
         model = Table
-        fields = ['name', 'capacity']
+        fields = ['id', 'name', 'capacity']
 
 class BookingSerializer(serializers.ModelSerializer):
     table = serializers.PrimaryKeyRelatedField(

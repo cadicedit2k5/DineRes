@@ -22,8 +22,8 @@ import {
 } from '@expo-google-fonts/roboto';
 
 import { MD3LightTheme, PaperProvider, configureFonts } from 'react-native-paper';
-import Booking from "./screens/Booking/Booking";
 import Table from "./screens/Table/Table";
+import Booking from "./screens/Booking/Booking"
 import EditProfile from "./screens/User/EditProfile";
 import Register from "./screens/User/Register";
 import ChangePassword from "./screens/User/ChangePassword";
@@ -51,7 +51,7 @@ const StackNavigator = () => {
       <Stack.Screen name="Cart" component={Cart} options={{title: "Don dat hang"}} />
       <Stack.Screen name="CompareDish" component={CompareDish} options={{title: "So sanh mon an"}} />
       <Stack.Screen name="MyOrders" component={MyOrders} options={{title: "Don hang cua toi"}} />
-
+      <Stack.Screen name="Booking" component={Booking} options={{ title: "Đặt bàn" }} />
     </Stack.Navigator>
   );
 };
@@ -85,7 +85,7 @@ const TabNavigator = () => {
       }>
       <Tab.Screen name="Home" component={Home} options={{ title: 'Trang chủ', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color}/>}}/>
       <Tab.Screen name="Food" component={Food} options={{ title: 'Món ăn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="food" label="Đồ ăn" />}} />
-      <Tab.Screen name="Booking" component={Table} options={{ title: 'Đặt bàn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="receipt-text-edit" label="Đặt bàn" /> }} />
+      <Tab.Screen name="Table" component={Table} options={{ title: 'Đặt bàn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="receipt-text-edit" label="Đặt bàn" /> }} />
       <Tab.Screen name="Chat" component={Chat} options={{ title: 'Chat', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="chat-processing" label="Chat" /> }} />
       <Tab.Screen name="User" component={User} options={{ title: 'Người dùng', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="account" label="Tôi" /> }}/>
     </Tab.Navigator>

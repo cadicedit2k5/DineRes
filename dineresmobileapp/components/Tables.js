@@ -3,6 +3,8 @@ import Apis, { endpoints } from "../utils/Apis";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ActivityIndicator, List } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 const Tables = () => {
     const [tables, setTables] = useState([]);
@@ -12,6 +14,10 @@ const Tables = () => {
     const [showPicker, setShowPicker] = useState(false);
     const [bookingtime, setBookingtime] = useState("")
     const [searched, setSearched] = useState(false);
+
+    const nav = useNavigation()
+    const tabBarHeight = useBottomTabBarHeight()
+
     const loadTables = async () => {
         try{
             setLoading(true);
@@ -23,7 +29,7 @@ const Tables = () => {
 
             let res = await Apis.get(url);
             if (res.data.next === null)
-                setPage(0);
+                setPage(null);
             if (page === 1)
                 setTables(res.data.results);
             if (page > 1)
@@ -90,27 +96,36 @@ const Tables = () => {
 
             <TouchableOpacity 
                 onPress={onSearch}
-                style={style.button}
-            >
-                <Text style={{ color: "#fff", fontWeight: "bold" }}>
-                    Tìm bàn trống
-                </Text>
+                disabled ={ loading || !bookingtime }
+                style={[ style.button, (loading || !bookingtime) && {backgroundColor: "#ccc"} ]}>
+
+                {loading ? ( <ActivityIndicator color="#fff" />) : (
+                    <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                        Tìm bàn trống
+                    </Text>
+                )}
             </TouchableOpacity>
 
             <FlatList 
-                ListFooterComponent={loading && <ActivityIndicator size="large" /> }
-                onEndReached={loadMore} 
                 data={tables} 
-                renderItem={({ item }) => <List.Item
+                onEndReached={loadMore}
+                onEndReachedThreshold={0.3}
+                contentContainerStyle={{ paddingBottom: tabBarHeight + 16 }}
+                ListFooterComponent={loading && <ActivityIndicator size="large" /> }
+                renderItem={({ item }) => (<List.Item
+                    style={style.item}
                     title={item.name}
                     description={`Số chỗ ngồi: ${item.capacity} chỗ`}
                     left={() => <Image source={require("../assets/DineResLoGo.png")} style={style.avatar} />}
                     right={() => (<TouchableOpacity
                                         style={style.bookBtn}
-                                        onPress={() => console.log("Book table:", item.id)}>
+                                        onPress={() => nav.navigate("Booking", {
+                                                                                table: item,
+                                                                                booking_time: bookingtime
+                                                                            })}>
                                         <Text style={style.bookText}>Đặt bàn</Text>
                                     </TouchableOpacity>)}
-                />} />
+                />)} />
         </View>
     );
 };
@@ -118,7 +133,7 @@ const Tables = () => {
 export default Tables;
 
 const style = StyleSheet.create ({
-        padding: {
+    padding: {
         padding: 16
     },
     heading: {
@@ -154,12 +169,14 @@ const style = StyleSheet.create ({
     },
     item: {
         backgroundColor: "#fff",
-        marginBottom: 8,
+        marginVertical: 6, // Khoảng cách giữa các card
+        marginHorizontal: 2,
         borderRadius: 10,
-        elevation: 2,          // Android shadow
-        shadowColor: "#000",   // iOS shadow
+        elevation: 3,         // Đổ bóng cho Android
+        shadowColor: "#000",  // Đổ bóng cho iOS
         shadowOpacity: 0.1,
-        shadowRadius: 4
+        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 2 },
     },
     avatar: {
         width: 60,

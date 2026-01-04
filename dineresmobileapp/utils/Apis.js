@@ -15,7 +15,8 @@ export const endpoints = {
   "apply-chef": "/users/apply-chef/",
   "user-notify": "/notifications/",
   "tables": "/tables/",
-  "orders": "/orders/"
+  "orders": "/orders/",
+  "bookings": "/bookings/"
 
 };
 
