@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native'
 import { Button, IconButton } from 'react-native-paper'
-import { MyUserContext } from '../../utils/contexts/MyContexts'
+import { MyUserContext, ViewModeContext } from '../../utils/contexts/MyContexts'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -13,6 +13,7 @@ const User = () => {
     const defaultAvatarUrl = 'https://res.cloudinary.com/dxopigima/image/upload/v1767193541/user_u8yhks.png'
 
     const [user, dispatch] = useContext(MyUserContext);
+    const [isCustomerView, setIsCustomerView] = useContext(ViewModeContext);
     const nav = useNavigation();
 
     const logout = async () => {
@@ -68,6 +69,26 @@ const User = () => {
         }
     ]
     if (user) {
+            if (user.user_role !== 'customer' && isCustomerView) {
+                icons.unshift(
+                    {
+                        icon: "account-switch-outline",
+                        name: "Giao diện quản lý",
+                        action: () => {setIsCustomerView(false)},
+                    }
+                )
+            }else {
+                icons.unshift(
+                {
+                    icon: "account-switch-outline",
+                    name: "Giao diện người dùng",
+                    action: () => {setIsCustomerView(true)},
+                },{
+                    icon: "clipboard-text-clock-outline",
+                    name: "My Orders",
+                    action: () => nav.navigate("MyOrders"),
+                },)
+            }
             icons.unshift(
                 {
                     icon: "square-edit-outline",
@@ -83,11 +104,6 @@ const User = () => {
                     icon: "chef-hat",
                     name: "Ứng tuyển đầu bếp",
                     action: () => nav.navigate("ApplyChef"),
-                },
-                {
-                    icon: "clipboard-text-clock-outline",
-                    name: "My Orders",
-                    action: () => nav.navigate("MyOrders"),
                 })
             icons.push(
                 {

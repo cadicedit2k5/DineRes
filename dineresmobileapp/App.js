@@ -1,19 +1,10 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Home from "./screens/Home/Home";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
-import DishDetail from "./screens/Food/DishDetail";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Icon } from "react-native-paper";
-import Login from "./screens/User/Login";
-import Food from "./screens/Food/Food";
-import { useContext, useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import MyUserReducer from "./utils/reducers/MyUserReducer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Apis, { authApis, endpoints } from "./utils/Apis";
-import { MyUserContext } from "./utils/contexts/MyContexts";
-import User from "./screens/User/User";
+import { MyUserContext, ViewModeContext } from "./utils/contexts/MyContexts";
 import {CLIENT_ID, CLIENT_SECRET} from "@env";
-import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { 
   useFonts, 
   Roboto_400Regular, 
@@ -22,75 +13,7 @@ import {
 } from '@expo-google-fonts/roboto';
 
 import { MD3LightTheme, PaperProvider, configureFonts } from 'react-native-paper';
-import Table from "./screens/Table/Table";
-import Booking from "./screens/Booking/Booking"
-import EditProfile from "./screens/User/EditProfile";
-import Register from "./screens/User/Register";
-import ChangePassword from "./screens/User/ChangePassword";
-import { Text, View } from "react-native";
-import TabBarIcon from "./components/Layout/TabBarIcon";
-import ApplyChef from "./screens/User/ApplyChef";
-import Chat from "./screens/Chat/Chat";
-import Cart from "./screens/Cart/Cart";
-import CompareDish from "./screens/Food/CompareDish";
-import MyOrders from "./screens/Cart/MyOrders";
-
-const Stack = createNativeStackNavigator();
-
-const StackNavigator = () => {
-  const [user, ] = useContext(MyUserContext);
-  return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Home" component={TabNavigator} options={{title: "Trang chu"}} />
-      {!user && <Stack.Screen name="Login" component={Login} options={{title: "Dang nhap"}} />}
-      <Stack.Screen name="DishDetail" component={DishDetail} options={{title: "Chi tiet"}} />
-      <Stack.Screen name="EditProfile" component={EditProfile} options={{title: "Chinh sua ho so"}} />
-      <Stack.Screen name="Register" component={Register} options={{title: "Dang ky"}} />
-      <Stack.Screen name="ChangePassword" component={ChangePassword} options={{title: "Thay doi mat khau"}} />
-      <Stack.Screen name="ApplyChef" component={ApplyChef} options={{title: "Ung tuyen dau bep"}} />
-      <Stack.Screen name="Cart" component={Cart} options={{title: "Don dat hang"}} />
-      <Stack.Screen name="CompareDish" component={CompareDish} options={{title: "So sanh mon an"}} />
-      <Stack.Screen name="MyOrders" component={MyOrders} options={{title: "Don hang cua toi"}} />
-      <Stack.Screen name="Booking" component={Booking} options={{ title: "Đặt bàn" }} />
-    </Stack.Navigator>
-  );
-};
-
-const Tab = createBottomTabNavigator();
-
-const TabNavigator = () => {
-  const [user,] = useContext(MyUserContext);
-  const insets = useSafeAreaInsets();
-  return (
-    <Tab.Navigator screenOptions={
-      {headerShown: false,
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: "#ffa008ff",
-        tabBarInactiveTintColor: "#000",
-        tabBarStyle: {
-          borderTopLeftRadius: 50,
-          borderTopRightRadius: 50,
-          borderBottomLeftRadius: 50,
-          borderBottomRightRadius: 50,
-          marginHorizontal: 10,
-          height: 80,
-          position: "absolute",
-          bottom: insets.bottom,
-        },
-        tabBarIconStyle: {
-          height: 80,
-          width: "100%"
-        }
-      }
-      }>
-      <Tab.Screen name="Home" component={Home} options={{ title: 'Trang chủ', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color}/>}}/>
-      <Tab.Screen name="Food" component={Food} options={{ title: 'Món ăn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="food" label="Đồ ăn" />}} />
-      <Tab.Screen name="Table" component={Table} options={{ title: 'Đặt bàn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="receipt-text-edit" label="Đặt bàn" /> }} />
-      <Tab.Screen name="Chat" component={Chat} options={{ title: 'Chat', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="chat-processing" label="Chat" /> }} />
-      <Tab.Screen name="User" component={User} options={{ title: 'Người dùng', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="account" label="Tôi" /> }}/>
-    </Tab.Navigator>
-  );
-}
+import MainNavigators from "./navigators/MainNavigators";
 
 // 2. CẤU HÌNH THEME ROBOTO
 const fontConfig = {
@@ -104,6 +27,7 @@ const theme = {
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
+  const [isCustomerView, setIsCustomerView] = useState(false);
 
   // 3. LOAD CÁC BIẾN THỂ CỦA ROBOTO
   const [fontsLoaded] = useFonts({
@@ -186,9 +110,9 @@ const App = () => {
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
         <MyUserContext.Provider value={[user, dispatch]}>
-          <NavigationContainer >
-            <StackNavigator />
-          </NavigationContainer>
+          <ViewModeContext.Provider value={[isCustomerView, setIsCustomerView]}>
+            <MainNavigators />
+          </ViewModeContext.Provider>
         </MyUserContext.Provider>
         </PaperProvider>
     </SafeAreaProvider>

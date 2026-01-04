@@ -18,6 +18,8 @@ export const endpoints = {
   "orders": "/orders/",
   "bookings": "/bookings/"
 
+  "orders": "/orders/",
+  "payments": "/payments/",
 };
 
 export const authApis = (token) => {

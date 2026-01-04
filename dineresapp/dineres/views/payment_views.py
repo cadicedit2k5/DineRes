@@ -1,5 +1,6 @@
 import uuid
 
+from django.contrib.admin.templatetags.admin_list import result_list
 from django.db import transaction
 from rest_framework import viewsets, generics, permissions, status
 from rest_framework.response import Response
@@ -44,6 +45,7 @@ class PaymentIPNViewSet(APIView):
         try:
             payment = PaymentStrategyFactory.get_strategy(method)
             data = request.data
+            print(data)
             payment.process_payment(data)
             return Response(
                 {
@@ -56,19 +58,18 @@ class PaymentIPNViewSet(APIView):
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, method):
-        data = request.query_params.dict()
-        payment = PaymentStrategyFactory.get_strategy(method)
-        payment.process_payment(data)
-        return Response(
-            {
-                "message": "Giao dịch đã được ghi nhận.",
-                "data": data
-            },
-            status=status.HTTP_200_OK
-        )
-        # try:
-        #
-        # except Exception as e:
-        #     return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            data = request.query_params.dict()
+            payment = PaymentStrategyFactory.get_strategy(method)
+            payment.process_payment(data)
+            return Response(
+                {
+                    "message": "Giao dịch đã được ghi nhận.",
+                    "data": data
+                },
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 

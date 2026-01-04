@@ -16,7 +16,7 @@ const MyButton = ({loading, onPress, btnLabel}) => {
   )
 }
 
-export default MyButton
+export default MyButton;
 
 const styles = StyleSheet.create({
     btn: {

@@ -3,7 +3,7 @@ import { Image, View } from "react-native";
 import { IconButton, Modal, Portal } from "react-native-paper";
 import MyStyles from "../../styles/MyStyles";
 import { useContext, useEffect, useState } from "react";
-import { MyUserContext } from "../../utils/contexts/MyContexts";
+import { MyUserContext, ViewModeContext } from "../../utils/contexts/MyContexts";
 import { authApis, endpoints } from "../../utils/Apis";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
@@ -14,6 +14,7 @@ const Header = () => {
   const [visible, setVisible] = useState(false);
   const [notifys, setNotifys] = useState([]);
   const [user, ] = useContext(MyUserContext);
+  const [isCustomerView, ] = useContext(ViewModeContext);
   const nav = useNavigation();
 
   const showModal = () => setVisible(true);
@@ -56,11 +57,12 @@ const Header = () => {
       </TouchableOpacity>
 
       <View style={MyStyles.row}>
+      {isCustomerView && 
         <IconButton
         icon="cart"
         size={20}
         onPress={() => nav.navigate("Cart")}
-        />
+        />}
         {user && 
         <IconButton
           icon="bell"

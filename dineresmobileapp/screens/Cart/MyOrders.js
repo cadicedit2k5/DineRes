@@ -8,11 +8,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { authApis, endpoints } from '../../utils/Apis'
 import moment from 'moment'
 import "moment/locale/vi"
+import { useNavigation } from '@react-navigation/native'
 
 const MyOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
+    const nav = useNavigation();
 
     const loadOrder = async () => {
         const url = `${endpoints['orders']}?page=${page}`
@@ -98,45 +100,21 @@ const MyOrders = () => {
                             justifyContent: "space-between",
                             alignItems: "center"
                         }}>
-                            <Text style={{fontWeight: "bold", marginRight: 5}}>Tong tien: <Text style={MyStyles.price}>200.000d</Text></Text>
-                            {(item.status !== 'paid' && item.status !== 'cancel') && 
+                            <Text style={{fontWeight: "bold", marginRight: 8}}>Tong tien: <Text style={MyStyles.price}>{parseInt(item.total_amount).toLocaleString('vi-VN')}đ</Text></Text>
+                            {(item.status === 'done') && 
                             <Button
                                 mode='contained-tonal'
-                                onPress={() => console.log("Thanh toan")}
+                                onPress={() => {
+                                    nav.navigate("Payment", { 
+                                        orderId: item.id, 
+                                        totalAmount: item.total_amount 
+                                    })
+                                }}
                             >Thanh toan</Button>}
                         </View>
                     </View>
                 </View>)}}
             />
-        {/* <ScrollView >
-            <View style={styles.orderContainer}> 
-                <Icon size={40} color='#f09c15ff' source="pot-steam"/>
-                <View style={{flex: 1, marginLeft: 10,}}>
-                    <View style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                    }}>
-                        <Text style={styles.orderSubTitle}>Order ID: #049503894</Text>
-                        <Text style={styles.orderStatus}>Pending</Text>
-                    </View>
-                    <View>
-                        <Text>10 mon</Text>
-                        <Text>ngay dat</Text>
-                    </View>
-                    <View style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center"
-                    }}>
-                        <Text style={{fontWeight: "bold"}}>Tong tien: <Text style={MyStyles.price}>200.000d</Text></Text>
-                        <Button
-                            mode='contained-tonal'
-                        >Thanh toan</Button>
-                    </View>
-                </View>
-            </View>
-            
-        </ScrollView> */}
     </SafeAreaView>
   )
 }
