@@ -5,3 +5,6 @@ class DishPagination(PageNumberPagination):
 
 class NotificationPagination(PageNumberPagination):
     page_size = 10
+
+class TablePagination(PageNumberPagination):
+    page_size = 4

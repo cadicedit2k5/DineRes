@@ -8,7 +8,7 @@ class IsVerifiedChef(BasePermission):
             return True
 
         if request.user.is_authenticated and request.user.user_role == User.Role.CHEF\
-                and request.user.is_verified:
+                and request.user.chef.is_verified:
             return True
 
         return False
@@ -18,7 +18,7 @@ class IsVerifiedChef(BasePermission):
             return True
 
         if request.user.is_authenticated and request.user.user_role == User.Role.CHEF\
-                and request.user.is_verified:
+                and request.user.chef.is_verified:
             return True
 
         return False

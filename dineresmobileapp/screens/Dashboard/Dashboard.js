@@ -16,7 +16,8 @@ const Dashboard = () => {
     },
     {
       "icon": "shaker-outline",
-      "label": "Quản lý nguyên liệu"
+      "label": "Quản lý nguyên liệu",
+      "action": () => {nav.navigate("IngredientDashBoard")}
     },
     {
       "icon": "book-open-blank-variant-outline",

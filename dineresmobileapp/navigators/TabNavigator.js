@@ -4,11 +4,12 @@ import { MyUserContext, ViewModeContext } from "../utils/contexts/MyContexts";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Home from "../screens/Home/Home";
 import Food from "../screens/Food/Food";
-import Booking from "../screens/Booking/Booking";
+import Tables from "../components/Tables"
 import Chat from "../screens/Chat/Chat";
 import User from "../screens/User/User";
 import Dashboard from "../screens/Dashboard/Dashboard";
 import TabBarIcon from "../components/Layout/TabBarIcon";
+import Table from "../screens/Table/Table";
 
 const Tab = createBottomTabNavigator();
 
@@ -44,7 +45,7 @@ const TabNavigator = () => {
     </>
     :<>
         <Tab.Screen name="Food" component={Food} options={{ title: 'Món ăn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="food" label="Đồ ăn" />}} />
-        <Tab.Screen name="Booking" component={Booking} options={{ title: 'Đặt bàn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="receipt-text-edit" label="Đặt bàn" /> }} />
+        <Tab.Screen name="Table" component={Table} options={{ title: 'Đặt bàn', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="receipt-text-edit" label="Đặt bàn" /> }} />
     </>}
         <Tab.Screen name="Chat" component={Chat} options={{ title: 'Chat', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="chat-processing" label="Chat" /> }} />
         <Tab.Screen name="User" component={User} options={{ title: 'Người dùng', tabBarIcon: ({color="#dcbb87"}) => <TabBarIcon color={color} icon="account" label="Tôi" /> }}/>

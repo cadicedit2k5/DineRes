@@ -6,6 +6,7 @@ export const endpoints = {
   "dishes": "/dishes/",
   "dish-detail": (dishId) => `/dishes/${dishId}/`,
   "dish-reviews": (dishId) => `/dishes/${dishId}/reviews/`,
+  "ingredients": "/ingredients/",
 
   "register": "/users/",
   "login": "/o/token/",
@@ -14,7 +15,9 @@ export const endpoints = {
   "change-password": "/users/change-password/",
   "apply-chef": "/users/apply-chef/",
   "user-notify": "/notifications/",
-
+  "tables": "/tables/",
+  "orders": "/orders/",
+  "bookings": "/bookings/",
   "orders": "/orders/",
   "payments": "/payments/",
 };

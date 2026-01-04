@@ -1,14 +1,14 @@
-import React, { useState, useContext, useEffect } from 'react';
+import { useState, } from 'react';
 import { View, StyleSheet, ScrollView, Image, Alert, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
-import { Text, TextInput, Button, HelperText, ActivityIndicator, Appbar, Avatar } from 'react-native-paper';
-import * as ImagePicker from 'expo-image-picker';
+import { Text, Button} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import Apis, { authApis, endpoints } from '../../utils/Apis';
+import { authApis, endpoints } from '../../utils/Apis';
 import GoBack from '../../components/Layout/GoBack';
 import { pickImage } from '../../utils/ImageUtils';
 import InputText from '../../components/Layout/InputText';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import IngredientManager from '../../components/IngredientManager';
 
 const EditDish = () => {
     const route = useRoute();
@@ -18,11 +18,10 @@ const EditDish = () => {
     const [name, setName] = useState(dish?.name || "");
     const [price, setPrice] = useState(dish?.price?.toString() || "");
     const [prepTime, setPrepTime] = useState(dish?.prep_time?.toString() || "");
-    
     const [description, setDescription] = useState(dish?.description || "");
-    
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [ingredients, setIngredients] = useState(dish?.ingredients || []);
 
 
     const updateDish = async () => {
@@ -48,6 +47,13 @@ const EditDish = () => {
                     type: image.mineType || 'image/jpeg'
                 });
             }
+
+            const ingredientsData = ingredients.map(ing => ({
+                id: ing.id,
+                amount: parseFloat(ing.amount)
+            }));
+            
+            form.append('ingredients', JSON.stringify(ingredientsData));
 
             const res = await authApis(token).patch(endpoints['dish-detail'](dish.id), form, {
                 headers: {
@@ -158,18 +164,13 @@ const EditDish = () => {
                             placeholder="Nhập mô tả..."
                         />
 
-                        {/* HIỂN THỊ NGUYÊN LIỆU (CHỈ ĐỌC - READ ONLY) */}
-                        {dish.ingredients && dish.ingredients.length > 0 && (
-                            <View style={styles.ingredientsBox}>
-                                <Text variant="titleSmall" style={{ fontWeight: 'bold', marginBottom: 5 }}>Nguyên liệu:</Text>
-                                {dish.ingredients.map((ing) => (
-                                    <Text key={ing.id} style={{ color: '#666' }}>
-                                        • {ing.name}: {parseInt(ing.amount)} {ing.unit}
-                                    </Text>
-                                ))}
-                                <HelperText type="info">Để sửa nguyên liệu, vui lòng dùng trang quản lý kho.</HelperText>
-                            </View>
-                        )}
+                        {/* NGUYÊN LIỆU */}
+                        <View style={{ paddingHorizontal: 20, marginTop: 10 }}>
+                            <IngredientManager 
+                                ingredients={ingredients} 
+                                setIngredients={setIngredients} 
+                            />
+                        </View>
 
                         <View style={{ height: 20 }} />
 
