@@ -10,8 +10,8 @@ class CreatePaymentSerializer(serializers.Serializer):
     def validate_order_id(self, value):
         try:
             order = Order.objects.get(pk=value)
-            if order.status != Order.Status.PENDING:
+            if order.status == Order.Status.PAID:
                 raise serializers.ValidationError({"Đơn hàng đã được thanh toán."})
             return value
         except Order.DoesNotExist:
-            raise serializers.ValidationError({"Đơn hàng đã được thanh toán."})
+            raise serializers.ValidationError({"Đơn hàng không tồn tại."})

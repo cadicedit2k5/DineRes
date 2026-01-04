@@ -51,8 +51,7 @@ class PaymentStrategy(ABC):
 class CashPaymentStrategy(PaymentStrategy):
     def create_payment(self, amount, ref):
         return {
-            "payUrl": f"{os.getenv('SERVER_URL')}/api/ipn/cash",
-            "ref": ref
+            "payUrl": f"{os.getenv('SERVER_URL')}/api/ipn/cash?ref={ref}",
         }
 
     def verify_payment(self, data):

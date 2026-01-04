@@ -33,6 +33,7 @@ import Chat from "./screens/Chat/Chat";
 import Cart from "./screens/Cart/Cart";
 import CompareDish from "./screens/Food/CompareDish";
 import MyOrders from "./screens/Cart/MyOrders";
+import Payment from "./screens/Cart/Payment";
 
 const Stack = createNativeStackNavigator();
 
@@ -50,6 +51,7 @@ const StackNavigator = () => {
       <Stack.Screen name="Cart" component={Cart} options={{title: "Don dat hang"}} />
       <Stack.Screen name="CompareDish" component={CompareDish} options={{title: "So sanh mon an"}} />
       <Stack.Screen name="MyOrders" component={MyOrders} options={{title: "Don hang cua toi"}} />
+      <Stack.Screen name="Payment" component={Payment} options={{title: "Thanh toan"}} />
 
     </Stack.Navigator>
   );

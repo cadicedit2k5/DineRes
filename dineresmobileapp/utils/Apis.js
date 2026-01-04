@@ -15,7 +15,8 @@ export const endpoints = {
   "apply-chef": "/users/apply-chef/",
   "user-notify": "/notifications/",
 
-  "orders": "/orders/"
+  "orders": "/orders/",
+  "payments": "/payments/",
 };
 
 export const authApis = (token) => {
