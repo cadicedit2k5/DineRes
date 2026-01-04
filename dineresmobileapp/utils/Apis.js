@@ -16,8 +16,7 @@ export const endpoints = {
   "user-notify": "/notifications/",
   "tables": "/tables/",
   "orders": "/orders/",
-  "bookings": "/bookings/"
-
+  "bookings": "/bookings/",
   "orders": "/orders/",
   "payments": "/payments/",
 };

@@ -9,10 +9,11 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 const Tables = () => {
     const [tables, setTables] = useState([]);
     const [date, setDate] = useState(new Date());
+    const [bookingtime, setBookingtime] = useState("")
+
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [showPicker, setShowPicker] = useState(false);
-    const [bookingtime, setBookingtime] = useState("")
     const [searched, setSearched] = useState(false);
 
     const nav = useNavigation()
@@ -28,8 +29,8 @@ const Tables = () => {
             console.info(url);
 
             let res = await Apis.get(url);
-            if (res.data.next === null)
-                setPage(null);
+            if (!res.data.next)
+                setPage(0);
             if (page === 1)
                 setTables(res.data.results);
             if (page > 1)
@@ -61,12 +62,13 @@ const Tables = () => {
     }, [page, searched]);
 
     useEffect(() => {
+        setTables([]);
         setPage(1);
         setSearched(false);
     }, [bookingtime]);
 
     const loadMore = () => {
-        if (page > 0 && !loading)
+        if (page > 0 && !loading && tables.length > 0)
             setPage(page + 1);
     }
 
@@ -110,7 +112,7 @@ const Tables = () => {
                 data={tables} 
                 onEndReached={loadMore}
                 onEndReachedThreshold={0.3}
-                contentContainerStyle={{ paddingBottom: tabBarHeight + 16 }}
+                contentContainerStyle={{ paddingBottom: tabBarHeight + 200 }}
                 ListFooterComponent={loading && <ActivityIndicator size="large" /> }
                 renderItem={({ item }) => (<List.Item
                     style={style.item}

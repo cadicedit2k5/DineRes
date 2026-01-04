@@ -13,6 +13,7 @@ import CompareDish from "../screens/Food/CompareDish";
 import MyOrders from "../screens/Cart/MyOrders";
 import Payment from "../screens/Cart/Payment";
 import Dashboard from "../screens/Dashboard/Dashboard";
+import Booking from "../screens/Booking/Booking";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,7 @@ const StackNavigator = () => {
       <Stack.Screen name="CompareDish" component={CompareDish} options={{title: "So sanh mon an"}} />
       <Stack.Screen name="MyOrders" component={MyOrders} options={{title: "Don hang cua toi"}} />
       <Stack.Screen name="Payment" component={Payment} options={{title: "Thanh toan"}} />
+      <Stack.Screen name="Booking" component={Booking} options={{ title: "Đặt bàn" }} />
 
     {!isCustomerView && <>
       <Stack.Screen name="Dashboard" component={Dashboard} options={{title: "Bang dieu khien"}} />
