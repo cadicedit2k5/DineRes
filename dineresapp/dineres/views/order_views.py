@@ -3,7 +3,7 @@ from rest_framework import viewsets, generics, permissions, status, serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from dineres.models import Order, Dish, OrderDetail
+from dineres.models import Order, Dish, OrderDetail, Booking, User
 from dineres.serializers.order_serializers import OrderSerializer, OrderInputSerializer
 
 
@@ -22,10 +22,28 @@ class OrderViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIVie
         input_serializer = OrderInputSerializer(data=details_data, many=True)
         input_serializer.is_valid(raise_exception=True)
         items = input_serializer.validated_data
+
+        user = request.user
+
+        order_customer = None
+        order_staff = None
+        booking = None
+
+        if user.user_role == User.Role.CUSTOMER:
+            order_customer = user
+        else:
+            order_staff = user
+            customer_id = request.data.get('customer_id')
+            if customer_id:
+                order_customer = User.objects.get(pk=customer_id)
+        print(request.data.get('take_away'))
+        if order_customer and not request.data.get('take_away'):
+            booking = (Booking.objects.filter(customer=order_customer)
+                       .exclude(status__in=[Booking.Status.COMPLETED, Booking.Status.CANCELLED]).first())
         try:
             # Su dung rollback de phong truong hop co loi
             with transaction.atomic():
-                order = Order.objects.create(customer=request.user, total_amount=0)
+                order = Order.objects.create(customer=order_customer, staff=order_staff, booking=booking)
                 total_amount = 0
 
                 for item in items:

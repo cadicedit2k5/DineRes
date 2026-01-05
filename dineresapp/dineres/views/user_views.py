@@ -5,10 +5,11 @@ from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.response import Response
 
 from dineres.models import User, Chef
+from dineres.permissions import IsVerifiedChef
 from dineres.serializers.user_serializers import UserSerializer, ChefSerializer
 
 
-class UserViewSet(viewsets.ViewSet, CreateAPIView):
+class UserViewSet(viewsets.ViewSet, CreateAPIView, ListAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
     parser_classes = [parsers.MultiPartParser]
@@ -16,6 +17,8 @@ class UserViewSet(viewsets.ViewSet, CreateAPIView):
     def get_permissions(self):
         if self.action in ['verify_chef', 'get_pending_chefs']:
             return [permissions.IsAdminUser()]
+        if self.action in ['list']:
+            return [IsVerifiedChef()]
         if self.action == 'create':
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
+import { useState, useEffect, useContext } from 'react';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Button } from 'react-native-paper';
+import { Button, SegmentedButtons } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GoBack from '../../components/Layout/GoBack';
 import QuantityChange from '../../components/Layout/QuantityChange';
@@ -10,17 +10,27 @@ import MyStyles from '../../styles/MyStyles';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { authApis, endpoints } from '../../utils/Apis';
+import { MyUserContext, ViewModeContext } from '../../utils/contexts/MyContexts';
+import UserFind from '../../components/UserFind';
+import ForceLogin from '../../components/Layout/ForceLogin';
 
 const Cart = () => {
     const [cart, setCart] = useState([]);
+    const [user, ] = useContext(MyUserContext);
     const [loading, setLoading] = useState(false);
+    const [takeAway, setTakeWay] = useState(true);
+    const [isCustomerView, ] = useContext(ViewModeContext);
+    const [customer, setCustomer] = useState(null);
+    const [visible, setVisible] = useState(false);
     const nav = useNavigation();
 
     const loadCart = async () => {
         try {
             setLoading(true);
             const items = await AsyncStorage.getItem("cart");
-            setCart(JSON.parse(items));
+            if (items) {
+                setCart(JSON.parse(items));
+            }
         } catch (error) {
             console.error(error);
         }finally {
@@ -32,35 +42,48 @@ const Cart = () => {
         loadCart();
     }, [])
 
-    const handleOrder = async () => {
-        const details = [];
-        for (let item of cart) {
-            details.push({
-                "dish_id": item.id,
-                "quantity": item.quantity
-            })
+    const validateOrder = () => {
+        if (!cart || cart.length === 0) {
+            Alert.alert("Thông báo", "Chưa có món ăn nào!!!");
+            return false;
         }
-        console.info(details);
-        try {
-            setLoading(true);
-            const token = await AsyncStorage.getItem("access-token");
+        return true;
+    }
 
-            if (token) {
-                const res = await authApis(token).post(endpoints['orders'],
-                    {
-                        "details": details
-                    }
-                );
-
-                if (res.status === 201) {
-                    Alert.alert("Thông báo", "Đã đặt thành công!!!");
-                    setCart([]);
-                }
+    const handleOrder = async () => {
+        if (validateOrder()) {
+            const details = [];
+            for (let item of cart) {
+                details.push({
+                    "dish_id": item.id,
+                    "quantity": item.quantity
+                })
             }
-        } catch (error) {
-            console.error(error);
-        }finally {
-            setLoading(false);
+            console.info(details);
+            try {
+                setLoading(true);
+                const token = await AsyncStorage.getItem("access-token");
+
+                if (token) {
+                    const res = await authApis(token).post(endpoints['orders'],
+                        {
+                            "customer_id": customer ? customer.id : null,
+                            "take_away": takeAway,
+                            "details": details
+                        }
+                    );
+
+                    if (res.status === 201) {
+                        Alert.alert("Thông báo", "Đã đặt thành công!!!");
+                        setCart([]);
+                        AsyncStorage.removeItem("cart");
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+            }finally {
+                setLoading(false);
+            }
         }
     }
 
@@ -117,9 +140,12 @@ const Cart = () => {
     };
 
     const getTotalPrice = () => {
-        return cart.reduce((total, item) => {
-            return total + (Number(item.price) * item.quantity);
-        }, 0);
+        if (cart) {
+            return cart.reduce((total, item) => {
+                return total + (Number(item.price) * item.quantity);
+            }, 0);
+        }
+        return 0;
     };
 
     return (
@@ -169,36 +195,72 @@ const Cart = () => {
                     </View>
                 )}
             />
-            
-            <View style={styles.footerContainer}>
-        
-        <View style={styles.totalContainer}>
-            <Text style={MyStyles.subTitle}>
-                Tổng cộng:
-            </Text>
-            <Text style={MyStyles.price}>
-                {getTotalPrice().toLocaleString()} VNĐ
-            </Text>
-        </View>
 
-        <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 10 }}>
-            <View style={{ flex: 1 }}>
-                <MyButton
-                    btnLabel="So sánh"
-                    loading={loading}
-                    onPress={() => nav.navigate("CompareDish", {"dishes": cart})}
-                />
-            </View>
+            <UserFind
+                setCustomer={setCustomer}
+                visible={visible}
+                setVisible={setVisible} />
             
-            <View style={{ flex: 1 }}>
-                <MyButton 
-                    btnLabel="Đặt ngay"
-                    loading={loading}
-                    onPress={handleOrder}
-                />
-            </View>
-        </View>
-    </View>
+            {!user ? <ForceLogin /> : 
+            <View style={styles.footerContainer}>
+                {!isCustomerView && 
+                <View style={{flexDirection: "row", alignItems: "center", gap: 10, marginVertical: 10}}>
+                    <Text
+                        style={{fontWeight: "bold",
+                             color: "#e46921ff"}}
+                    >Khách hàng</Text>
+                    <Text>{customer? customer.first_name + customer.last_name :""}</Text>
+                    <Button mode='outlined' onPress={() => setVisible(true)}>Chọn</Button>
+                </View>}
+
+                <View style={{ marginBottom: 15 }}>
+                    <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>Hình thức dùng bữa:</Text>
+                    <SegmentedButtons
+                        value={takeAway}
+                        onValueChange={setTakeWay}
+                        buttons={[
+                            {
+                                value: false,
+                                label: 'Ăn tại chỗ',
+                                icon: 'silverware-fork-knife',
+                            },
+                            {
+                                value: true,
+                                label: 'Mang đi',
+                                icon: 'bag-personal', 
+                            },
+                        ]}
+                        density="medium"
+                    />
+                </View>
+
+                <View style={styles.totalContainer}>
+                    <Text style={MyStyles.subTitle}>
+                        Tổng cộng:
+                    </Text>
+                    <Text style={MyStyles.price}>
+                        {getTotalPrice().toLocaleString()} VNĐ
+                    </Text>
+                </View>
+
+                <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 10 }}>
+                    <View style={{ flex: 1 }}>
+                        <MyButton
+                            btnLabel="So sánh"
+                            loading={loading}
+                            onPress={() => nav.navigate("CompareDish", {"dishes": cart})}
+                        />
+                    </View>
+                    
+                    <View style={{ flex: 1 }}>
+                        <MyButton 
+                            btnLabel="Đặt ngay"
+                            loading={loading}
+                            onPress={handleOrder}
+                        />
+                    </View>
+                </View>
+            </View>}
         </SafeAreaView>
     );
 };

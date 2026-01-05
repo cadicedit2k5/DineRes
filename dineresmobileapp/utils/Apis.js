@@ -10,6 +10,7 @@ export const endpoints = {
 
   "register": "/users/",
   "login": "/o/token/",
+  "users": "/users/",
   "refresh-login": "/o/refresh/",
   "current-user": "/users/current-user/",
   "change-password": "/users/change-password/",
