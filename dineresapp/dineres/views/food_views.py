@@ -22,6 +22,15 @@ class IngredientViewSet(viewsets.ViewSet, ListAPIView, CreateAPIView):
     queryset = Ingredient.objects.filter(active=True)
     serializer_class = IngredientSerializer
 
+    def get_queryset(self):
+        query = self.queryset
+
+        q = self.request.query_params.get('q')
+        if q:
+            query = query.filter(name__icontains=q)
+
+        return query
+
     def get_permissions(self):
         if self.action == 'list':
             return [permissions.AllowAny()]

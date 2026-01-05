@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Button, IconButton } from 'react-native-paper'
 import { MyUserContext, ViewModeContext } from '../../utils/contexts/MyContexts'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -25,7 +25,6 @@ const User = () => {
 
     const changeAvatar = async () => {
         const avatar = await pickImage();
-        console.info(avatar)
         if (avatar) {
             try {
                 const form = new FormData();
@@ -69,7 +68,8 @@ const User = () => {
         }
     ]
     if (user) {
-            if (user.user_role !== 'customer' && isCustomerView) {
+        if (user.user_role !== 'customer') {
+            if (isCustomerView) {
                 icons.unshift(
                     {
                         icon: "account-switch-outline",
@@ -83,44 +83,45 @@ const User = () => {
                     icon: "account-switch-outline",
                     name: "Giao diện người dùng",
                     action: () => {setIsCustomerView(true)},
-                },{
-                    icon: "clipboard-text-clock-outline",
-                    name: "My Orders",
-                    action: () => nav.navigate("MyOrders"),
-                },)
-            }
-            icons.unshift(
-                {
-                    icon: "square-edit-outline",
-                    name: "Chỉnh sửa hồ sơ",
-                    action: () => nav.navigate("EditProfile")
-                },
-                {
-                    icon: "key-variant",
-                    name: "Thay đổi mật khẩu",
-                    action: () => nav.navigate("ChangePassword"),
-                },
-                {
-                    icon: "chef-hat",
-                    name: "Ứng tuyển đầu bếp",
-                    action: () => nav.navigate("ApplyChef"),
                 })
-            icons.push(
-                {
-                    icon: "logout",
-                    name: "Đăng xuất",
-                    action: logout,
-                }
-            )
-        }else {
-            icons.push(
-                {
-                    icon: "login",
-                    name: "Đăng nhập",
-                    action: () => nav.navigate("Login"),
-                }
-            )
+            }
         }
+        icons.unshift(
+            {
+                icon: "square-edit-outline",
+                name: "Chỉnh sửa hồ sơ",
+                action: () => nav.navigate("EditProfile")
+            },
+            {
+                icon: "key-variant",
+                name: "Thay đổi mật khẩu",
+                action: () => nav.navigate("ChangePassword"),
+            },
+            {
+                icon: "chef-hat",
+                name: "Ứng tuyển đầu bếp",
+                action: () => nav.navigate("ApplyChef"),
+            },{
+                icon: "clipboard-text-clock-outline",
+                name: "My Orders",
+                action: () => nav.navigate("MyOrders"),
+            },)
+        icons.push(
+            {
+                icon: "logout",
+                name: "Đăng xuất",
+                action: logout,
+            }
+        )
+    }else {
+        icons.push(
+            {
+                icon: "login",
+                name: "Đăng nhập",
+                action: () => nav.navigate("Login"),
+            }
+        )
+    }
   return (
     <SafeAreaView style={{alignItems: "center", width: "100%", backgroundColor: "white", flex: 1}}>
         <Text style={style.profileTitle}>Hồ sơ người dùng</Text>
@@ -138,7 +139,7 @@ const User = () => {
         {user && 
         <Text style={[style.profileTitle, {marginTop: 30}]}>{`${user.first_name} ${user.last_name}`}</Text>
         }
-        <View style={{width: "100%", marginTop: 10, paddingHorizontal: 10}}>
+        <ScrollView style={{width: "100%", marginTop: 10, paddingHorizontal: 10}}>
             {icons.map((i, index) =>
                 <Button 
                 key={index}
@@ -150,7 +151,7 @@ const User = () => {
                 labelStyle={{fontSize: 17}}
                 onPress={i.action}>{i.name}</Button>
             )}
-        </View>
+        </ScrollView>
     </SafeAreaView>
   )
 }

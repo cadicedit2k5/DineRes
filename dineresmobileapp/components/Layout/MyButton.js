@@ -20,8 +20,8 @@ export default MyButton;
 
 const styles = StyleSheet.create({
     btn: {
-        paddingHorizontal: 20,
-        backgroundColor: '#ee6a0dff',
-        borderRadius: 12,
+      paddingHorizontal: 20,
+      backgroundColor: '#ee6a0dff',
+      borderRadius: 12,
     }
 })

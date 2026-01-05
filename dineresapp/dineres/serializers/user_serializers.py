@@ -13,6 +13,21 @@ class ChefSerializer(ModelSerializer):
             }
         }
 
+
+class ChefInfoSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Chef
+        fields = ['id', 'full_name', 'avatar', 'specialty']
+
+    def get_full_name(self, obj):
+        return f"{obj.user.last_name} {obj.user.first_name}".strip()
+
+    def get_avatar(self, obj):
+        return obj.user.avatar.url if obj.user.avatar else ''
+
 class UserSerializer(ModelSerializer):
     bio = serializers.CharField(required=False, write_only=True)
     class Meta:

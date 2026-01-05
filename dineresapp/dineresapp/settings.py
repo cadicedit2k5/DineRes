@@ -118,7 +118,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'dineresdb',
         'USER': 'root',
-        'PASSWORD': '1234',
+        'PASSWORD': '1310',
         'HOST': ''  # mac dinh localhost
     }
 }

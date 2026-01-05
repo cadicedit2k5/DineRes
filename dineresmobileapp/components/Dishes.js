@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FlatList, Image, StyleSheet, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import Apis, { endpoints } from "../utils/Apis";
 import { ActivityIndicator, Button, Divider, Modal, Portal, RadioButton, Searchbar, Text, TextInput } from "react-native-paper";
@@ -8,6 +8,7 @@ import MyStyles from "../styles/MyStyles";
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Rating from "./Layout/Rating";
 import RenderHTML from "react-native-render-html";
+import { ViewModeContext } from "../utils/contexts/MyContexts";
 
 const Dishes = () => {
   const [cate, setCate] = useState(null);
@@ -24,6 +25,11 @@ const Dishes = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(false);
 
   const {width} = useWindowDimensions();
+  const [isCustomerView, ] = useContext(ViewModeContext);
+  let tabBarHeight = -15;
+  if (isCustomerView) {
+    tabBarHeight  = useBottomTabBarHeight();
+  }
 
   const sortList = [
     {
@@ -62,8 +68,6 @@ const Dishes = () => {
   const openMenu = () => setVisible(true);
 
   const closeMenu = () => setVisible(false);
-
-  const tabBarHeight = useBottomTabBarHeight();
 
   const loadDishes = async () => {
     let url = `${endpoints['dishes']}?page=${page}`;
@@ -272,6 +276,7 @@ const Dishes = () => {
                   review_count={item.review_count}
                 />
     
+                {isCustomerView && 
                 <Button
                   icon="plus"
                   contentStyle={{ height: 30}}
@@ -280,7 +285,7 @@ const Dishes = () => {
                   onPress={() => nav.navigate("DishDetail", {"dishId": item.id})}
                 >
                   Thêm
-                </Button>
+                </Button>}
               </View>
     
             </View>
