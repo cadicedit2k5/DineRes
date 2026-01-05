@@ -26,7 +26,7 @@ const Dashboard = () => {
     {
       "icon": "clipboard-text-clock-outline",
       "label": "Quản lý Order",
-      "action": () => {}
+      "action": () => {nav.navigate("Orders")}
     },
     {
       "icon": "history",

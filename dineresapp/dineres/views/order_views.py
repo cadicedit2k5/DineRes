@@ -14,9 +14,6 @@ class OrderViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIVie
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        return self.queryset.filter(customer=self.request.user).order_by('-created_date');
-
     def create(self, request, *args, **kwargs):
         details_data = request.data.get("details")
         input_serializer = OrderInputSerializer(data=details_data, many=True)
@@ -76,5 +73,9 @@ class OrderViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIVie
     @action(methods=['patch'], detail=True, url_path='done')
     def done_order(self, pk=None):
         Order.objects.filter(pk=pk).update(status=Order.Status.DONE)
+
+    @action(methods=['patch'], detail=True, url_path='cancel')
+    def cancel_order(self, pk=None):
+        Order.objects.filter(pk=pk).update(status=Order.Status.CANCEL)
 
 

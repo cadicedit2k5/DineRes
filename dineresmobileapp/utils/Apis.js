@@ -20,6 +20,7 @@ export const endpoints = {
   "orders": "/orders/",
   "bookings": "/bookings/",
   "orders": "/orders/",
+  "user-orders": "/users/orders/",
   "payments": "/payments/",
 };
 

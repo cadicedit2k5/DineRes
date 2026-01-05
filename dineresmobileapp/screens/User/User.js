@@ -68,6 +68,13 @@ const User = () => {
         }
     ]
     if (user) {
+        if (isCustomerView) {
+            icons.unshift({
+                icon: "clipboard-text-clock-outline",
+                name: "My Orders",
+                action: () => nav.navigate("Orders"),
+            })
+        }
         if (user.user_role !== 'customer') {
             if (isCustomerView) {
                 icons.unshift(
@@ -75,12 +82,7 @@ const User = () => {
                     icon: "account-switch-outline",
                     name: "Giao diện quản lý",
                     action: () => {setIsCustomerView(false)},
-                },{
-                    icon: "clipboard-text-clock-outline",
-                    name: "My Orders",
-                    action: () => nav.navigate("MyOrders"),
-                },
-                )
+                })
             }else {
                 icons.unshift(
                 {

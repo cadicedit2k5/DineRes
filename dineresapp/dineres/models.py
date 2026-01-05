@@ -141,6 +141,9 @@ class Order(BaseModel):
     staff = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name='staff')
     booking = models.ForeignKey('Booking', null=True, blank=True, on_delete=models.SET_NULL, related_name='orders')
 
+    class Meta:
+        ordering = ['-created_date']
+
     def __str__(self):
         return f'Order #{self.pk} by {self.customer}'
 

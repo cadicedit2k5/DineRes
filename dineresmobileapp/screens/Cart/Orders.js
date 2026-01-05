@@ -1,23 +1,32 @@
-import { FlatList, ScrollView, StyleSheet, Text, View} from 'react-native'
+import { FlatList, StyleSheet, Text, View} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import GoBack from '../../components/Layout/GoBack'
 import { ActivityIndicator, Button, Icon } from 'react-native-paper'
 import MyStyles from '../../styles/MyStyles'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { authApis, endpoints } from '../../utils/Apis'
 import moment from 'moment'
 import "moment/locale/vi"
 import { useNavigation } from '@react-navigation/native'
+import { MyUserContext, ViewModeContext } from '../../utils/contexts/MyContexts'
+import MyButton from '../../components/Layout/MyButton'
 
-const MyOrders = () => {
+const Orders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
+    const [isCustomerView] = useContext(ViewModeContext);
+    const [user, ] = useContext(MyUserContext);
     const nav = useNavigation();
 
     const loadOrder = async () => {
-        const url = `${endpoints['orders']}?page=${page}`
+        let url;
+        if (isCustomerView) {
+            url = `${endpoints['user-orders']}?page=${page}`;
+        }else {
+            url = `${endpoints['orders']}?page=${page}`;
+        }
         try {
             setLoading(true);
             const token = await AsyncStorage.getItem("access-token");
@@ -57,6 +66,14 @@ const MyOrders = () => {
         }
     }
 
+    const cancelOrder= async () => {
+
+    }
+
+    const doneOrder = async() => {
+
+    }
+
     const getStatusStyle = (status) => {
     switch (status.toLowerCase()) {
         case 'pending':
@@ -72,7 +89,21 @@ const MyOrders = () => {
   return (
     <SafeAreaView style={{backgroundColor: "white", flex: 1}}>
         <GoBack />
-        <Text style={MyStyles.title}>My Orders</Text>
+        <Text style={MyStyles.title}>Orders</Text>
+        {(orders.length === 0 && !loading) && 
+        <Text
+            style={{
+                fontWeight: "bold",
+                fontSize: 16,
+                color: "#ff5252",
+                backgroundColor: '#ffebee',
+                borderColor: "#ff5252b0",
+                borderWidth: 1,
+                borderRadius: 10,
+                padding: 20,
+                margin: 20
+            }}
+        >Không có Order nào</Text>}
 
         <FlatList
             data={orders}
@@ -94,13 +125,29 @@ const MyOrders = () => {
                         <View>
                             <Text>{item.details.length} món</Text>
                             <Text>{moment(item.created_date).format('lll')}</Text>
+                            <Text style={{fontWeight: "bold", marginRight: 8}}>Tong tien: <Text style={MyStyles.price}>{parseInt(item.total_amount).toLocaleString('vi-VN')}đ</Text></Text>
                         </View>
                         <View style={{
                             flexDirection: "row",
                             justifyContent: "space-between",
-                            alignItems: "center"
+                            alignItems: "center",
+                            marginTop: 10
                         }}>
-                            <Text style={{fontWeight: "bold", marginRight: 8}}>Tong tien: <Text style={MyStyles.price}>{parseInt(item.total_amount).toLocaleString('vi-VN')}đ</Text></Text>
+
+                            {(item.status === 'pending') && 
+                            <Button
+                                mode='contained-tonal'
+                                onPress={cancelOrder}
+                                style={{backgroundColor: "#ff5252"}}
+                            >Hủy</Button>}
+
+                            {(user.user_role == 'chef' && item.status === 'pending')&&
+                            <Button
+                                mode='contained-tonal'
+                                onPress={doneOrder}
+                                style={{ color: '#f09c15ff', backgroundColor: '#fdf3e5' }}
+                            >Nấu</Button>}
+
                             {(item.status === 'done') && 
                             <Button
                                 mode='contained-tonal'
@@ -110,7 +157,7 @@ const MyOrders = () => {
                                         totalAmount: item.total_amount 
                                     })
                                 }}
-                            >Thanh toan</Button>}
+                            >Thanh toán</Button>}
                         </View>
                     </View>
                 </View>)}}
@@ -119,7 +166,7 @@ const MyOrders = () => {
   )
 }
 
-export default MyOrders
+export default Orders
 
 const styles = StyleSheet.create({
     orderContainer: {
