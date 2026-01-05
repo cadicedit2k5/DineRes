@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import Apis, { endpoints } from "../utils/Apis";
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { ActivityIndicator, List } from "react-native-paper";
+import { ActivityIndicator, HelperText, List, Portal } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const Tables = () => {
     const [tables, setTables] = useState([]);
@@ -15,6 +16,7 @@ const Tables = () => {
     const [loading, setLoading] = useState(false);
     const [showPicker, setShowPicker] = useState(false);
     const [searched, setSearched] = useState(false);
+    const [timeError, setTimeError] = useState("");
 
     const nav = useNavigation()
     const tabBarHeight = useBottomTabBarHeight()
@@ -50,6 +52,16 @@ const Tables = () => {
             `${pad(date.getHours())}:${pad(date.getMinutes())}`;
     };
 
+    const validate = (date) => {
+        const now = new Date();
+        if (date < now) {
+            setTimeError("Không thể chọn thời gian trong quá khứ");
+            return false;
+        }
+        setTimeError("");
+        return true;
+    }
+
    const onSearch = () => {
         setTables([]);
         setPage(1);
@@ -83,23 +95,54 @@ const Tables = () => {
                 </Text>
             </TouchableOpacity>
 
-            {showPicker && (
-                <DateTimePicker
-                    value={date}
-                    mode="datetime"
-                    display="default"
-                    onChange={(event, selectedDate) => {
-                        setShowPicker(false);
-                        if (selectedDate){
-                            setDate(selectedDate);
-                            setBookingtime(formatLocalDateTime(selectedDate))
-                        } 
-                    }}/>)}
+            <HelperText type="error" visible={!!timeError}>
+                {timeError}
+            </HelperText>
 
+           {Platform.OS === "android" && showPicker && (
+                <DateTimePickerModal
+                    isVisible
+                    mode="datetime"
+                    date={date}
+                    onConfirm={(d) => {
+                        if (!validate(d)){
+                            setShowPicker(false);
+                            return;
+                        } 
+                        setShowPicker(false);
+                        setDate(d);
+                        setBookingtime(formatLocalDateTime(d));
+                    }}
+                    onCancel={() => setShowPicker(false)}
+                />
+            )}
+
+            {Platform.OS === "ios" && showPicker && (
+                <Portal>
+                    <DateTimePickerModal 
+                    isVisible={showPicker} 
+                    mode="datetime" date={date} 
+                    display="inline"
+                    // minimumDate={new Date()}
+                    onConfirm={(d) => { 
+                        // if (d < new Date()) {
+                        //     Alert.alert("Lỗi", "Không thể chọn thời gian trong quá khứ");
+                        //     return;
+                        // }
+                        if (!validate(d)) return;
+                        setShowPicker(false); 
+                        setDate(d); 
+                        setBookingtime(formatLocalDateTime(d));
+                    }} 
+                    onCancel={() => setShowPicker(false)} /> 
+                </Portal>
+            )}
+
+            
             <TouchableOpacity 
                 onPress={onSearch}
-                disabled ={ loading || !bookingtime }
-                style={[ style.button, (loading || !bookingtime) && {backgroundColor: "#ccc"} ]}>
+                disabled ={ loading || !bookingtime || !!timeError }
+                style={[ style.button, (loading || !bookingtime || !!timeError) && {backgroundColor: "#ccc"} ]}>
 
                 {loading ? ( <ActivityIndicator color="#fff" />) : (
                     <Text style={{ color: "#fff", fontWeight: "bold" }}>
