@@ -1,21 +1,63 @@
-import { StyleSheet, View } from 'react-native'
+import { Alert, StyleSheet, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import GoBack from '../../components/Layout/GoBack'
 import ListOrderDetail from '../../components/ListOrderDetail'
-import { useRoute } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { Text } from 'react-native'
 import MyStyles from '../../styles/MyStyles'
 import MyButton from '../../components/Layout/MyButton'
 import { useState } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { authApis, endpoints } from '../../utils/Apis'
 
 const OrderDetail = () => {
     const route = useRoute();
-    const {order, payOrder, cancelOrder, doneOrder} = route?.params;
+    const {order, payOrder, cancelOrder} = route?.params;
     const [details, setDetails] = useState(order.details);
     const [loading, setLoading] = useState(false);
+    const nav = useNavigation();
 
-    updateOrder = async () => {
+    const handleUpdate = () => {
+        Alert.alert("Thông báo", "Chắc chắc thay đổi?",
+            [
+                {
+                    text: "Hủy",
+                },{
+                    text: "Ok",
+                    onPress: updateOrder,
+                }
+            ]
+        )
+    }
 
+    const updateOrder = async () => {
+        try {
+            setLoading(true);
+            const data = [];
+            for (let detail of details) {
+                data.push({
+                    "dish_id": detail.dish_id,
+                    "quantity": detail.quantity,
+                })
+            }
+
+            console.log(data)
+            const token = await AsyncStorage.getItem("access-token");
+            if (token) {
+                const res = await authApis(token).patch(endpoints["order-detail"](order.id),
+                    {"details": data},
+                )
+
+                if (res.status === 200) {
+                    Alert.alert("Thông báo", "Cập nhật thành công");
+                    nav.navigate("Orders");
+                }
+            }
+        } catch (error) {
+            console.error(error.response.data);
+        }finally{
+            setLoading(false);
+        }
     }
 
     const getTotalPrice = () => {
@@ -47,14 +89,14 @@ const OrderDetail = () => {
                     <MyButton
                         btnLabel="Hủy"
                         loading={loading}
-                        onPress={() => {}}
+                        onPress={cancelOrder}
                     />
                 </View>
                 <View style={{ flex: 1 }}>
                     <MyButton 
                         btnLabel="Cập nhật"
                         loading={loading}
-                        onPress={() => {}}
+                        onPress={handleUpdate}
                     />
                 </View>
                 </>}

@@ -20,8 +20,9 @@ export const endpoints = {
   "orders": "/orders/",
   "bookings": "/bookings/",
   "orders": "/orders/",
-  "done-orders": (orderId) => `/orders/${orderId}/done/`,
-  "cancel-orders": (orderId) => `/orders/${orderId}/cancel/`,
+  "done-order": (orderId) => `/orders/${orderId}/done/`,
+  "cancel-order": (orderId) => `/orders/${orderId}/cancel/`,
+  "order-detail": (orderId) => `/orders/${orderId}/`,
   "user-orders": "/users/orders/",
   "payments": "/payments/",
 };

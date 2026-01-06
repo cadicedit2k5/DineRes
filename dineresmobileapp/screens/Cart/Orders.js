@@ -97,7 +97,7 @@ const Orders = () => {
 
             if (token) {
                 
-                const res = await authApis(token).post(endpoints['cancel-orders'](orderId));
+                const res = await authApis(token).post(endpoints['cancel-order'](orderId));
                 if (res.status === 200) {
                     Alert.alert("Thông báo", "Cancel thành công");
                     updateOrders(res.data);
@@ -117,7 +117,7 @@ const Orders = () => {
             const token = await AsyncStorage.getItem("access-token");
 
             if (token) {
-                const res = await authApis(token).post(endpoints['done-orders'](orderId));
+                const res = await authApis(token).post(endpoints['done-order'](orderId));
                 
                 if (res.status === 200) {
                     Alert.alert("Thông báo", "Đã nấu xong");
@@ -185,8 +185,8 @@ const Orders = () => {
                             {
                                 "order": item,
                                 "payOrder": () => payOrder(item),
-                                "cancelOrder": cancelOrder,
-                                "doneOrder": doneOrder,
+                                "cancelOrder": () => cancelOrder(item.id),
+                                "doneOrder": () => doneOrder(item.id),
                             })}}
                          style={{
                             flexDirection: "row",
