@@ -208,7 +208,7 @@ const EditDish = () => {
                             Lưu thay đổi
                         </Button>
 
-                        <Button 
+                        {dish && <Button 
                             mode="outlined" 
                             onPress={deleteDish} 
                             disabled={loading}
@@ -216,7 +216,7 @@ const EditDish = () => {
                             style={styles.deleteButton}
                         >
                             Xóa món ăn
-                        </Button>
+                        </Button>}
 
                     </View>
                 </ScrollView>

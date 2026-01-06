@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, View} from 'react-native'
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import GoBack from '../../components/Layout/GoBack'
 import { ActivityIndicator, Button, Icon } from 'react-native-paper'
@@ -10,7 +10,6 @@ import moment from 'moment'
 import "moment/locale/vi"
 import { useNavigation } from '@react-navigation/native'
 import { MyUserContext, ViewModeContext } from '../../utils/contexts/MyContexts'
-import MyButton from '../../components/Layout/MyButton'
 
 const Orders = () => {
     const [orders, setOrders] = useState([]);
@@ -66,12 +65,78 @@ const Orders = () => {
         }
     }
 
-    const cancelOrder= async () => {
-
+    const updateOrders = (order) => {
+        let newOrders = orders.map(item => {
+            if (item.id == order.id) {
+                return order;
+            }
+            return item;
+        })
+        setOrders(newOrders);
     }
 
-    const doneOrder = async() => {
+    const handleCancel= (orderId) => {
+        Alert.alert("Cảnh báo", "Thật sự muốn hủy sao?",
+            [
+                {
+                    text: "Không",
+                    onPress: () => {}
+                },
+                {
+                    text: "Hủy",
+                    onPress: () => cancelOrder(orderId),
+                }
+            ]
+        )
+    }
 
+    const cancelOrder= async (orderId) => {
+        try {
+            setLoading(true);
+            const token = await AsyncStorage.getItem("access-token");
+
+            if (token) {
+                
+                const res = await authApis(token).post(endpoints['cancel-orders'](orderId));
+                if (res.status === 200) {
+                    Alert.alert("Thông báo", "Cancel thành công");
+                    updateOrders(res.data);
+                }
+            }
+        } catch (error) {
+            console.error(error.response.data)
+           Alert.alert("Thông báo", "Cancel thất bại");
+        }finally {
+            setLoading(false);
+        }
+    }
+
+    const doneOrder = async(orderId) => {
+        try {
+            setLoading(true);
+            const token = await AsyncStorage.getItem("access-token");
+
+            if (token) {
+                const res = await authApis(token).post(endpoints['done-orders'](orderId));
+                
+                if (res.status === 200) {
+                    Alert.alert("Thông báo", "Đã nấu xong");
+                    updateOrders(res.data);
+                }
+            }
+        } catch (error) {
+            console.error(error.response.data)
+           Alert.alert("Thông báo", "Có vẻ là tay nghề của bạn hơi kém.");
+        }finally {
+            setLoading(false);
+        }
+    }
+
+    const payOrder = (item) => {
+        nav.navigate("Payment", { 
+            orderId: item.id,
+            totalAmount: item.total_amount 
+        })
     }
 
     const getStatusStyle = (status) => {
@@ -115,13 +180,21 @@ const Orders = () => {
                 return (<View key={key} style={styles.orderContainer}> 
                     <Icon size={40} color='#f09c15ff' source="pot-steam"/>
                     <View style={{flex: 1, marginLeft: 10,}}>
-                        <View style={{
+                        <TouchableOpacity
+                        onPress={() => {nav.navigate("OrderDetail",
+                            {
+                                "order": item,
+                                "payOrder": () => payOrder(item),
+                                "cancelOrder": cancelOrder,
+                                "doneOrder": doneOrder,
+                            })}}
+                         style={{
                             flexDirection: "row",
                             justifyContent: "space-between",
                         }}>
                             <Text style={styles.orderSubTitle}>Order ID: #{item.id}</Text>
                             <Text style={[styles.orderStatus, statusStyle]}>{(item.status).toUpperCase()}</Text>
-                        </View>
+                        </TouchableOpacity>
                         <View>
                             <Text>{item.details.length} món</Text>
                             <Text>{moment(item.created_date).format('lll')}</Text>
@@ -137,26 +210,21 @@ const Orders = () => {
                             {(item.status === 'pending') && 
                             <Button
                                 mode='contained-tonal'
-                                onPress={cancelOrder}
+                                onPress={() => handleCancel(item.id)}
                                 style={{backgroundColor: "#ff5252"}}
                             >Hủy</Button>}
 
-                            {(user.user_role == 'chef' && item.status === 'pending')&&
+                            {(user.user_role == 'chef' || user.user_role == 'admin' && item.status === 'pending' && !isCustomerView)&&
                             <Button
                                 mode='contained-tonal'
-                                onPress={doneOrder}
+                                onPress={() => doneOrder(item.id)}
                                 style={{ color: '#f09c15ff', backgroundColor: '#fdf3e5' }}
                             >Nấu</Button>}
 
                             {(item.status === 'done') && 
                             <Button
                                 mode='contained-tonal'
-                                onPress={() => {
-                                    nav.navigate("Payment", { 
-                                        orderId: item.id, 
-                                        totalAmount: item.total_amount 
-                                    })
-                                }}
+                                onPress={() => payOrder(item)}
                             >Thanh toán</Button>}
                         </View>
                     </View>

@@ -45,10 +45,11 @@ class DishSerializer(ImageSerializer):
         }
 
     def get_rating(self, instance):
-        return round(instance.avg_rating, 1) if instance.avg_rating else 0
+        avg = getattr(instance, 'avg_rating', 0)
+        return round(avg, 1) if avg else 0
 
     def get_review_count(self, instance):
-        return instance.review_count if instance.review_count else 0
+        return getattr(instance, 'review_count', 0)
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
