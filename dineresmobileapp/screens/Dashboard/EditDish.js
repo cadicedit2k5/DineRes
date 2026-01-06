@@ -9,11 +9,12 @@ import { pickImage } from '../../utils/ImageUtils';
 import InputText from '../../components/Layout/InputText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import IngredientManager from '../../components/IngredientManager';
+import Categories from '../../components/Categories';
 
 const EditDish = () => {
     const route = useRoute();
     const nav = useNavigation();
-    const { dish } = route.params;
+    const { dish } = route?.params;
 
     const [name, setName] = useState(dish?.name || "");
     const [price, setPrice] = useState(dish?.price?.toString() || "");
@@ -22,6 +23,7 @@ const EditDish = () => {
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [ingredients, setIngredients] = useState(dish?.ingredients || []);
+    const [cate, setCate] = useState({"id": 1});
 
 
     const updateDish = async () => {
@@ -39,6 +41,7 @@ const EditDish = () => {
             form.append('price', price);
             form.append('prep_time', prepTime);
             form.append('description', description);
+            form.append('category', parseInt(cate.id));
             
             if (image) {
                 form.append('image', {
@@ -55,20 +58,39 @@ const EditDish = () => {
             
             form.append('ingredients', JSON.stringify(ingredientsData));
 
-            const res = await authApis(token).patch(endpoints['dish-detail'](dish.id), form, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            console.info(form);
+            let res;
 
-            if (res.status === 200) {
+            if (dish !== null) {
+                res = await authApis(token).patch(endpoints['dish-detail'](dish.id), form, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+
                 Alert.alert("Thành công", "Cập nhật món ăn thành công!", [
                     { text: "OK", onPress: () => nav.navigate("DishDetail", { dishId: dish.id }) }
                 ]);
+            }else {
+                res = await authApis(token).post(endpoints["dishes"],
+                    form,
+                    {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        }
+                    }
+                )
+                Alert.alert("Thành công", "Tạo mới món ăn thành công!", [
+                    { text: "OK", onPress: () => nav.goBack() }
+                ]);
             }
         } catch (error) {
-            console.error(error);
-            Alert.alert("Lỗi", "Không thể cập nhật món ăn.");
+            console.error(error.response.data);
+            if (error.response.data.name) {
+                Alert.alert("Lỗi", error.response.data.name[0]);
+            } else {
+                Alert.alert("Lỗi", "Không thể thực hiện hành động.");
+            }
         } finally {
             setLoading(false);
         }
@@ -120,7 +142,7 @@ const EditDish = () => {
                             if (img) setImage(img);
                         }}>
                             <Image 
-                                source={{ uri: image?.uri ? image.uri : dish.image}} 
+                                source={{ uri: image ? image.uri : dish?.image}} 
                                 style={styles.dishImage}
                             />
                             <View style={styles.cameraIcon}>
@@ -128,6 +150,7 @@ const EditDish = () => {
                             </View>
                         </TouchableOpacity>
                     </View>
+                    <Categories setCate={setCate} allCate={[]}/>
 
                     {/* KHU VỰC FORM */}
                     <View style={styles.formContainer}>

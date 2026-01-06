@@ -121,8 +121,8 @@ const IngredientManager = ({ ingredients, setIngredients }) => {
             </View>
 
             {/* DANH SÁCH NGUYÊN LIỆU HIỆN TẠI */}
-            {ingredients.map((item) => (
-                <View key={item.id} style={styles.ingRow}>
+            {ingredients.map((item, key) => (
+                <View key={key} style={styles.ingRow}>
                     <View style={{ flex: 3 }}>
                         <Text style={styles.ingName}>{item.name}</Text>
                         <Text style={styles.ingUnit}>Đơn vị: {item.unit}</Text>
@@ -163,10 +163,10 @@ const IngredientManager = ({ ingredients, setIngredients }) => {
                         <FlatList
                             data={searchResults}
                             onEndReached={loadMore}
+                            keyExtractor={(item, index) => `${item.id}-${index}`}
                             ListFooterComponent={loading && <ActivityIndicator size="large"/>}
-                            renderItem={({ item, key }) => (
+                            renderItem={({ item}) => (
                                 <TouchableOpacity 
-                                    key={key}
                                     style={[styles.resultItem, selectedIng?.id === item.id && styles.selectedItem]}
                                     onPress={() => setSelectedIng(item)}
                                 >

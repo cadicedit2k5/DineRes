@@ -153,7 +153,7 @@ const Dishes = () => {
         style={styles.searchBar}
         inputStyle={styles.inputSearchBar}
       />
-      <Categories setCate={setCate}/>
+      <Categories setCate={setCate} allCate={[{ id: null, name: "Tất cả", image: null}]}/>
 
       <View style={styles.dishContainer}>
         <View style={MyStyles.row}>

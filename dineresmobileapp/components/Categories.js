@@ -2,21 +2,23 @@ import { useEffect, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Apis, { endpoints } from "../utils/Apis";
 
-const Categories = ({setCate}) => {
+const Categories = ({setCate, allCate}) => {
   const [cates, setCates] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const loadCates = async () => {
     let res = await Apis.get(endpoints["categories"]);
     const allCates = [
-      { id: null, name: "Tất cả", image: null},
+      ...allCate,
       ...res.data.results
     ];
+
     setCates(allCates);
   };
 
   const handlePress = (item, index) => {
     setCate(item);
+    console.info(item);
     setSelectedIndex(index);
   }
 
