@@ -73,6 +73,10 @@ const User = () => {
                 icon: "clipboard-text-clock-outline",
                 name: "My Orders",
                 action: () => nav.navigate("Orders"),
+            }, {
+                icon: "clipboard-text-clock-outline",
+                name: "Lịch sử đặt bàn",
+                action: () => nav.navigate("BookingHistory"),
             })
         }
         if (user.user_role !== 'customer') {

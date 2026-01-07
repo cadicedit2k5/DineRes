@@ -3,9 +3,12 @@ from rest_framework import viewsets, parsers, permissions, status
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.response import Response
+from yaml import serialize
 
-from dineres.models import User, Chef, Order
+from dineres.models import User, Chef, Order, Booking
+from dineres.paginators import BookingPagination
 from dineres.permissions import IsVerifiedChef
+from dineres.serializers.booking_serializers import BookingDetailSerializer
 from dineres.serializers.order_serializers import OrderSerializer
 from dineres.serializers.user_serializers import UserSerializer, ChefSerializer
 
@@ -107,4 +110,21 @@ class UserViewSet(viewsets.ViewSet, CreateAPIView, ListAPIView):
             serializer = OrderSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
         serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], url_path='bookings', detail=False, permission_classes=[permissions.IsAuthenticated], pagination_class=BookingPagination)
+    def get_bookings(self, request):
+        user = request.user
+        bookings = (
+            Booking.objects
+            .filter(customer=user, active=True)
+            .select_related('customer')
+            .prefetch_related('tables')
+            .order_by('-booking_time')
+        )
+        page = self.paginate_queryset(bookings)
+        if page is not None:
+            serializer = BookingDetailSerializer(page, many=True)
+            return  self.get_paginated_response(serializer.data)
+        serializer = BookingDetailSerializer(bookings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

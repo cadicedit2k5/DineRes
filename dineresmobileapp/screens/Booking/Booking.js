@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, Image, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Image, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import GoBack from "../../components/Layout/GoBack";
@@ -27,11 +27,11 @@ const Booking = () => {
                 "table": table.id,
             });
             if (res.status === 201)
-                alert("Đặt bàn thành công!");
+                Alert.alert("Thông báo:", "Đặt bàn thành công!");
                 nav.goBack();
-        } catch (err) {
-            console.error(err);
-            alert("Đặt bàn thất bại");
+        } catch (ex) {
+            console.error(ex);
+            Alert.alert("Cảnh báo:", "Đặt bàn thất bại");
         } finally {
             setLoading(false);
         }
