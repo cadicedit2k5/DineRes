@@ -8,3 +8,6 @@ class NotificationPagination(PageNumberPagination):
 
 class TablePagination(PageNumberPagination):
     page_size = 6
+
+class BookingPagination(PageNumberPagination):
+    page_size = 6

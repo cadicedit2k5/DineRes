@@ -18,6 +18,7 @@ import Booking from "../screens/Booking/Booking";
 import IngredientManager from "../components/IngredientManager";
 import Orders from "../screens/Cart/Orders";
 import OrderDetail from "../screens/Cart/OrderDetail";
+import BookingHistory from "../screens/Booking/BookingHistory";
 import OrderDashboard from "../screens/Dashboard/OrderDashboard";
 import IngredientDashboard from "../screens/Dashboard/IngredientDashboard";
 
@@ -39,6 +40,7 @@ const StackNavigator = () => {
       <Stack.Screen name="Cart" component={Cart} options={{title: "Don dat hang"}} />
       <Stack.Screen name="CompareDish" component={CompareDish} options={{title: "So sanh mon an"}} />
       <Stack.Screen name="Orders" component={Orders} options={{title: "Don hang cua toi"}} />
+      <Stack.Screen name="BookingHistory" component={BookingHistory} options={{title: "Lịch sự đặt hàng"}} />
       <Stack.Screen name="Payment" component={Payment} options={{title: "Thanh toan"}} />
       <Stack.Screen name="Booking" component={Booking} options={{ title: "Đặt bàn" }} />
       <Stack.Screen name="OrderDetail" component={OrderDetail} options={{ title: "Chi tiet don hang" }} />

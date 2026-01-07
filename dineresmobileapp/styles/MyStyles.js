@@ -15,8 +15,8 @@ export default StyleSheet.create({
       backgroundColor: "#F6F4EF"
     },
      avatar: {
-        width: 120,
-        height: 120,
+        width: 70,
+        height: 70,
         borderRadius: 100
     },title: { 
         fontSize: 24,
