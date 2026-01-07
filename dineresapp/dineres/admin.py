@@ -1,14 +1,19 @@
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.auth.models import Group
+from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ngettext
+from django.urls import path
 
+from .dao import get_dishes_quantity_stats, get_dishes_quantity_timeline, get_dishes_amount_stats, get_dishes_quantity, \
+    get_total_booking_timeline, get_total_booking_count
 from .models import Category, Dish, Order, Booking, Review, Table, Ingredient, User, Chef, Transaction
 
 # Base Admin
 class BaseAdmin(admin.ModelAdmin):
     readonly_fields = ['hinh_anh']
+    stat = Category.objects.annotate()
     def hinh_anh(self, obj):
         if obj and obj.image:
             return mark_safe(
@@ -23,6 +28,39 @@ class DishIngredientInline(admin.TabularInline):
 # Register your models here.
 class DineResAppAdmin(admin.AdminSite):
     site_header = 'Hệ thống nhà hàng trực tuyển'
+
+    def get_urls(self):
+        return [
+            path('dishes-stat/', self.dishes_stats)
+        ] + super().get_urls()
+
+    def dishes_stats(self, request):
+        period_label = {
+            'day': 'ngày',
+            'week': 'tuần',
+            'month': 'tháng'
+        }
+
+        time_param = request.GET.get('period', 'month')
+        revenue_dishes_quantity_stats = get_dishes_quantity_stats(time_param)
+        revenue_dishes_quantity_timeline = get_dishes_quantity_timeline(time_param)
+        total_dishes_amount = get_dishes_amount_stats(time_param)['total_amount'] or 0
+        dishes_quantity = get_dishes_quantity()
+        revenue_booking_quantity_timeline = get_total_booking_timeline(time_param)
+        total_booking_amount = get_total_booking_count(time_param)
+
+
+        return TemplateResponse(request, 'admin/dishes-stats.html', {
+            'total_quantity_stats': revenue_dishes_quantity_stats,
+            'total_quantity_timeline': revenue_dishes_quantity_timeline,
+            'total_amount_stat': total_dishes_amount,
+            'period': time_param,
+            'period_label': period_label.get(time_param, 'tháng'),
+            'dishes_quantity': dishes_quantity,
+            "total_booking_timeline": revenue_booking_quantity_timeline,
+            'booking_amount': total_booking_amount
+        })
+
 
 class CategoryAdmin(BaseAdmin):
     list_display = ['id', 'name']

@@ -186,13 +186,12 @@ class Table(BaseModel):
 
 class Booking(BaseModel):
     class Status(models.TextChoices):
-        PENDING = 'pending', 'Đang chờ'
         CONFIRMED = 'confirmed', 'Đã xác nhận'
         COMPLETED = 'completed', 'Đã dùng bữa'
         CANCELLED = 'cancelled', 'Đã hủy'
 
     booking_time = models.DateTimeField()
-    status = models.CharField(max_length=12, choices=Status.choices, default=Status.PENDING)
+    status = models.CharField(max_length=12, choices=Status.choices, default=Status.CONFIRMED)
     note = RichTextField(null=True, blank=True)
 
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bookings')

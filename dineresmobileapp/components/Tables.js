@@ -137,8 +137,7 @@ const Tables = () => {
                     onCancel={() => setShowPicker(false)} /> 
                 </Portal>
             )}
-
-            
+           
             <TouchableOpacity 
                 onPress={onSearch}
                 disabled ={ loading || !bookingtime || !!timeError }
@@ -182,11 +181,10 @@ const style = StyleSheet.create ({
         padding: 16
     },
     heading: {
-        fontSize: 18, 
+        fontSize: 15, 
         fontWeight: "bold"
     },
     button: {
-        marginTop: 12,
         backgroundColor: "#2196F3",
         padding: 12,
         borderRadius: 8,
