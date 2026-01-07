@@ -10,37 +10,19 @@ import MyStyles from '../../styles/MyStyles';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { authApis, endpoints } from '../../utils/Apis';
-import { MyUserContext, ViewModeContext } from '../../utils/contexts/MyContexts';
+import { MyCartContext, MyUserContext, ViewModeContext } from '../../utils/contexts/MyContexts';
 import UserFind from '../../components/UserFind';
 import ForceLogin from '../../components/Layout/ForceLogin';
 
 const Cart = () => {
-    const [cart, setCart] = useState([]);
     const [user, ] = useContext(MyUserContext);
     const [loading, setLoading] = useState(false);
     const [takeAway, setTakeWay] = useState(true);
     const [isCustomerView, ] = useContext(ViewModeContext);
     const [customer, setCustomer] = useState(null);
     const [visible, setVisible] = useState(false);
+    const [cart, cartDispatch] = useContext(MyCartContext);
     const nav = useNavigation();
-
-    const loadCart = async () => {
-        try {
-            setLoading(true);
-            const items = await AsyncStorage.getItem("cart");
-            if (items) {
-                setCart(JSON.parse(items));
-            }
-        } catch (error) {
-            console.error(error);
-        }finally {
-            setLoading(false);  
-        }
-    }
-
-    useEffect(() => {
-        loadCart();
-    }, [])
 
     const validateOrder = () => {
         if (!cart || cart.length === 0) {
@@ -75,47 +57,44 @@ const Cart = () => {
 
                     if (res.status === 201) {
                         Alert.alert("Thông báo", "Đã đặt thành công!!!");
-                        setCart([]);
-                        AsyncStorage.removeItem("cart");
+                        cartDispatch({
+                            type: "clear",
+                        })
+                        nav.goBack();
                     }
                 }
             } catch (error) {
-                console.error(error);
+                console.error(error.response.data);
             }finally {
                 setLoading(false);
             }
         }
     }
 
-    const updateCart = async (newCart) => {
-        setCart(newCart);
-        try {
-            await AsyncStorage.setItem('cart', JSON.stringify(newCart));
-        } catch (e) {
-            console.error("Lỗi lưu storage", e);
+    const increaseQuantity = (itemId) => {
+        const dish = cart.find(item => item.id === itemId);
+        if (dish) {
+            cartDispatch({
+                type: "update",
+                payload: {
+                    id: itemId,
+                    quantity: dish.quantity + 1,
+                },
+            })
         }
     };
 
-    const increaseQuantity = (itemId) => {
-        const newCart = cart.map(item => {
-            if (item.id === itemId) {
-                return { ...item, quantity: item.quantity + 1 };
-            }
-            return item;
-        });
-        updateCart(newCart);
-    };
-
     const decreaseQuantity = (itemId) => {
-        const newCart = cart.map(item => {
-            if (item.id === itemId) {
-                if (item.quantity > 1) {
-                    return { ...item, quantity: item.quantity - 1 };
-                }
-            }
-            return item;
-        });
-        updateCart(newCart);
+        const dish = cart.find(item => item.id === itemId);
+        if (dish && dish.quantity > 1) {
+            cartDispatch({
+                type: "update",
+                payload: {
+                    id: itemId,
+                    quantity: dish.quantity - 1,
+                },
+            })
+        }
     };
 
     const removeItem = (itemId) => {
@@ -131,8 +110,12 @@ const Cart = () => {
             {
                 text: "Xóa",
                 onPress: () => {
-                    const newCart = cart.filter(item => item.id !== itemId);
-                    updateCart(newCart);
+                    cartDispatch({
+                        type: "remove",
+                        payload: {
+                            id: itemId,
+                        }
+                    })
                 },
             }
         ]

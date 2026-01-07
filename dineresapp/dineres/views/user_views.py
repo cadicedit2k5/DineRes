@@ -1,4 +1,5 @@
 from django.contrib.auth.hashers import check_password
+from django.db.models import Q
 from rest_framework import viewsets, parsers, permissions, status
 from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
@@ -23,6 +24,15 @@ class UserViewSet(viewsets.ViewSet, CreateAPIView, ListAPIView):
         if self.action == 'create':
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
+
+    def get_queryset(self):
+        query = self.queryset
+
+        q = self.request.query_params.get('q')
+        if q:
+            return query.filter(Q(username__icontains=q) | Q(first_name__icontains=q)
+                                | Q(last_name__icontains=q) | Q(phone__exact=q))
+        return query
 
     @action(methods=['get', 'patch'], url_path='current-user', detail=False)
     def current_user(self, request):

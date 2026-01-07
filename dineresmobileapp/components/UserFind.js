@@ -39,7 +39,7 @@ const UserFind = ({setCustomer, visible, setVisible}) => {
             }
         }, 500);
         return () => clearTimeout(timer);
-    }, [q]);
+    }, [q, visible]);
 
     return (
     <Portal>

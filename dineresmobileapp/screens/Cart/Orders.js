@@ -10,6 +10,7 @@ import moment from 'moment'
 import "moment/locale/vi"
 import { useNavigation } from '@react-navigation/native'
 import { MyUserContext, ViewModeContext } from '../../utils/contexts/MyContexts'
+import MyButton from '../../components/Layout/MyButton'
 
 const Orders = () => {
     const [orders, setOrders] = useState([]);
@@ -230,6 +231,11 @@ const Orders = () => {
                     </View>
                 </View>)}}
             />
+        {!isCustomerView && 
+        <MyButton
+            btnLabel={"Tạo Order mới"}
+            onPress={() => nav.navigate("OrderDashboard")}
+        />}
     </SafeAreaView>
   )
 }

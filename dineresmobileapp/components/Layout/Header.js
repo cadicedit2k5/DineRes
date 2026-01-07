@@ -28,14 +28,14 @@ const Header = () => {
 
   useEffect(() => {
     loadNotification();
-  }, [])
+  }, [user])
 
   return (
     <View style={[MyStyles.row, {padding: 10}]}>
       <Portal>
         <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={style.notiContainer}>
           <Text style={style.notiHeader}>Thông báo</Text>
-          {notifys.length !== 0 ? notifys.map(i => <TouchableOpacity style={MyStyles.margin} key={i.id}>
+          {notifys.length !== 0 ? notifys.map(i => <TouchableOpacity style={{margin: 10}} key={i.id}>
             <Text style={style.notiTitle}>{i.title}</Text>
             <Text style={style.notiContent}>{i.message}</Text>
             <Text>{moment(i.created_date).fromNow()}</Text>

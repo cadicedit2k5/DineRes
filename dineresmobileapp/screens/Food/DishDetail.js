@@ -4,21 +4,22 @@ import { Text, Icon, Divider, Avatar, ActivityIndicator } from 'react-native-pap
 import { useNavigation, useRoute } from '@react-navigation/native';
 import GoBack from '../../components/Layout/GoBack';
 import Apis, { endpoints } from '../../utils/Apis';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import QuantityChange from '../../components/Layout/QuantityChange';
 import MyButton from '../../components/Layout/MyButton';
 import Rating from '../../components/Layout/Rating';
 import DishReviews from '../../components/DishReviews';
 import RenderHTML from 'react-native-render-html';
-import { ViewModeContext } from '../../utils/contexts/MyContexts';
+import { MyCartContext, ViewModeContext } from '../../utils/contexts/MyContexts';
 
 const DishDetail = () => {
     const route = useRoute();
     const dishId = route?.params?.dishId;
+    const mode = route?.params.mode;
     const [dish, setDish] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(false);
     const [isCustomerView] = useContext(ViewModeContext);
+    const [, cartDispatch] = useContext(MyCartContext);
     const nav = useNavigation();
 
     const {width} = useWindowDimensions();
@@ -44,22 +45,14 @@ const DishDetail = () => {
     const handleAddToCart = async () => {
         try {
             setLoading(true);
-            const jsonValue = await AsyncStorage.getItem('cart');
-            let cart = jsonValue != null ? JSON.parse(jsonValue) : [];
 
-            const existingItem = cart.find(item => item.id === dish.id);
-
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                cart.push({
+            cartDispatch({
+                type: "add",
+                payload: {
                     ...dish,
                     quantity: quantity
-                });
-            }
-
-            const newJsonValue = JSON.stringify(cart);
-            await AsyncStorage.setItem('cart', newJsonValue);
+                }
+            })
         } catch (error) {
             console.error(error);
         }finally {
@@ -158,9 +151,9 @@ const DishDetail = () => {
                 </ScrollView>
             </View>
 
-            {/* 3. FOOTER: ĐẶT HÀNG (Dính dưới đáy) */}
+            {/* 3. FOOTER: ĐẶT HÀNG */}
             <View style={styles.footer}>
-                {isCustomerView ? <>
+                {mode === 'order' ? <>
                     <QuantityChange 
                     quantity={quantity}
                     increaseQty={increaseQty}

@@ -8,9 +8,10 @@ import MyStyles from "../styles/MyStyles";
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Rating from "./Layout/Rating";
 import RenderHTML from "react-native-render-html";
-import { ViewModeContext } from "../utils/contexts/MyContexts";
+import { MyCartContext, ViewModeContext } from "../utils/contexts/MyContexts";
+import MyButton from "./Layout/MyButton";
 
-const Dishes = () => {
+const Dishes = ({mode}) => {
   const [cate, setCate] = useState(null);
   const [dishes, setDishes] = useState([]);
   const [page, setPage] = useState(1);
@@ -26,6 +27,7 @@ const Dishes = () => {
 
   const {width} = useWindowDimensions();
   const [isCustomerView, ] = useContext(ViewModeContext);
+  const [, cartDispatch] = useContext(MyCartContext);
   let tabBarHeight = -15;
   if (isCustomerView) {
     tabBarHeight  = useBottomTabBarHeight();
@@ -248,7 +250,7 @@ const Dishes = () => {
               
               {/* Header */}
               <View style={styles.headerRow}>
-                <TouchableOpacity onPress={() => nav.navigate("DishDetail", {"dishId": item.id})}>
+                <TouchableOpacity onPress={() => nav.navigate("DishDetail", {"dishId": item.id, "mode": mode})}>
                   <Text style={styles.title} numberOfLines={1}>{item.name}</Text>
                 </TouchableOpacity>
                 <Text style={styles.price}>
@@ -276,13 +278,21 @@ const Dishes = () => {
                   review_count={item.review_count}
                 />
     
-                {isCustomerView && 
+                {mode === "order" && 
                 <Button
                   icon="plus"
                   contentStyle={{ height: 30}}
                   labelStyle={{ fontSize: 12, color: "#ee6a0dff", marginVertical: 0 }}
                   style={styles.addButton}
-                  onPress={() => nav.navigate("DishDetail", {"dishId": item.id})}
+                  onPress={() => {
+                    cartDispatch({
+                      type: "add",
+                      payload: {
+                        ...item,
+                        quantity: 1
+                      }
+                    })
+                  }}
                 >
                   Thêm
                 </Button>}
@@ -292,6 +302,10 @@ const Dishes = () => {
           </View>
           }>
         </FlatList>
+        <MyButton
+          btnLabel={"Xong"}
+          onPress={() => {nav.navigate("Cart")}}
+        />
       </View>
     </View>
   );

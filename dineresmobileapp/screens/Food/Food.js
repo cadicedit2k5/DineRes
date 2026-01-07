@@ -6,7 +6,7 @@ const Food = () => {
   return (
     <SafeAreaView style={{flex: 1}}>
         <Header />
-        <Dishes/>
+        <Dishes mode={"order"}/>
     </SafeAreaView>
   )
 }

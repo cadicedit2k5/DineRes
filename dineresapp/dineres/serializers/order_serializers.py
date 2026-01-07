@@ -20,12 +20,10 @@ class OrderDetailSerializer(ModelSerializer):
 
 class OrderSerializer(ModelSerializer):
     details = OrderInputSerializer(many=True)
-    customer_id = serializers.IntegerField(required=False, write_only=True)
-    take_away = serializers.BooleanField(default=True, write_only=True)
 
     class Meta:
         model = Order
-        fields = ['id', 'created_date', 'status', 'total_amount', 'details', 'customer_id', 'take_away']
+        fields = ['id', 'created_date', 'status', 'total_amount', 'details']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
