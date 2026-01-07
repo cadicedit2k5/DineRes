@@ -50,7 +50,7 @@ class BookingDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ['status', 'booking_time', 'note', 'table']
+        fields = ['id', 'status', 'booking_time', 'note', 'table']
 
     def get_table(self, obj):
         table = obj.tables.first()

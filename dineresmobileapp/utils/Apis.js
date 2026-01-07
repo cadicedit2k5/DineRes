@@ -25,6 +25,7 @@ export const endpoints = {
   "order-detail": (orderId) => `/orders/${orderId}/`,
   "user-orders": "/users/orders/",
   "payments": "/payments/",
+  "user-bookings": "users/bookings/",
 };
 
 export const authApis = (token) => {
