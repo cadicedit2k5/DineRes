@@ -5,7 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters as rest_filters
 from rest_framework import viewsets, permissions, parsers, status
 from rest_framework.decorators import action
-from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -18,7 +18,7 @@ from dineres.serializers.review_serializers import ReviewSerializer
 from dineres.services.notification_services import NotificationService
 
 
-class IngredientViewSet(viewsets.ViewSet, ListAPIView, CreateAPIView, UpdateAPIView):
+class IngredientViewSet(viewsets.ViewSet, ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView):
     queryset = Ingredient.objects.filter(active=True)
     serializer_class = IngredientSerializer
 

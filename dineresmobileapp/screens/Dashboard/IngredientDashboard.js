@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Text, Card, IconButton, Chip, Portal, Modal } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Apis, { endpoints } from '../../utils/Apis';
+import Apis, { authApis, endpoints } from '../../utils/Apis';
 import GoBack from '../../components/Layout/GoBack';
 import MyStyles from '../../styles/MyStyles';
 import MyButton from '../../components/Layout/MyButton';
 import EditIngredient from './EditIngredient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const IngredientDashboard = () => {
     const [ingredients, setIngredients] = useState([]);
@@ -48,7 +49,7 @@ const IngredientDashboard = () => {
     }, [page]);
 
     const loadMore = () => {
-        if (page > 0 && ingredients.length > 0) {
+        if (page > 0 && ingredients.length > 0 && !loading) {
             setPage(page + 1);
         }
     };
@@ -68,13 +69,28 @@ const IngredientDashboard = () => {
         }
     }
 
+    const deleteIngredient = async (id) => {
+        const token = await AsyncStorage.getItem("access-token");
+
+        if (token) {
+            try {
+                const res = await authApis(token).delete(endpoints['ingredient-detail'](id));
+                if (res.status === 204) {
+                    Alert.alert("Thông báo", "Đã xóa thành công");
+                    setIngredients(current => current.filter(item => item.id !== id));
+                }
+            }catch (error) {
+                console.error(error.response.data);
+            }
+        }
+    }
     const handleDelete = (id) => {
         Alert.alert(
             "Xác nhận", 
             "Bạn có chắc muốn xóa nguyên liệu này?",
             [
                 { text: "Hủy", style: "cancel" },
-                { text: "Xóa", onPress: () => console.log(`Xóa ID ${id}`) }
+                { text: "Xóa", onPress: () => deleteIngredient(id) }
             ]
         );
     }
@@ -86,7 +102,6 @@ const IngredientDashboard = () => {
 
             <FlatList
                 data={ingredients}
-                
                 keyExtractor={(item, key) => item.id.toString() + key}
                 contentContainerStyle={styles.listContainer}
                 onEndReached={loadMore}
