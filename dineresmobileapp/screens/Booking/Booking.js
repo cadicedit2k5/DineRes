@@ -4,6 +4,7 @@ import { useState } from "react";
 import GoBack from "../../components/Layout/GoBack";
 import { authApis, endpoints } from "../../utils/Apis";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 
 
@@ -37,44 +38,46 @@ const Booking = () => {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={styles.container}>
-                <GoBack />
+        <SafeAreaView style={{ flex: 1}}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={styles.container}>
+                    <GoBack />
 
-                <Text style={styles.title}>Xác nhận đặt bàn</Text>
+                    <Text style={styles.title}>Xác nhận đặt bàn</Text>
 
-                <View style={styles.card}>
-                    <Image source={require("../../assets/DineResLoGo.png")} style={styles.image} />
-                    <Text style={styles.label}>Bàn</Text>
-                    <Text style={styles.value}>{table.name}</Text>
+                    <View style={styles.card}>
+                        <Image source={require("../../assets/DineResLoGo.png")} style={styles.image} />
+                        <Text style={styles.label}>Bàn</Text>
+                        <Text style={styles.value}>{table.name}</Text>
 
-                    <Text style={styles.label}>Sức chứa</Text>
-                    <Text style={styles.value}>{table.capacity} chỗ</Text>
+                        <Text style={styles.label}>Sức chứa</Text>
+                        <Text style={styles.value}>{table.capacity} chỗ</Text>
 
-                    <Text style={styles.label}>Thời gian</Text>
-                    <Text style={styles.value}>{booking_time}</Text>
+                        <Text style={styles.label}>Thời gian</Text>
+                        <Text style={styles.value}>{booking_time}</Text>
+                    </View>
+
+                    <TextInput
+                        style={[styles.input, styles.noteInput]}
+                        placeholder="Ghi chú (không bắt buộc)"
+                        value={note}
+                        onChangeText={setNote}
+                        multiline
+                        numberOfLines={3}
+                    />
+
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={loadBooking}
+                        disabled={loading}
+                    >
+                        <Text style={styles.buttonText}>
+                            {loading ? "Đang đặt bàn..." : "Xác nhận đặt bàn"}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
-
-                <TextInput
-                    style={[styles.input, styles.noteInput]}
-                    placeholder="Ghi chú (không bắt buộc)"
-                    value={note}
-                    onChangeText={setNote}
-                    multiline
-                    numberOfLines={3}
-                />
-
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={loadBooking}
-                    disabled={loading}
-                >
-                    <Text style={styles.buttonText}>
-                        {loading ? "Đang đặt bàn..." : "Xác nhận đặt bàn"}
-                    </Text>
-                </TouchableOpacity>
-            </View>
-        </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback>
+        </SafeAreaView>
         
     );
 };

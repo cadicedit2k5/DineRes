@@ -373,6 +373,118 @@ for item in tables:
         name=item["name"],
         defaults={"capacity": item["capacity"]}
     )
+
+#8. Tạo customer
+print("-> Đang tạo dữ liệu khách hàng...")
+customers = []
+for i in range(1, 6):  # Tạo 5 khách hàng mẫu
+    user, created = User.objects.get_or_create(
+        username=f'customer{i}',
+        defaults={
+            'first_name': f'Khách',
+            'last_name': f'Hàng {i}',
+            'email': f'customer{i}@gmail.com',
+            'phone': f'098765432{i}',
+            'user_role': User.Role.CUSTOMER
+        }
+    )
+    if created:
+        user.set_password('123456')
+        user.save()
+    customers.append(user)
+
+#10. tạo order và orderDetail
+import random
+import datetime
+from django.utils.timezone import make_aware
+from django.db import transaction
+
+from dineres.models import (
+    User, Dish, Order, OrderDetail, Transaction
+)
+
+customers = list(User.objects.filter(user_role=User.Role.CUSTOMER))
+dishes = list(Dish.objects.all())
+
+if not customers or not dishes:
+    print("Thiếu customer hoặc dish")
+    exit()
+
+YEAR = 2026
+MONTH = 1
+ORDERS_COUNT = 60
+
+@transaction.atomic
+def seed_january_orders():
+    for _ in range(ORDERS_COUNT):
+        customer = random.choice(customers)
+
+        # random ngày trong tháng 1
+        day = random.randint(1, 31)
+        hour = random.randint(10, 22)
+        minute = random.randint(0, 59)
+
+        naive_dt = datetime.datetime(
+            YEAR, MONTH, day, hour, minute
+        )
+        order_date = make_aware(naive_dt)
+
+        status = random.choices(
+            [Order.Status.PAID, Order.Status.DONE, Order.Status.CANCEL],
+            weights=[0.7, 0.2, 0.1]
+        )[0]
+
+        # Tạo Order
+        order = Order.objects.create(
+            customer=customer,
+            status=status,
+            total_amount=0
+        )
+
+        # Ép created_date (KHÔNG dùng save)
+        Order.objects.filter(pk=order.pk).update(
+            created_date=order_date
+        )
+
+        # OrderDetail
+        selected_dishes = random.sample(
+            dishes,
+            random.randint(2, 5)
+        )
+
+        total_amount = 0
+        for dish in selected_dishes:
+            qty = random.randint(1, 3)
+            OrderDetail.objects.create(
+                order=order,
+                dish=dish,
+                quantity=qty,
+                price_at_order=dish.price
+            )
+            total_amount += dish.price * qty
+
+        # Update tổng tiền
+        Order.objects.filter(pk=order.pk).update(
+            total_amount=total_amount
+        )
+
+        # Transaction
+        if status in [Order.Status.PAID, Order.Status.DONE]:
+            Transaction.objects.create(
+                order=order,
+                amount=total_amount,
+                payment_method=random.choice(
+                    [m[0] for m in Transaction.Method.choices]
+                ),
+                status=Transaction.Status.SUCCESS,
+                paid_at=order_date + datetime.timedelta(
+                    minutes=random.randint(5, 30)
+                ),
+                transaction_ref=f"JAN-{order.id}-{random.randint(1000, 9999)}"
+            )
+
+seed_january_orders()
+
 print("-> Đã tạo dữ liệu mẫu thành công!")
 
 EOF

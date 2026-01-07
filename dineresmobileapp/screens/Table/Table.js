@@ -4,7 +4,7 @@ import Tables from '../../components/Tables'
 
 const Table = () => {
   return (
-    <SafeAreaView style={{ flex: 1}}>
+    <SafeAreaView  style={{ flex: 1}}>
         <Header />
         <Tables />
     </SafeAreaView>
