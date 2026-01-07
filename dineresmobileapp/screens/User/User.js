@@ -68,15 +68,21 @@ const User = () => {
         }
     ]
     if (user) {
+        if (isCustomerView) {
+            icons.unshift({
+                icon: "clipboard-text-clock-outline",
+                name: "My Orders",
+                action: () => nav.navigate("Orders"),
+            })
+        }
         if (user.user_role !== 'customer') {
             if (isCustomerView) {
                 icons.unshift(
-                    {
-                        icon: "account-switch-outline",
-                        name: "Giao diện quản lý",
-                        action: () => {setIsCustomerView(false)},
-                    }
-                )
+                {
+                    icon: "account-switch-outline",
+                    name: "Giao diện quản lý",
+                    action: () => {setIsCustomerView(false)},
+                })
             }else {
                 icons.unshift(
                 {
@@ -101,11 +107,7 @@ const User = () => {
                 icon: "chef-hat",
                 name: "Ứng tuyển đầu bếp",
                 action: () => nav.navigate("ApplyChef"),
-            },{
-                icon: "clipboard-text-clock-outline",
-                name: "My Orders",
-                action: () => nav.navigate("MyOrders"),
-            },)
+            })
         icons.push(
             {
                 icon: "logout",

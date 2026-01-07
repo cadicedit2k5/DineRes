@@ -27,7 +27,7 @@ const theme = {
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
-  const [isCustomerView, setIsCustomerView] = useState(false);
+  const [isCustomerView, setIsCustomerView] = useState(true);
 
   // 3. LOAD CÁC BIẾN THỂ CỦA ROBOTO
   const [fontsLoaded] = useFonts({

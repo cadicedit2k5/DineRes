@@ -27,6 +27,7 @@ const DishDetail = () => {
       try {
         if (dishId) {
             const res = await Apis.get(endpoints['dish-detail'](dishId));
+            console.log(res.data)
             setDish(res.data);
         }
       } catch (error) {

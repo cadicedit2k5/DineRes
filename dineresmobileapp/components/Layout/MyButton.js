@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native'
 import { Button } from 'react-native-paper'
 
-const MyButton = ({loading, onPress, btnLabel}) => {
+const MyButton = ({loading, onPress, btnLabel, ...props}) => {
   return (
     <Button
         loading={loading}
@@ -10,6 +10,7 @@ const MyButton = ({loading, onPress, btnLabel}) => {
         style={styles.btn} 
         contentStyle={{ height: 50 }}
         onPress={onPress}
+        {...props}
     >
         {btnLabel}
     </Button>

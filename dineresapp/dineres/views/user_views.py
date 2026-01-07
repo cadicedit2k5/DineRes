@@ -4,11 +4,13 @@ from rest_framework.decorators import action
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.response import Response
 
-from dineres.models import User, Chef
+from dineres.models import User, Chef, Order
+from dineres.permissions import IsVerifiedChef
+from dineres.serializers.order_serializers import OrderSerializer
 from dineres.serializers.user_serializers import UserSerializer, ChefSerializer
 
 
-class UserViewSet(viewsets.ViewSet, CreateAPIView):
+class UserViewSet(viewsets.ViewSet, CreateAPIView, ListAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
     parser_classes = [parsers.MultiPartParser]
@@ -16,6 +18,8 @@ class UserViewSet(viewsets.ViewSet, CreateAPIView):
     def get_permissions(self):
         if self.action in ['verify_chef', 'get_pending_chefs']:
             return [permissions.IsAdminUser()]
+        if self.action in ['list']:
+            return [IsVerifiedChef()]
         if self.action == 'create':
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
@@ -94,3 +98,13 @@ class UserViewSet(viewsets.ViewSet, CreateAPIView):
         except Chef.DoesNotExist:
             return Response({"message": "Không tìm thấy đầu bếp!"}, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(methods=['get'], url_path='orders', detail=False)
+    def get_orders(self, request):
+        user = request.user
+        orders = Order.objects.filter(customer=user, active=True)
+        page = self.paginate_queryset(orders)
+        if page is not None:
+            serializer = OrderSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

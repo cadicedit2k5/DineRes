@@ -10,13 +10,14 @@ import ChangePassword from "../screens/User/ChangePassword";
 import ApplyChef from "../screens/User/ApplyChef";
 import Cart from "../screens/Cart/Cart";
 import CompareDish from "../screens/Food/CompareDish";
-import MyOrders from "../screens/Cart/MyOrders";
 import Payment from "../screens/Cart/Payment";
 import Dashboard from "../screens/Dashboard/Dashboard";
 import FoodDashboard from "../screens/Dashboard/FoodDashboard";
 import EditDish from "../screens/Dashboard/EditDish";
 import Booking from "../screens/Booking/Booking";
 import IngredientManager from "../components/IngredientManager";
+import Orders from "../screens/Cart/Orders";
+import OrderDetail from "../screens/Cart/OrderDetail";
 
 const Stack = createNativeStackNavigator();
 
@@ -35,9 +36,10 @@ const StackNavigator = () => {
       <Stack.Screen name="ApplyChef" component={ApplyChef} options={{title: "Ung tuyen dau bep"}} />
       <Stack.Screen name="Cart" component={Cart} options={{title: "Don dat hang"}} />
       <Stack.Screen name="CompareDish" component={CompareDish} options={{title: "So sanh mon an"}} />
-      <Stack.Screen name="MyOrders" component={MyOrders} options={{title: "Don hang cua toi"}} />
+      <Stack.Screen name="Orders" component={Orders} options={{title: "Don hang cua toi"}} />
       <Stack.Screen name="Payment" component={Payment} options={{title: "Thanh toan"}} />
       <Stack.Screen name="Booking" component={Booking} options={{ title: "Đặt bàn" }} />
+      <Stack.Screen name="OrderDetail" component={OrderDetail} options={{ title: "Chi tiet don hang" }} />
 
     {!isCustomerView && <>
       <Stack.Screen name="Dashboard" component={Dashboard} options={{title: "Bang dieu khien"}} />

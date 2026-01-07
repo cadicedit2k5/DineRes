@@ -10,6 +10,7 @@ export const endpoints = {
 
   "register": "/users/",
   "login": "/o/token/",
+  "users": "/users/",
   "refresh-login": "/o/refresh/",
   "current-user": "/users/current-user/",
   "change-password": "/users/change-password/",
@@ -19,6 +20,10 @@ export const endpoints = {
   "orders": "/orders/",
   "bookings": "/bookings/",
   "orders": "/orders/",
+  "done-order": (orderId) => `/orders/${orderId}/done/`,
+  "cancel-order": (orderId) => `/orders/${orderId}/cancel/`,
+  "order-detail": (orderId) => `/orders/${orderId}/`,
+  "user-orders": "/users/orders/",
   "payments": "/payments/",
 };
 

@@ -16,7 +16,7 @@ const ForceLogin = ({next_params, next_screen}) => {
             >
                 Đăng nhập
             </Text>
-            {' '}để viết đánh giá.
+            {' '}để thực hiện hành động.
         </Text> 
     </View>
   )

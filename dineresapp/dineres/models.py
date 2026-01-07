@@ -1,4 +1,3 @@
-# from time import timezone
 from django.utils import timezone
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -23,6 +22,7 @@ class User(AbstractUser):
     class Role(models.TextChoices):
         ADMIN = 'admin', 'Quản trị viên'
         CUSTOMER = 'customer', 'Khách hàng'
+        STAFF = 'staff', "Nhân viên"
         CHEF = 'chef', 'Đầu bếp'
 
     avatar = CloudinaryField('avatar', null=True)
@@ -137,7 +137,12 @@ class Order(BaseModel):
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     total_amount = models.DecimalField(max_digits=12, decimal_places=0, default=0, validators=[MinValueValidator(0)])
 
-    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='orders')
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name='orders')
+    staff = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name='staff')
+    booking = models.ForeignKey('Booking', null=True, blank=True, on_delete=models.SET_NULL, related_name='orders')
+
+    class Meta:
+        ordering = ['-created_date']
 
     def __str__(self):
         return f'Order #{self.pk} by {self.customer}'
@@ -187,6 +192,7 @@ class Table(BaseModel):
 class Booking(BaseModel):
     class Status(models.TextChoices):
         CONFIRMED = 'confirmed', 'Đã xác nhận'
+        DINING = 'dining', 'Đang dùng bữa'
         COMPLETED = 'completed', 'Đã dùng bữa'
         CANCELLED = 'cancelled', 'Đã hủy'
 
