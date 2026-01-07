@@ -19,6 +19,7 @@ import IngredientManager from "../components/IngredientManager";
 import Orders from "../screens/Cart/Orders";
 import OrderDetail from "../screens/Cart/OrderDetail";
 import BookingHistory from "../screens/Booking/BookingHistory";
+import OrderDashboard from "../screens/Dashboard/OrderDashboard";
 
 const Stack = createNativeStackNavigator();
 
@@ -48,6 +49,7 @@ const StackNavigator = () => {
       <Stack.Screen name="FoodDashboard" component={FoodDashboard} options={{title: "Quan ly mon an"}} />
       <Stack.Screen name="EditDish" component={EditDish} options={{title: "Quan ly mon an"}} />
       <Stack.Screen name="IngredientManager" component={IngredientManager} options={{title: "Quan ly mon an"}} />
+      <Stack.Screen name="OrderDashboard" component={OrderDashboard} options={{title: "Quan ly mon an"}} />
 
     </>}
 

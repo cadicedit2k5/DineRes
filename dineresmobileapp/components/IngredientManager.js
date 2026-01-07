@@ -5,7 +5,6 @@ import Apis, {endpoints} from "../utils/Apis";
 import InputText from "./Layout/InputText";
 
 const IngredientManager = ({ ingredients, setIngredients }) => {
-
     const [modalVisible, setModalVisible] = useState(false);
     const [q, setQ] = useState("");
     const [page, setPage] = useState(1);

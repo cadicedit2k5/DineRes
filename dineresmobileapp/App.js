@@ -2,7 +2,7 @@ import { useEffect, useReducer, useState } from "react";
 import MyUserReducer from "./utils/reducers/MyUserReducer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Apis, { authApis, endpoints } from "./utils/Apis";
-import { MyUserContext, ViewModeContext } from "./utils/contexts/MyContexts";
+import { MyCartContext, MyUserContext, ViewModeContext } from "./utils/contexts/MyContexts";
 import {CLIENT_ID, CLIENT_SECRET} from "@env";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { 
@@ -14,6 +14,7 @@ import {
 
 import { MD3LightTheme, PaperProvider, configureFonts } from 'react-native-paper';
 import MainNavigators from "./navigators/MainNavigators";
+import MyCartReducer from "./utils/reducers/MyCartReducer";
 
 // 2. CẤU HÌNH THEME ROBOTO
 const fontConfig = {
@@ -27,6 +28,7 @@ const theme = {
 
 const App = () => {
   const [user, dispatch] = useReducer(MyUserReducer, null);
+  const [cart, cartDispatch] = useReducer(MyCartReducer, []);
   const [isCustomerView, setIsCustomerView] = useState(true);
 
   // 3. LOAD CÁC BIẾN THỂ CỦA ROBOTO
@@ -110,9 +112,11 @@ const App = () => {
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
         <MyUserContext.Provider value={[user, dispatch]}>
-          <ViewModeContext.Provider value={[isCustomerView, setIsCustomerView]}>
-            <MainNavigators />
-          </ViewModeContext.Provider>
+          <MyCartContext.Provider value={[cart, cartDispatch]}>
+            <ViewModeContext.Provider value={[isCustomerView, setIsCustomerView]}>
+              <MainNavigators />
+            </ViewModeContext.Provider>
+          </MyCartContext.Provider>
         </MyUserContext.Provider>
         </PaperProvider>
     </SafeAreaProvider>

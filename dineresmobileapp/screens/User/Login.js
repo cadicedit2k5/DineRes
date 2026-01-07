@@ -47,7 +47,6 @@ const Login = ({route}) => {
             "Content-Type": "multipart/form-data"
           }
         });
-        console.log(res.data);
         if (res.status === 200) {
           console.log(res.data);
           await AsyncStorage.setItem("access-token", res.data.access_token);
@@ -55,7 +54,6 @@ const Login = ({route}) => {
 
           setTimeout(async () => {
             let u = await authApis(res.data.access_token).get(endpoints['current-user']);
-            console.info(u.data)
             dispatch({
               "type": "login",
               "payload": u.data,
