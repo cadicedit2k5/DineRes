@@ -7,6 +7,7 @@ export const endpoints = {
   "dish-detail": (dishId) => `/dishes/${dishId}/`,
   "dish-reviews": (dishId) => `/dishes/${dishId}/reviews/`,
   "ingredients": "/ingredients/",
+  "ingredient-detail": (ingredientId) => `/ingredients/${ingredientId}/`,
 
   "register": "/users/",
   "login": "/o/token/",

@@ -302,10 +302,11 @@ const Dishes = ({mode}) => {
           </View>
           }>
         </FlatList>
+        {mode === "order" &&
         <MyButton
           btnLabel={"Xong"}
           onPress={() => {nav.navigate("Cart")}}
-        />
+        />}
       </View>
     </View>
   );
