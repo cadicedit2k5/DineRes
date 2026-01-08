@@ -10,6 +10,7 @@ import Rating from "./Layout/Rating";
 import RenderHTML from "react-native-render-html";
 import { MyCartContext, ViewModeContext } from "../utils/contexts/MyContexts";
 import MyButton from "./Layout/MyButton";
+import InputText from "./Layout/InputText";
 
 const Dishes = ({mode}) => {
   const [cate, setCate] = useState(null);
@@ -151,6 +152,7 @@ const Dishes = ({mode}) => {
         placeholder="Tìm theo tên"
         placeholderTextColor="#999"
         onChangeText={setQ}
+        iconColor="#ee6a0dff"
         value={q}
         style={styles.searchBar}
         inputStyle={styles.inputSearchBar}
@@ -161,7 +163,7 @@ const Dishes = ({mode}) => {
         <View style={MyStyles.row}>
           {cate ?
          <Text style={MyStyles.title}>{cate.name}</Text>
-         :
+         :  
          <Text style={MyStyles.title}>Tất cả</Text>}
 
           <View>
@@ -183,7 +185,7 @@ const Dishes = ({mode}) => {
                   {/* CHỌN TRƯỜNG */}
                   <View style={{ flex: 1}}>
                     <RadioButton.Group onValueChange={value => setSortField(value)} value={sortField}>
-                      {sortList.map((item, key) => <View key={key} style={styles.radioRow}><RadioButton value={item.value} /><Text>{item.label}</Text></View>)}
+                      {sortList.map((item, key) => <View key={key} style={styles.radioRow}><RadioButton color="#ee6a0dff" value={item.value} /><Text>{item.label}</Text></View>)}
                     </RadioButton.Group>
                   </View>
 
@@ -192,8 +194,8 @@ const Dishes = ({mode}) => {
                   {/* CHỌN CHIỀU*/}
                   <View style={{ flex: 1 }}>
                     <RadioButton.Group onValueChange={value => setSortDir(value)} value={sortDir}>
-                      <View style={styles.radioRow}><RadioButton value="" /><Text>Tăng dần</Text></View>
-                      <View style={styles.radioRow}><RadioButton value="-" /><Text>Giảm dần</Text></View>
+                      <View style={styles.radioRow}><RadioButton color="#ee6a0dff" value="" /><Text>Tăng dần</Text></View>
+                      <View style={styles.radioRow}><RadioButton color="#ee6a0dff" value="-" /><Text>Giảm dần</Text></View>
                     </RadioButton.Group>
                   </View>
                 </View>
@@ -202,7 +204,7 @@ const Dishes = ({mode}) => {
                 <View>
                   <Text style={styles.menuHeader}>Lọc theo</Text>
                   {filterList.map((item, key) => 
-                    <TextInput 
+                    <InputText 
                     key={key}
                     mode="outlined"
                     label={item.label}
@@ -217,12 +219,10 @@ const Dishes = ({mode}) => {
                 </View>
 
 
-                <Button
-                  mode="contained"
+                <MyButton
+                  btnLabel={"OK"}
                   onPress={handleFilter}
-                >
-                  OK
-                </Button>
+                />
             </Modal>
             </Portal>
           </View>
@@ -241,7 +241,7 @@ const Dishes = ({mode}) => {
             <View style={styles.imageContainer}>
                 <Image
                   style={styles.image} 
-                  source={require("../assets/DineResLoGo.png")} 
+                  source={{uri: item.image}} 
                   resizeMode="cover"
                 />
             </View>
@@ -316,7 +316,7 @@ export default Dishes;
 
 const styles = StyleSheet.create({
   searchBar: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
     borderRadius: 10,
     marginHorizontal: 10,
     borderWidth: 1, 

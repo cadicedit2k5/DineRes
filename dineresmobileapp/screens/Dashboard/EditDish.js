@@ -127,7 +127,7 @@ const EditDish = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container]}>
             <GoBack title="Chỉnh sửa món ăn" />
             
             <KeyboardAvoidingView 

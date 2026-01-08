@@ -13,7 +13,7 @@ const InputText = ({
   const [showPass, setShowPass] = useState(false);
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <TextInput
           mode="outlined"
           label={label}

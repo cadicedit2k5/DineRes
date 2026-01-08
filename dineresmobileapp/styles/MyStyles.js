@@ -35,5 +35,10 @@ export default StyleSheet.create({
     price: {
         fontWeight: 'bold',
         color: '#ee6a0dff',
+    },badge: {
+        position: 'absolute',
+        top: 5,
+        right: 5,
+        backgroundColor: '#ee6a0dff'
     }
 });

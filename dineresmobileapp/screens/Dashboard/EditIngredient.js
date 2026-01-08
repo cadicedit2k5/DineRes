@@ -66,11 +66,13 @@ const EditIngredient = ({visible, setVisible, ingredient, onSaveSuccess}) => {
         <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={styles.modalContainer}>
             <Text style={MyStyles.subTitle}>Thông tin nguyên liệu</Text>
 
-            <InputText 
+            <View style={{height: 60}}>
+                <InputText 
                 label={"Tên nguyên liệu"}
                 value={name}
                 onChangeText={setName}
             />
+            </View>
 
             <FlatList
                 data={UNIT_OPTIONS}
@@ -101,7 +103,7 @@ const EditIngredient = ({visible, setVisible, ingredient, onSaveSuccess}) => {
             </FlatList>
             <View style={styles.modalButtons}>
                 <Button onPress={() => setVisible(false)} textColor="#666">Hủy</Button>
-                <Button mode="contained" onPress={handleSave}
+                <Button style={{backgroundColor: "#ee6a0dff"}}  mode="contained" onPress={handleSave}
                 loading={loading} visible={loading}>
                    OK
                 </Button>
