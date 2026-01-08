@@ -1,12 +1,15 @@
 import { useContext, useEffect, useState } from 'react'
-import { ScrollView, Text } from 'react-native'
-import { Button, TextInput } from 'react-native-paper';
+import { ScrollView } from 'react-native'
+import { Text, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { authApis, endpoints } from '../../utils/Apis';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MyUserContext } from '../../utils/contexts/MyContexts';
 import { useNavigation } from '@react-navigation/native';
 import GoBack from '../../components/Layout/GoBack';
+import InputText from '../../components/Layout/InputText';
+import MyButton from '../../components/Layout/MyButton';
+import MyStyles from '../../styles/MyStyles';
 
 const EditProfile = () => {
     const info = [{
@@ -45,7 +48,6 @@ const EditProfile = () => {
     }, [currUser])
 
     const validate = () => {
-        
         return true;
     }
 
@@ -75,7 +77,7 @@ const EditProfile = () => {
                     nav.goBack();
                 }
             } catch (error) {
-                console.error(error);
+                console.error(error.response.data);
             }finally {
                 setLoading(false);
             }
@@ -83,13 +85,13 @@ const EditProfile = () => {
     }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={MyStyles.container}>
         <GoBack />
         <ScrollView style={{ padding: 20 }}>
-            <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 20 }}>Chỉnh sửa hồ sơ</Text>
+            <Text variant="headlineMedium" style={MyStyles.title}>Chỉnh sửa hồ sơ</Text>
             
             {info.map(i => (
-                <TextInput
+                <InputText
                     key={i.field}   
                     label={i.title}
                     value={user[i.field]}
@@ -100,14 +102,11 @@ const EditProfile = () => {
                 />
             ))}
 
-            <Button 
-                loading={loading} 
-                disabled={loading} 
-                mode="contained"
+            <MyButton 
+                btnLabel={"Cập nhật hồ sơ"}
+                loading={loading}
                 onPress={editProfile} 
-            >
-                Cập nhật hồ sơ
-            </Button>
+            />
         </ScrollView>
     </SafeAreaView>
   )

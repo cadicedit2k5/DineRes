@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { FlatList, Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Button, IconButton } from 'react-native-paper'
 import { MyUserContext, ViewModeContext } from '../../utils/contexts/MyContexts'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import MyStyles from '../../styles/MyStyles'
 import { authApis, endpoints } from '../../utils/Apis'
 import { pickImage } from '../../utils/ImageUtils'
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
 
 const User = () => {
     const defaultAvatarUrl = 'https://res.cloudinary.com/dxopigima/image/upload/v1767193541/user_u8yhks.png'
@@ -15,6 +16,7 @@ const User = () => {
     const [user, dispatch] = useContext(MyUserContext);
     const [isCustomerView, setIsCustomerView] = useContext(ViewModeContext);
     const nav = useNavigation();
+    const tabBarHeight = useBottomTabBarHeight();
 
     const logout = async () => {
         await AsyncStorage.removeItem("access-token");
@@ -145,19 +147,22 @@ const User = () => {
         {user && 
         <Text style={[style.profileTitle, {marginTop: 30}]}>{`${user.first_name} ${user.last_name}`}</Text>
         }
-        <ScrollView style={{width: "100%", marginTop: 10, paddingHorizontal: 10}}>
-            {icons.map((i, index) =>
+        <FlatList
+            data = {icons}
+            contentContainerStyle={{
+                paddingBottom: tabBarHeight+20
+            }}
+            style={{width: "100%", marginTop: 10, paddingHorizontal: 10}}
+            renderItem={({item}) =>
                 <Button 
-                key={index}
                 mode='text'
                 style={style.profileBtn}
-                icon={i.icon} 
+                icon={item.icon} 
                 textColor='black'
                 contentStyle={{justifyContent: 'flex-start'}}
                 labelStyle={{fontSize: 17}}
-                onPress={i.action}>{i.name}</Button>
-            )}
-        </ScrollView>
+                onPress={item.action}>{item.name}</Button>}
+        />
     </SafeAreaView>
   )
 }
@@ -184,7 +189,8 @@ const style = StyleSheet.create({
         borderWidth: 2,
     },
     profileBtn : {
-        padding: 15,
+        paddingHorizontal: 15,
+        paddingVertical: 10,
         borderRadius: 0,
         borderBottomWidth: 1,
         borderBottomColor: "lightgray",

@@ -105,12 +105,10 @@ const ApplyChef = () => {
                               onChangeText={(t) => setProfile({...profile, [item.field]: t})}
                               label={item.title}
                               multiline={item.multiline}
+                              style={{marginBottom: 10}}
                               error={err[item.field]}
                               onFocus={() => setErr({})}
                             />
-                            <HelperText type='error' visible={err[item.field]}>
-                                {err[item.field]}
-                            </HelperText>
                           </View>
                           )}
 
