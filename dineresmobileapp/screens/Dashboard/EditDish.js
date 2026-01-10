@@ -161,22 +161,20 @@ const EditDish = () => {
                             style={styles.input}
                         />
 
-                        <View style={styles.row}>
-                            <InputText
-                                label="Giá (VNĐ)"
-                                value={price}
-                                onChangeText={setPrice}
-                                keyboardType="numeric"
-                                style={[styles.input, { flex: 1, marginRight: 10 }]}
-                            />
-                            <InputText
-                                label="Thời gian (phút)"
-                                value={prepTime}
-                                onChangeText={setPrepTime}
-                                keyboardType="numeric"
-                                style={[styles.input, { flex: 1 }]}
-                            />
-                        </View>
+                        <InputText
+                            label="Giá (VNĐ)"
+                            value={price}
+                            onChangeText={setPrice}
+                            keyboardType="numeric"
+                            style={styles.input}
+                        />
+                        <InputText
+                            label="Thời gian (phút)"
+                            value={prepTime}
+                            onChangeText={setPrepTime}
+                            keyboardType="numeric"
+                            style={styles.input}
+                        />
 
                         <InputText
                             label="Mô tả"

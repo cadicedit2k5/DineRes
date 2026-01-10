@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Image, View } from "react-native";
 import { Badge, IconButton, Modal, Portal } from "react-native-paper";
 import MyStyles from "../../styles/MyStyles";
@@ -36,13 +36,15 @@ const Header = () => {
       <Portal>
         <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={style.notiContainer}>
           <Text style={style.notiHeader}>Thông báo</Text>
-          {notifys.length !== 0 ? notifys.map(i => <TouchableOpacity style={{margin: 10}} key={i.id}>
-            <Text style={style.notiTitle}>{i.title}</Text>
-            <Text style={style.notiContent}>{i.message}</Text>
-            <Text>{moment(i.created_date).fromNow()}</Text>
-          </ TouchableOpacity>) 
-          : <Text>Không có thông báo!!!</Text>
-          }
+          <ScrollView>
+            {notifys.length !== 0 ? notifys.map(i => <TouchableOpacity style={{margin: 10}} key={i.id}>
+              <Text style={style.notiTitle}>{i.title}</Text>
+              <Text style={style.notiContent}>{i.message}</Text>
+              <Text>{moment(i.created_date).fromNow()}</Text>
+            </ TouchableOpacity>) 
+            : <Text>Không có thông báo!!!</Text>
+            }
+          </ScrollView>
         </Modal>
       </Portal>
 
@@ -92,6 +94,7 @@ const style = StyleSheet.create({
       fontWeight: 700,
     }, notiContainer: {
       width: 300,
+      maxHeight: 500,
       position: "absolute",
       right: 10,
       top: 50,

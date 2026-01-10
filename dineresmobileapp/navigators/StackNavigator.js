@@ -21,6 +21,7 @@ import OrderDetail from "../screens/Cart/OrderDetail";
 import BookingHistory from "../screens/Booking/BookingHistory";
 import OrderDashboard from "../screens/Dashboard/OrderDashboard";
 import IngredientDashboard from "../screens/Dashboard/IngredientDashboard";
+import PaymentHistory from "../screens/Dashboard/PaymentHistory";
 
 const Stack = createNativeStackNavigator();
 
@@ -31,7 +32,7 @@ const StackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="Home" component={TabNavigator} options={{title: "Trang chu"}} />
-      {!user && <Stack.Screen name="Login" component={Login} options={{title: "Dang nhap"}} />}
+      <Stack.Screen name="Login" component={Login} options={{title: "Dang nhap"}} />
       <Stack.Screen name="DishDetail" component={DishDetail} options={{title: "Chi tiet"}} />
       <Stack.Screen name="EditProfile" component={EditProfile} options={{title: "Chinh sua ho so"}} />
       <Stack.Screen name="Register" component={Register} options={{title: "Dang ky"}} />
@@ -52,6 +53,7 @@ const StackNavigator = () => {
       <Stack.Screen name="IngredientManager" component={IngredientManager} options={{title: "Quan ly mon an"}} />
       <Stack.Screen name="OrderDashboard" component={OrderDashboard} options={{title: "Quan ly dat hang"}} />
       <Stack.Screen name="IngredientDashboard" component={IngredientDashboard} options={{title: "Quan ly nguyen lieu"}} />
+      <Stack.Screen name="PaymentHistory" component={PaymentHistory} options={{title: "Lich su thanh toan"}} />
 
     </>}
 

@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import InputText from '../../components/Layout/InputText';
 import MyButton from '../../components/Layout/MyButton';
 import MyStyles from '../../styles/MyStyles';
+import GoBack from '../../components/Layout/GoBack';
 
 const Login = ({route}) => {
   const info = [{
@@ -64,8 +65,8 @@ const Login = ({route}) => {
               "type": "login",
               "payload": u.data,
             });
-            const next_screen = route?.params.next_screen;
-            const next_params = route?.params.next_params;
+            const next_screen = route.params?.next_screen;
+            const next_params = route.params?.next_params;
 
             if (next_screen) {
               nav.navigate(next_screen, next_params);
@@ -88,7 +89,7 @@ const Login = ({route}) => {
       <ScrollView style={{ padding: 20 }}
         contentContainerStyle={{
           justifyContent: "center",
-          flex: 1
+          flexGrow: 1
         }}
       >
         <Text style={MyStyles.title}>Đăng nhập</Text>

@@ -17,16 +17,19 @@ export const endpoints = {
   "change-password": "/users/change-password/",
   "apply-chef": "/users/apply-chef/",
   "user-notify": "/notifications/",
+
   "tables": "/tables/",
   "orders": "/orders/",
   "bookings": "/bookings/",
+  "user-bookings": "users/bookings/",
+
   "orders": "/orders/",
   "done-order": (orderId) => `/orders/${orderId}/done/`,
   "cancel-order": (orderId) => `/orders/${orderId}/cancel/`,
   "order-detail": (orderId) => `/orders/${orderId}/`,
   "user-orders": "/users/orders/",
   "payments": "/payments/",
-  "user-bookings": "users/bookings/",
+  "transactions": "/transactions/"
 };
 
 export const authApis = (token) => {

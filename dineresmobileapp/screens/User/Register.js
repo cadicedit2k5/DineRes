@@ -90,7 +90,7 @@ const Register = () => {
 
           if (res.status === 201) {
             alert("Đăng ký thành công");
-            nav.navigate("Login");
+            nav.navigate("Login", {"next_screen": "Home"});
           }
         } catch (error) {
           const errorData = error.response.data;

@@ -30,7 +30,8 @@ const Dashboard = () => {
     },
     {
       "icon": "history",
-      "label": "Lịch sử thanh toán"
+      "label": "Lịch sử thanh toán",
+      "action": () => nav.navigate("PaymentHistory")
     },
      {
       "icon": "chart-bell-curve",
