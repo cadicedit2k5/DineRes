@@ -20,6 +20,8 @@ import Orders from "../screens/Cart/Orders";
 import OrderDetail from "../screens/Cart/OrderDetail";
 import BookingHistory from "../screens/Booking/BookingHistory";
 import OrderDashboard from "../screens/Dashboard/OrderDashboard";
+import BookingManage from "../screens/Booking/BookingManage";
+import BookingDetail from "../screens/Booking/BookingDetail";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,7 +45,9 @@ const StackNavigator = () => {
       <Stack.Screen name="Payment" component={Payment} options={{title: "Thanh toan"}} />
       <Stack.Screen name="Booking" component={Booking} options={{ title: "Đặt bàn" }} />
       <Stack.Screen name="OrderDetail" component={OrderDetail} options={{ title: "Chi tiet don hang" }} />
-
+      <Stack.Screen name="BookingManage" component={BookingManage} options={{title: "Quản lý đặt hàng"}} />
+      <Stack.Screen name="BookingDetail" component={BookingDetail} options={{title: "Chi tiết đặt hàng"}} />
+      
     {!isCustomerView && <>
       <Stack.Screen name="Dashboard" component={Dashboard} options={{title: "Bang dieu khien"}} />
       <Stack.Screen name="FoodDashboard" component={FoodDashboard} options={{title: "Quan ly mon an"}} />

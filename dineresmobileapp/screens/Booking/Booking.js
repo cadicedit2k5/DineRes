@@ -21,7 +21,7 @@ const Booking = () => {
             setLoading(true);
             const token = await AsyncStorage.getItem("access-token");
 
-            const res =await authApis(token).post(endpoints['bookings'], {
+            const res = await authApis(token).post(endpoints['bookings'], {
                 "booking_time": booking_time,
                 "note": note,
                 "table": table.id,

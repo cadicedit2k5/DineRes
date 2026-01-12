@@ -47,13 +47,29 @@ class BookingSerializer(serializers.ModelSerializer):
 
 class BookingDetailSerializer(serializers.ModelSerializer):
     table = serializers.SerializerMethodField()
+    customer_name = serializers.CharField(
+        source='customer.get_full_name',
+        read_only=True
+    )
 
     class Meta:
         model = Booking
-        fields = ['id', 'status', 'booking_time', 'note', 'table']
+        fields = ['id', 'status', 'booking_time', 'note', 'customer_name', 'table']
 
     def get_table(self, obj):
         table = obj.tables.first()
         return TableSerializer(table).data if table else None
+
+class BookingStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Booking
+        fields = ['status']
+
+    def validate(self, data):
+        status = data.get('status')
+        allowed = ['confirmed', 'dining', 'completed', 'cancelled']
+        if status not in allowed:
+            raise serializers.ValidationError("Trạng thái không hợp lệ")
+        return data
 
 

@@ -26,6 +26,7 @@ export const endpoints = {
   "user-orders": "/users/orders/",
   "payments": "/payments/",
   "user-bookings": "users/bookings/",
+  "update-status": (bookingId) => `/bookings/${bookingId}/update-status/`,
 };
 
 export const authApis = (token) => {
