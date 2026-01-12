@@ -1,13 +1,16 @@
 from datetime import timedelta
 
 from django.utils.dateparse import parse_datetime
-from rest_framework import viewsets, generics, permissions, status, parsers
+from rest_framework import viewsets, generics, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from dineres.models import Table, Booking
-from dineres.paginators import TablePagination
+from dineres.paginators import TablePagination, BookingPagination
+from dineres.permissions import IsEmployee
 from dineres.serializers import booking_serializers
+from dineres.serializers.booking_serializers import BookingDetailSerializer, BookingStatusSerializer
+
 
 class TableViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Table.objects.filter(active=True)
@@ -32,11 +35,11 @@ class TableViewSet(viewsets.ViewSet, generics.ListAPIView):
 
         return qs.distinct()
 
-class BookingView(viewsets.ViewSet, generics.CreateAPIView):
+class BookingView(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIView):
     queryset = Booking.objects.filter(active=True)
     serializer_class = booking_serializers.BookingSerializer
-    # parser_classes = [parsers.MultiPartParser]
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = BookingPagination
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -45,3 +48,34 @@ class BookingView(viewsets.ViewSet, generics.CreateAPIView):
         booking = serializer.save(customer=request.user)
 
         return Response(booking_serializers.BookingDetailSerializer(booking).data,status=status.HTTP_201_CREATED)
+
+    def list(self, request, *args, **kwargs):
+        qs = (
+            self.get_queryset()
+            .select_related('customer')
+            .prefetch_related('tables')
+            .order_by('-booking_time')
+        )
+
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            serializer = BookingDetailSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = BookingDetailSerializer(qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['patch'], detail=True, url_path='update-status', permission_classes=[IsEmployee])
+    def update_status(self, request, pk):
+        booking = self.get_object()
+
+        serializer = BookingStatusSerializer(
+            booking,
+            data=request.data,
+            partial=True
+        )
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(BookingDetailSerializer(booking).data, status=status.HTTP_200_OK)
