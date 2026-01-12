@@ -1,5 +1,6 @@
 from django.db import transaction
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer
 
@@ -52,7 +53,10 @@ class OrderSerializer(ModelSerializer):
                 order_customer = User.objects.get(pk=customer_id)
         if order_customer and not take_away:
             booking = (Booking.objects.filter(customer=order_customer)
-                       .exclude(status__in=[Booking.Status.COMPLETED, Booking.Status.CANCELLED]).first())
+                       .exclude(status__in=[Booking.Status.COMPLETED, Booking.Status.CANCELLED]))
+            if not booking.exists():
+                raise ValidationError({"message": "Đặt bàn trước khi Gọi món"})
+            booking = booking.first()
 
         # Su dung rollback de phong truong hop co loi
         with transaction.atomic():

@@ -4,12 +4,11 @@ import { MyUserContext, ViewModeContext } from "../utils/contexts/MyContexts";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Home from "../screens/Home/Home";
 import Food from "../screens/Food/Food";
-import Tables from "../components/Tables"
-import Chat from "../screens/Chat/Chat";
 import User from "../screens/User/User";
 import Dashboard from "../screens/Dashboard/Dashboard";
 import TabBarIcon from "../components/Layout/TabBarIcon";
 import Table from "../screens/Table/Table";
+import Chat from "../screens/Chat/Chat";
 
 const Tab = createBottomTabNavigator();
 
