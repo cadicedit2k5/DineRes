@@ -2,7 +2,7 @@ import { Alert, StyleSheet, Touchable, TouchableOpacity, View} from 'react-nativ
 import { useContext, useEffect, useState } from 'react'
 import ForceLogin from './Layout/ForceLogin'
 import InputText from './Layout/InputText'
-import { Avatar, Divider, IconButton, Text } from 'react-native-paper'
+import { Avatar, Divider, Icon, IconButton, Text } from 'react-native-paper'
 import MyButton from './Layout/MyButton'
 import { MyUserContext } from '../utils/contexts/MyContexts'
 import Apis, { authApis, endpoints } from '../utils/Apis'
@@ -139,7 +139,18 @@ const DishReviews = ({dishId}) => {
                     <View style={{flex: 1, justifyContent: "center", gap: 10}}>
                         <Text style={{fontWeight: "bold"}}>{c.customer.username}</Text>
                         <Text style={styles.metaText}>{c.comment}</Text>
-                        <Text>{moment(c.created_date).fromNow()}</Text>
+                        <View style={{flexDirection: "row", alignItems: "center"}}>
+                            <View style={[{flexDirection: "row", marginRight: 20}]}>
+                                {[1, 2, 3, 4, 5].map((star, key) => 
+                                    <Icon
+                                        key={key}
+                                        source="star"
+                                        color={star <= c.rating ? "gold" : "gray"}
+                                    />  
+                                )}
+                            </View>
+                            <Text style={{fontSize: 10}}>{moment(c.created_date).fromNow()}</Text>
+                        </View>
                     </View>
                 </View>
             )}

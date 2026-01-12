@@ -48,7 +48,7 @@ const Dishes = ({mode}) => {
       "label": "Giá"
     },
     {
-      "value": "rating",
+      "value": "avg_rating",
       "label": "Đánh giá"
     },
   ]

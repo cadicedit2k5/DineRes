@@ -18,7 +18,10 @@ const Header = () => {
   const [isCustomerView, ] = useContext(ViewModeContext);
   const nav = useNavigation();
 
-  const showModal = () => setVisible(true);
+  const showModal = () => {
+    loadNotification();
+    setVisible(true)
+  };
   const hideModal = () => setVisible(false);
 
   const loadNotification = async () => {
@@ -31,13 +34,27 @@ const Header = () => {
     loadNotification();
   }, [user])
 
+  const accessNotify = (type, id) => {
+    hideModal();
+    switch (type) {
+      case "dish":
+        nav.navigate("DishDetail", {"dishId": id});
+        break;
+      case "order":
+        nav.navigate("Orders")
+        break;
+    }
+  }
+
   return (
     <View style={[MyStyles.row, {padding: 10}]}>
       <Portal>
         <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={style.notiContainer}>
           <Text style={style.notiHeader}>Thông báo</Text>
           <ScrollView>
-            {notifys.length !== 0 ? notifys.map(i => <TouchableOpacity style={{margin: 10}} key={i.id}>
+            {notifys.length !== 0 ? notifys.map(i => 
+            <TouchableOpacity style={{margin: 10}} key={i.id}
+            onPress={() => accessNotify(i.target_type, i.object_id)}>
               <Text style={style.notiTitle}>{i.title}</Text>
               <Text style={style.notiContent}>{i.message}</Text>
               <Text>{moment(i.created_date).fromNow()}</Text>

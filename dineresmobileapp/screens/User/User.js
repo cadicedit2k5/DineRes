@@ -135,7 +135,7 @@ const User = () => {
         <Text style={style.profileTitle}>Hồ sơ người dùng</Text>
         {user &&
             <View style={style.profileAvatar}>
-                <Image style={MyStyles.avatar} source={{uri: (user) ? user.avatar : defaultAvatarUrl}}/>
+                <Image style={MyStyles.avatar} source={{uri: (user?.avatar) ? user.avatar : defaultAvatarUrl}}/>
                 <IconButton style={style.changeAvatarBtn}
                     icon="account-edit"
                     size={30}

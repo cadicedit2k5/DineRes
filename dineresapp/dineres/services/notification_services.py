@@ -10,11 +10,11 @@ class NotificationService:
     def mark_as_read(noti_id, user):
         try:
             noti = Notification.objects.filter(id=noti_id, user=user)
-            noti.update(read=True)
+            noti.update(id_readed=True)
             return True
         except Notification.DoesNotExist:
             return False
 
     @staticmethod
     def mark_all_as_read(user):
-        Notification.objects.filter(user=user, is_readed=False).update(is_readed=False)
+        Notification.objects.filter(user=user, is_readed=True).update(is_readed=False)

@@ -5,6 +5,7 @@ from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer
 
 from dineres.models import OrderDetail, Order, User, Booking, Dish
+from dineres.services.notification_services import NotificationService
 
 
 class OrderInputSerializer(serializers.Serializer):
@@ -81,6 +82,10 @@ class OrderSerializer(ModelSerializer):
 
             order.total_amount = total_amount
             order.save()
+            NotificationService.create_notification(user=order_customer,
+                                                    message="Vui lòng theo dõi đơn hàng của bạn.",
+                                                    title=f"Đã gọi món thành công!!! #{order.id}",
+                                                    target_object=order)
 
         return order
     def update(self, instance, validated_data):

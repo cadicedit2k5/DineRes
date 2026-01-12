@@ -113,7 +113,7 @@ class DishViewSet(viewsets.ModelViewSet):
                 user=dish.chef.user,
                 title="Món ăn nhận được đánh giá mới",
                 message=f"{request.user} vừa đánh giá {c.rating} sao cho món ăn {dish}",
-                target_object=c
+                target_object=dish
             )
 
             return Response(ReviewSerializer(c).data, status=status.HTTP_201_CREATED)
