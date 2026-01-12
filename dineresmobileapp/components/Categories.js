@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Apis, { endpoints } from "../utils/Apis";
+import MyStyles from "../styles/MyStyles";
 
 const Categories = ({setCate, allCate}) => {
   const [cates, setCates] = useState([]);
@@ -28,6 +29,13 @@ const Categories = ({setCate, allCate}) => {
 
   return (
     <View>
+      <Text style={{
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginTop: 10,
+        marginLeft: 20,
+        color: '#333'
+    }}>Danh mục</Text>
       <FlatList
         data={cates}
         horizontal

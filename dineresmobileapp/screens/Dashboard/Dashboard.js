@@ -17,7 +17,7 @@ const Dashboard = () => {
     {
       "icon": "shaker-outline",
       "label": "Quản lý nguyên liệu",
-      "action": () => {nav.navigate("IngredientDashBoard")}
+      "action": () => {nav.navigate("IngredientDashboard")}
     },
     {
       "icon": "book-open-blank-variant-outline",
@@ -31,7 +31,8 @@ const Dashboard = () => {
     },
     {
       "icon": "history",
-      "label": "Lịch sử thanh toán"
+      "label": "Lịch sử thanh toán",
+      "action": () => nav.navigate("PaymentHistory")
     },
      {
       "icon": "chart-bell-curve",

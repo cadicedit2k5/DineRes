@@ -6,6 +6,7 @@ from dineres.models import Transaction, Order
 class CreatePaymentSerializer(serializers.Serializer):
     order_id = serializers.IntegerField()
     payment_method = serializers.ChoiceField(choices=Transaction.Method.choices)
+    redirect_url = serializers.CharField(required=False)
 
     def validate_order_id(self, value):
         try:

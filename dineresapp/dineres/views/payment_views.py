@@ -21,6 +21,7 @@ class CreatePaymentViewSet(viewsets.ViewSet, generics.CreateAPIView):
 
         order_id = serializer.validated_data['order_id']
         payment_method = serializer.validated_data['payment_method']
+        redirect_url = serializer.validated_data['redirect_url']
 
         try:
             with transaction.atomic():
@@ -33,7 +34,7 @@ class CreatePaymentViewSet(viewsets.ViewSet, generics.CreateAPIView):
                                            payment_method=payment_method,
                                            transaction_ref=ref)
 
-                result = payment.create_payment(amount=total_amount, ref=ref)
+                result = payment.create_payment(amount=total_amount, ref=ref, redirect_url=redirect_url)
                 return Response(result, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -45,31 +46,19 @@ class PaymentIPNViewSet(APIView):
         try:
             payment = PaymentStrategyFactory.get_strategy(method)
             data = request.data
-            print(data)
+            print("return data:" ,data)
             payment.process_payment(data)
-            return Response(
-                {
-                    "message": "Giao dịch đã được ghi nhận.",
-                    "data": data
-                },
-                status=status.HTTP_200_OK
-            )
+            return Response({"return_code": 1, "return_message": "success"}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    def get(self, request, method):
-        try:
-            data = request.query_params.dict()
-            payment = PaymentStrategyFactory.get_strategy(method)
-            payment.process_payment(data)
-            return Response(
-                {
-                    "message": "Giao dịch đã được ghi nhận.",
-                    "data": data
-                },
-                status=status.HTTP_200_OK
-            )
-        except Exception as e:
-            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"return_code": 0, "return_message": str(e)}, status=status.HTTP_200_OK)
+    #
+    # def get(self, request, method):
+    #     try:
+    #         data = request.query_params.dict()
+    #         payment = PaymentStrategyFactory.get_strategy(method)
+    #         payment.process_payment(data)
+    #         return Response({"return_code": 1, "return_message": "success"}, status=200)
+    #     except Exception as e:
+    #         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 

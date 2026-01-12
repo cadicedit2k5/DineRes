@@ -2,10 +2,13 @@ import {useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import GoBack from '../../components/Layout/GoBack'
 import { ScrollView, Text, View } from 'react-native';
-import { Button, HelperText, TextInput } from 'react-native-paper';
+import { HelperText, TextInput } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authApis, endpoints } from '../../utils/Apis';
 import { useNavigation } from '@react-navigation/native';
+import InputText from '../../components/Layout/InputText';
+import MyStyles from '../../styles/MyStyles';
+import MyButton from '../../components/Layout/MyButton';
 
 const ChangePassword = () => {
     const info = [{
@@ -67,7 +70,7 @@ const ChangePassword = () => {
                     }
                 }
             } catch (error) {
-                setErr({old_password: error.response?.data?.message});
+                setErr({old_password: error.response.data?.message});
             } finally {
                 setLoading(false);
             }
@@ -75,38 +78,35 @@ const ChangePassword = () => {
     }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={MyStyles.container}>
         <GoBack/>
-        <ScrollView style={{ padding: 20 }}>
-            <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 20 }}>Thay đổi mật khẩu</Text>
+        <ScrollView style={{ padding: 20 }}
+        >
+            <Text style={MyStyles.title}>Thay đổi mật khẩu</Text>
             
             {info.map(i => (
                 <View key={i.field} >
-                    <TextInput  
+                    <InputText  
                         label={i.title}
                         value={user[i.field]}
                         secureTextEntry={i.secureTextEntry}
                         right={<TextInput.Icon icon={i.icon} />}
+                        style={{marginBottom: 10}}
                         onChangeText={(t) => {
                             setUser({...user, [i.field]: t});
                             if(err[i.field]) setErr({...err, [i.field]: null});
                         }}
                         error={err[i.field]}
                     />
-                    <HelperText type='error' visible={err[i.field]}>
-                        {err[i.field]}
-                    </HelperText>
                 </View>
             ))}
 
-            <Button 
+            <MyButton 
+                btnLabel={'Đổi mật khẩu'}
                 loading={loading} 
-                disabled={loading} 
-                mode="contained"
+                disabled={loading}
                 onPress={changePassword}
-            >
-                Đổi mật khẩu
-            </Button>
+            />
         </ScrollView>
     </SafeAreaView>
   )

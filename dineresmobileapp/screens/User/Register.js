@@ -1,18 +1,21 @@
 import { useState } from 'react'
-import { Image, TouchableOpacity } from 'react-native'
+import { Image, TouchableOpacity, View } from 'react-native'
 import { Text } from 'react-native'
-import { Button, HelperText, TextInput } from 'react-native-paper'
+import { TextInput } from 'react-native-paper'
 import Apis, { endpoints } from '../../utils/Apis'
 import { useNavigation } from '@react-navigation/native'
 import { ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { pickImage } from '../../utils/ImageUtils'
+import InputText from '../../components/Layout/InputText'
+import MyStyles from '../../styles/MyStyles'
+import MyButton from '../../components/Layout/MyButton'
 
 const Register = () => {
   const info = [{
         title: "Tên",
         field: "first_name",
-        icon: "text"
+        icon: "text",
     }, {
         title: "Họ và tên lót",
         field: "last_name",
@@ -43,8 +46,8 @@ const Register = () => {
 
     const [user, setUser] = useState({});
     const [loading, setLoading] = useState(false);
-    const [err, setErr] = useState(false);
     const nav = useNavigation();
+    const [err, setErr] = useState({});
 
     const chooseAvatar = async () => {
         const avatar = await pickImage();
@@ -55,14 +58,16 @@ const Register = () => {
     }
 
     const validate = () => {
-      if (!user.password || user.password !== user.confirm) {
-            setErr(true)
-            return false;
-        }
-        //...
-
-        setErr(false);
-        return true;
+      let tmpError = {};
+      if (!user.first_name) tmpError.first_name = "Vui lòng nhập Tên";
+      if (!user.last_name) tmpError.last_name = "Vui lòng nhập Họ và tên lót";
+      if (!user.username) tmpError.username = "Vui lòng nhập Tên đăng nhập";
+      if (!user.password) tmpError.password = "Vui lòng nhập Mặt khẩu";
+      if (!user.phone) tmpError.phone = "Vui lòng nhập Số điện thoại";
+      if (!user.email) tmpError.email = "Vui lòng nhập email";
+      if (user.confirm !== user.password) tmpError.confirm = "Mật khẩu không khớp";
+      setErr(tmpError);
+      return Object.keys(tmpError).length === 0;
     }
 
     const register = async () => {
@@ -84,18 +89,17 @@ const Register = () => {
           });
 
           if (res.status === 201) {
-            nav.navigate("Login");
-          }else {
-            console.error(res.data);
+            alert("Đăng ký thành công");
+            nav.navigate("Login", {"next_screen": "Home"});
           }
         } catch (error) {
-          console.error(error);
-          if (error.response) {
-            console.log(error.response.data);
-            alert("Lỗi từ server: " + JSON.stringify(error.response.data));
-          } else {
-            alert("Lỗi đăng ký người dùng!");
+          const errorData = error.response.data;
+          console.log(errorData);
+          let errTmp = {}
+          for (let key in errorData) {
+            errTmp[key] = errorData[key][0];
           }
+          setErr(errTmp);
         }finally{
           setLoading(false);
         }
@@ -104,26 +108,31 @@ const Register = () => {
     }
 
   return (
-    <SafeAreaView>
-      <ScrollView style={{ padding: 20 }}>
-        <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 20 }}>Đăng ký người dùng</Text>
+    <SafeAreaView style={MyStyles.container}>
+      <ScrollView style={{ padding: 20 }}
+        contentContainerStyle={{
+          flex: 1,
+          justifyContent: "center"
+        }}
+      >
+        <Text style={MyStyles.title}>Đăng ký người dùng</Text>
         
         {info.map(i => (
-            <TextInput
+            <InputText
                 key={i.field}
                 label={i.title}
                 value={user[i.field]}
                 secureTextEntry={i.secureTextEntry}
                 right={<TextInput.Icon icon={i.icon} />}
                 onChangeText={(t) => setUser({...user, [i.field]: t})}
-                onFocus={() => setErr(false)}
                 style={{ marginBottom: 10 }}
+                error={err[i.field]}
             />
         ))}
 
-        <HelperText type="error" visible={err}>
+        {/* <HelperText type="error">
             Mật khẩu KHÔNG khớp!
-        </HelperText>
+        </HelperText> */}
 
         <TouchableOpacity onPress={chooseAvatar} style={{ marginBottom: 20, alignItems: 'center' }}>
             <Text style={{ color: 'blue', marginBottom: 5 }}>Chọn ảnh đại diện...</Text>
@@ -134,17 +143,18 @@ const Register = () => {
             )}
         </TouchableOpacity>
 
-        <Button 
+        <MyButton 
+            btnLabel={"Đăng ký"}
             loading={loading} 
-            disabled={loading} 
-            mode="contained" 
+            disabled={loading}
             onPress={register} 
-        >
-            Đăng ký
-        </Button>
-        <Text>Đã có tài khoản? <TouchableOpacity onPress={() => nav.navigate("Login")}>
-          <Text>Đăng nhập</Text>
-          </TouchableOpacity></Text>
+        />
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
+            <Text>Đã có tài khoản? </Text>
+            <TouchableOpacity onPress={() => nav.navigate("Login")}>
+                <Text style={MyStyles.price}>Đăng nhập</Text>
+            </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   )

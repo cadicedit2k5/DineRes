@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
-from dineres.views import food_views, user_views, order_views, booking_views, payment_views, notification_views
+from dineres.views import food_views, user_views, order_views, booking_views, payment_views, notification_views, \
+    transaction_views
 from dineres.views.payment_views import PaymentIPNViewSet
 
 router = routers.DefaultRouter()
@@ -13,6 +14,7 @@ router.register('payments', payment_views.CreatePaymentViewSet, basename='paymen
 router.register('notifications', notification_views.NotificationViewSet, basename='notifications')
 router.register('tables', booking_views.TableViewSet, basename='tables')
 router.register('bookings', booking_views.BookingView, basename='bookings')
+router.register('transactions', transaction_views.TransactionViewSet, basename='transactions')
 
 urlpatterns = [
     path('', include(router.urls)),

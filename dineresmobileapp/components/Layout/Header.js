@@ -1,9 +1,9 @@
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Image, View } from "react-native";
-import { IconButton, Modal, Portal } from "react-native-paper";
+import { Badge, IconButton, Modal, Portal } from "react-native-paper";
 import MyStyles from "../../styles/MyStyles";
 import { useContext, useEffect, useState } from "react";
-import { MyUserContext, ViewModeContext } from "../../utils/contexts/MyContexts";
+import { MyCartContext, MyUserContext, ViewModeContext } from "../../utils/contexts/MyContexts";
 import { authApis, endpoints } from "../../utils/Apis";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
@@ -14,6 +14,7 @@ const Header = () => {
   const [visible, setVisible] = useState(false);
   const [notifys, setNotifys] = useState([]);
   const [user, ] = useContext(MyUserContext);
+  const [cart, ] = useContext(MyCartContext);
   const [isCustomerView, ] = useContext(ViewModeContext);
   const nav = useNavigation();
 
@@ -35,13 +36,15 @@ const Header = () => {
       <Portal>
         <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={style.notiContainer}>
           <Text style={style.notiHeader}>Thông báo</Text>
-          {notifys.length !== 0 ? notifys.map(i => <TouchableOpacity style={{margin: 10}} key={i.id}>
-            <Text style={style.notiTitle}>{i.title}</Text>
-            <Text style={style.notiContent}>{i.message}</Text>
-            <Text>{moment(i.created_date).fromNow()}</Text>
-          </ TouchableOpacity>) 
-          : <Text>Không có thông báo!!!</Text>
-          }
+          <ScrollView>
+            {notifys.length !== 0 ? notifys.map(i => <TouchableOpacity style={{margin: 10}} key={i.id}>
+              <Text style={style.notiTitle}>{i.title}</Text>
+              <Text style={style.notiContent}>{i.message}</Text>
+              <Text>{moment(i.created_date).fromNow()}</Text>
+            </ TouchableOpacity>) 
+            : <Text>Không có thông báo!!!</Text>
+            }
+          </ScrollView>
         </Modal>
       </Portal>
 
@@ -57,18 +60,24 @@ const Header = () => {
       </TouchableOpacity>
 
       <View style={MyStyles.row}>
-      {isCustomerView && 
-        <IconButton
-        icon="cart"
-        size={20}
-        onPress={() => nav.navigate("Cart")}
-        />}
+      {isCustomerView &&
+        <View>
+          <IconButton
+          icon="cart-outline"
+          size={25}
+          onPress={() => nav.navigate("Cart")}
+          />
+          <Badge style={MyStyles.badge}>{cart.length}</Badge>
+        </View> }
         {user && 
-        <IconButton
-          icon="bell"
-          size={20}
-          onPress={showModal}
-        />}
+        <View>
+          <IconButton
+            icon="bell-outline"
+            size={25}
+            onPress={showModal}
+          />
+          <Badge style={MyStyles.badge}>{notifys.length}</Badge>
+        </View>}
       </View>
     </View>
   );
@@ -85,6 +94,7 @@ const style = StyleSheet.create({
       fontWeight: 700,
     }, notiContainer: {
       width: 300,
+      maxHeight: 500,
       position: "absolute",
       right: 10,
       top: 50,

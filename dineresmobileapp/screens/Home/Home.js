@@ -1,14 +1,14 @@
 import { ScrollView, StyleSheet, Text} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Header from '../../components/Layout/Header'
+import MyStyles from '../../styles/MyStyles'
 
 const Home = () => {
   return (
-    <SafeAreaView>
+    <SafeAreaView style={MyStyles.container}>
       <Header />
       <ScrollView>
-        <Text>Home</Text>
-
+        
       </ScrollView>
     </SafeAreaView>
   )

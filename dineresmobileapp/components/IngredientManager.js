@@ -179,7 +179,7 @@ const IngredientManager = ({ ingredients, setIngredients }) => {
                     </View>
                     
                     {selectedIng && (
-                        <View style={{ marginTop: 10 }}>
+                        <View style={{ marginTop: 10, height: 50}}>
                             <InputText
                                 label={`Số lượng (${selectedIng.unit})`}
                                 value={inputAmount}
@@ -192,7 +192,7 @@ const IngredientManager = ({ ingredients, setIngredients }) => {
 
                     <View style={styles.modalButtons}>
                         <Button onPress={() => setModalVisible(false)} textColor="#666">Hủy</Button>
-                        <Button mode="contained" onPress={handleAddIngredient} disabled={!selectedIng || !inputAmount}>
+                        <Button style={{backgroundColor: "#ee6a0dff"}} mode="contained" onPress={handleAddIngredient} disabled={!selectedIng || !inputAmount}>
                             Thêm vào món
                         </Button>
                     </View>

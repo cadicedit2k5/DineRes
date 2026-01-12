@@ -9,13 +9,14 @@ from abc import abstractmethod, ABC
 from datetime import datetime
 
 from django.utils import timezone
+from rest_framework.utils import json
 
 from dineres.models import Transaction, Order
 
 
 class PaymentStrategy(ABC):
     @abstractmethod
-    def create_payment(self, amount, ref):
+    def create_payment(self, amount, ref, redirect_url=None):
         pass
 
     @abstractmethod
@@ -33,6 +34,7 @@ class PaymentStrategy(ABC):
     def process_payment(self, data):
         if self.verify_payment(data):
             ref, status = self.get_payment_status(data)
+            print(ref, status)
             self.update_db(ref, status)
 
     def update_db(self, ref, status):
@@ -49,10 +51,9 @@ class PaymentStrategy(ABC):
 
 
 class CashPaymentStrategy(PaymentStrategy):
-    def create_payment(self, amount, ref):
-        return {
-            "payUrl": f"{os.getenv('SERVER_URL')}/api/ipn/cash?ref={ref}",
-        }
+    def create_payment(self, amount, ref, redirect_url=None):
+        self.process_payment(data={"ref": ref})
+        return {}
 
     def verify_payment(self, data):
         return True
@@ -61,22 +62,23 @@ class CashPaymentStrategy(PaymentStrategy):
         return Transaction.Method.CASH
 
     def get_payment_status(self, data):
-        return data.get('ref'), Transaction.Status.SUCCESS
+        return data['ref'], Transaction.Status.SUCCESS
 
 
 class MomoPaymentStrategy(PaymentStrategy):
     def __init__(self):
         self.accessKey = os.getenv("MOMO_ACCESS_KEY")
         self.secretKey = os.getenv("MOMO_SECRET_KEY")
-        self.endpoint = "https://test-payment.momo.vn/v2/gateway/api/create"
-        self.ipnUrl = f"{os.getenv('SERVER_URL')}/api/ipn/momo"
-        self.redirectUrl = f"{os.getenv('SERVER_URL')}/api/ipn/momo"
+        self.endpoint = "https://test-payment.momo.vn/v2/gateway/api/create/"
+        self.ipnUrl = f"{os.getenv('SERVER_URL')}/api/ipn/momo/"
+        self.redirectUrl = "dineres://payment-result"
 
-    def create_payment(self, amount, ref):
+    def create_payment(self, amount, ref, redirect_url=None):
         partnerCode = "MOMO"
         orderId = str(ref)
         requestId = str(uuid.uuid4())
         extraData = str(ref)
+        self.redirectUrl = redirect_url if redirect_url else "dineres://payment-result"
 
         raw_signature = (f"accessKey={self.accessKey}&amount={amount}&extraData={extraData}"
                          f"&ipnUrl={self.ipnUrl}&orderId={orderId}&orderInfo=Thanh toan Momo"
@@ -156,7 +158,7 @@ class ZaloPayPaymentStrategy(PaymentStrategy):
         self.key2 = os.getenv("ZLP_MERCHANT_KEY2")
         self.endpoint = os.getenv("ZLP_MERCHANT_ENDPOINT")
         self.gateway_endpoint = os.getenv("ZLP_MERCHANT_GATEWAY_ENDPOINT")
-        self.redirect_url = f"{os.getenv("SERVER_URL")}/api/ipn/zlpay"
+        self.redirect_url = "dineres://payment-result"
 
     def get_mac(self, data, key):
         mac = hmac.new(
@@ -167,7 +169,10 @@ class ZaloPayPaymentStrategy(PaymentStrategy):
 
         return mac
 
-    def create_payment(self, amount, ref):
+    def create_payment(self, amount, ref, redirect_url=None):
+        self.redirect_url = redirect_url if redirect_url else "dineres://payment-result"
+        callback_url = f"{os.getenv('SERVER_URL')}/api/ipn/zlpay/"
+
         inputData = {
             "app_id": int(self.app_id),
             "app_user": "OkeOU",
@@ -179,6 +184,7 @@ class ZaloPayPaymentStrategy(PaymentStrategy):
             "bank_code": "",
             "embed_data": "{\"preferred_payment_method\": [\"zalopay_wallet\"], \"redirecturl\": \"" + self.redirect_url + "\"}",
             "item": '[]',
+            "callback_url": callback_url
         }
 
         data = "|".join([
@@ -205,29 +211,23 @@ class ZaloPayPaymentStrategy(PaymentStrategy):
             return {'payUrl': None, 'err_msg': str(e)}
 
     def verify_payment(self, data):
-        raw_data = "|".join([
-            data["appid"],
-            data["apptransid"],
-            data["pmcid"],
-            data["bankcode"],
-            data["amount"],
-            data["discountamount"],
-            data["status"],
-        ])
+        mac_received = data.get("mac")
+        data_str = data.get("data")
 
-        mac = self.get_mac(raw_data, self.key2)
-        return hmac.compare_digest(mac, data['checksum'])
+        mac_calculated = self.get_mac(data_str, self.key2)
+
+        return hmac.compare_digest(mac_received, mac_calculated)
 
     def get_payment_method(self):
         return Transaction.Method.ZLPAY
 
     def get_payment_status(self, data):
-        ref = data['apptransid']
+        data_str = data.get("data")
+        data_json = json.loads(data_str)
 
-        if data['status'] == '1':
-            return ref, Transaction.Status.SUCCESS
-        else:
-            return ref, Transaction.Status.FAILED
+        ref = data_json.get("app_trans_id")
+
+        return ref, Transaction.Status.SUCCESS
 
 class PaymentStrategyFactory:
     @staticmethod

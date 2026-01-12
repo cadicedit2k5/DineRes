@@ -1,13 +1,17 @@
 import { useContext, useState } from 'react'
-import { ScrollView, Text } from 'react-native'
+import { ScrollView, Text, View } from 'react-native'
 import Apis, { authApis, endpoints } from '../../utils/Apis';
-import { Button, HelperText, TextInput } from 'react-native-paper';
+import { HelperText, TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import {CLIENT_ID, CLIENT_SECRET} from "@env"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native';
 import { MyUserContext } from '../../utils/contexts/MyContexts';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import InputText from '../../components/Layout/InputText';
+import MyButton from '../../components/Layout/MyButton';
+import MyStyles from '../../styles/MyStyles';
+import GoBack from '../../components/Layout/GoBack';
 
 const Login = ({route}) => {
   const info = [{
@@ -23,13 +27,16 @@ const Login = ({route}) => {
 
     const [user, setUser] = useState({});
     const [loading, setLoading] = useState(false);
-    const [err, setErr] = useState(false);
+    const [err, setErr] = useState({});
     const nav = useNavigation();
     const [, dispatch] = useContext(MyUserContext);
 
     const validate = () => {
-      setErr(false);
-      return true;
+      let tmpError = {};
+      if (!user.username) tmpError.username = "Vui lòng nhập Tên đăng nhập";
+      if (!user.password) tmpError.password = "Vui lòng nhập Mặt khẩu";
+      setErr(tmpError);
+      return Object.keys(tmpError).length === 0;
   }
 
   const login = async () => {
@@ -58,8 +65,8 @@ const Login = ({route}) => {
               "type": "login",
               "payload": u.data,
             });
-            const next_screen = route?.params.next_screen;
-            const next_params = route?.params.next_params;
+            const next_screen = route.params?.next_screen;
+            const next_params = route.params?.next_params;
 
             if (next_screen) {
               nav.navigate(next_screen, next_params);
@@ -67,17 +74,10 @@ const Login = ({route}) => {
               nav.navigate("Home");
             }
           }, 500)
-        }else {
-          setErr(true);
         }
       } catch (error) {
-        console.error(error);
-        if (error.response) {
-          console.log(error.response.data);
-          alert("Lỗi từ server: " + JSON.stringify(error.response.data));
-        } else {
-          alert("Lỗi đăng nhập người dùng!");
-        }
+        console.log(error.response.data);
+          setErr({"general": "Sai tên đăng nhập hoặc mặt khẩu."});
       }finally{
         setLoading(false);
       }
@@ -85,38 +85,47 @@ const Login = ({route}) => {
   }
   
   return (
-    <SafeAreaView>
-      <ScrollView style={{ padding: 20 }}>
-        <Text style={{ fontSize: 24, textAlign: 'center', marginBottom: 20 }}>Đăng nhập</Text>
+    <SafeAreaView style={MyStyles.container}>
+      <ScrollView style={{ padding: 20 }}
+        contentContainerStyle={{
+          justifyContent: "center",
+          flexGrow: 1
+        }}
+      >
+        <Text style={MyStyles.title}>Đăng nhập</Text>
         
         {info.map(i => (
-            <TextInput
+            <InputText
                 key={i.field}
                 label={i.title}
                 value={user[i.field]}
                 secureTextEntry={i.secureTextEntry}
                 right={<TextInput.Icon icon={i.icon} />}
                 onChangeText={(t) => setUser({...user, [i.field]: t})}
-                onFocus={() => setErr(false)}
+                onFocus={() => setErr({})}
                 style={{ marginBottom: 10 }}
+                error={err[i.field]}
             />
         ))}
 
-        <HelperText type="error" visible={err}>
-            Sai tên đăng nhập hoặc mật khẩu!
-        </HelperText>
+        {err.general && 
+          <HelperText type="error" visible={err}>
+              Sai tên đăng nhập hoặc mật khẩu!
+          </HelperText>
+        }
 
-        <Button 
+        <MyButton 
+            btnLabel={"Đăng nhập"}
             loading={loading} 
             disabled={loading} 
-            mode="contained" 
             onPress={login} 
-        >
-            Đăng nhập
-        </Button>
-        <Text>Chưa có tài khoản? <TouchableOpacity onPress={() => nav.navigate("Register")}>
-                                  <Text>Đăng ký</Text>
-                                </TouchableOpacity></Text>
+        />
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
+            <Text>Chưa có tài khoản? </Text>
+            <TouchableOpacity onPress={() => nav.navigate("Register")}>
+                <Text style={MyStyles.price}>Đăng ký</Text>
+            </TouchableOpacity>
+        </View>
     </ScrollView>
   </SafeAreaView>
   )
