@@ -2,20 +2,22 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context'
 import GoBack from "../../components/Layout/GoBack";
 import MyStyles from "../../styles/MyStyles";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authApis, endpoints } from "../../utils/Apis";
 import { ActivityIndicator, Icon } from "react-native-paper";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
-const BookingHistory = () =>{
+const BookingManage = () =>{
     const [loading, setLoading] = useState(false);
-    const [page, setPage] = useState(1)
-    const [booking, setBooking] = useState([])
+    const [page, setPage] = useState(1);
+    const [booking, setBooking] = useState([]);
+    const nav = useNavigation();
 
     const loadBookingHistoty = async() => {
         try {
             setLoading(true)
-            let url = `${endpoints['user-bookings']}?page=${page}`;
+            let url = `${endpoints['bookings']}?page=${page}`;
             const token = await AsyncStorage.getItem('access-token');
             console.info(url)
             const res = await authApis(token).get(url)
@@ -43,6 +45,13 @@ const BookingHistory = () =>{
             setPage(page + 1);
     }
 
+    useFocusEffect(
+        useCallback(() => {
+            setBooking([]);
+            setPage(1);
+        }, [])
+    );
+
     const formatDateTime = (iso) => {
         const d = new Date(iso);
         return d.toLocaleDateString() + " - " + d.toLocaleTimeString([], {
@@ -68,7 +77,7 @@ const BookingHistory = () =>{
         <SafeAreaView style={{ flex: 1}}>
             <GoBack />
             <View>
-                <Text style={MyStyles.title}>Lịch sử đặt bàn</Text>
+                <Text style={MyStyles.title}>Quản lý đặt bàn</Text>
                 <FlatList 
                     data={booking}
                     onEndReached={loadMore}
@@ -95,6 +104,13 @@ const BookingHistory = () =>{
                                 </View>
 
                                 <View style={styles.row}>
+                                    <Icon source="account" size={18} color="#3c263aff" />
+                                    <Text style={styles.info}>
+                                        { item.customer_name }
+                                    </Text>
+                                </View>
+
+                                <View style={styles.row}>
                                     <Icon source="account-group" size={18} color="#3c263aff" />
                                     <Text style={styles.info}>
                                         { item.table.capacity } chỗ
@@ -114,6 +130,20 @@ const BookingHistory = () =>{
                                         <Text style={styles.note}>{item.note}</Text>
                                     </View>
                                 ) : null}
+
+                                <View style={styles.actionRow}>
+                                    <View
+                                        style={styles.actionBtn}
+                                        onTouchEnd={() =>
+                                            nav.navigate("BookingDetail", {
+                                                booking: item
+                                            })
+                                        }
+                                    >
+                                        <Icon source="clipboard-text-outline" size={18} color="#fff" />
+                                        <Text style={styles.actionText}>Xử lý</Text>
+                                    </View>
+                                </View>
                             </View>
                         );
                     }}
@@ -123,7 +153,7 @@ const BookingHistory = () =>{
     );
 }
 
-export default BookingHistory;
+export default BookingManage;
 
 const styles = StyleSheet.create({
   card: {
@@ -179,5 +209,24 @@ const styles = StyleSheet.create({
     },
     listContainer: {
         paddingBottom: 100,
-  },
+    },
+    actionRow: {
+        flexDirection: "row",
+        marginTop: 12,
+    },
+    actionBtn: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        backgroundColor: "#d19eafff",
+        paddingHorizontal: 14,
+        paddingVertical: 6,
+        borderRadius: 20,
+    },
+
+    actionText: {
+        color: "#fff",
+        fontSize: 13,
+        fontWeight: "600",
+    },
 });

@@ -33,3 +33,14 @@ class IsUserOwner(BasePermission):
 
         if hasattr(obj, 'customer'):
             return request.user == obj.customer
+
+class IsEmployee(BasePermission):
+    def has_permission(self, request, view):
+        return (
+            request.user.is_authenticated and
+            request.user.user_role in [
+                User.Role.ADMIN,
+                User.Role.STAFF,
+                User.Role.CHEF
+            ]
+        )

@@ -21,7 +21,8 @@ const Dashboard = () => {
     },
     {
       "icon": "book-open-blank-variant-outline",
-      "label": "Quản lý Booking"
+      "label": "Quản lý Booking",
+      "action": () => {nav.navigate("BookingManage")}
     },
     {
       "icon": "clipboard-text-clock-outline",
