@@ -15,13 +15,11 @@ const ChefChatList = () => {
 
         const unsubscribe = onValue(chatsRef, (snapshot) => {
             if (!snapshot.exists()) {
-                console.log("Không có dữ liệu nào trong support_chats");
                 setConversations([]);
                 return;
             }
 
             const data = snapshot.val();
-            console.log(JSON.stringify(data, null, 2));
 
             const sortedList = Object.keys(data)
                 .map(key => {

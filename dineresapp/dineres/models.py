@@ -5,7 +5,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator, RegexVa
 from rest_framework.exceptions import ValidationError
 
 from dineresapp import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 from ckeditor.fields import RichTextField
 from cloudinary.models import CloudinaryField
@@ -32,6 +32,18 @@ class User(AbstractUser):
 
     def __str__(self):
         return f'{self.get_user_role_display()}: {self.last_name} {self.first_name}'
+
+    def save(self, *args, **kwargs):
+        if self.user_role in [self.Role.CHEF, self.Role.ADMIN]:
+            self.is_staff = True
+        else :
+            self.is_staff = False
+        super().save(*args, **kwargs)
+
+        if self.user_role == self.Role.CHEF:
+            self.groups.add(Group.objects.get(name='Chef'))
+        elif self.user_role != self.Role.CHEF:
+            self.groups.remove(Group.objects.get(name='Chef'))
 
 class Chef(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chef')
@@ -98,6 +110,11 @@ class Dish(BaseModel):
     chef = models.ForeignKey(Chef, on_delete=models.PROTECT, related_name='dishes', null=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='dishes')
     ingredients = models.ManyToManyField(Ingredient, through='DishDetail')
+
+    class Meta:
+        permissions = [
+            ("view_dish_statistics", "Can view dish revenue statistics")
+        ]
 
     def __str__(self):
         return self.name
