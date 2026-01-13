@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert } from "react-native";
-import { Text, TextInput, Button, IconButton, Modal, Portal, Searchbar, Surface, Divider, ActivityIndicator } from "react-native-paper";
+import { Text, TextInput, Button, IconButton, Modal, Portal, Searchbar, ActivityIndicator } from "react-native-paper";
 import Apis, {endpoints} from "../utils/Apis";
 import InputText from "./Layout/InputText";
 
@@ -119,7 +119,6 @@ const IngredientManager = ({ ingredients, setIngredients }) => {
                 <Button mode="text" icon="plus" onPress={() => setModalVisible(true)}>Thêm mới</Button>
             </View>
 
-            {/* DANH SÁCH NGUYÊN LIỆU HIỆN TẠI */}
             {ingredients.map((item, key) => (
                 <View key={key} style={styles.ingRow}>
                     <View style={{ flex: 3 }}>
@@ -146,7 +145,6 @@ const IngredientManager = ({ ingredients, setIngredients }) => {
                 <Text style={{ fontStyle: 'italic', color: '#888', textAlign: 'center', margin: 10 }}>Chưa có nguyên liệu nào.</Text>
             )}
 
-            {/* MODAL TÌM KIẾM VÀ THÊM */}
             <Portal>
                 <Modal visible={modalVisible} onDismiss={() => setModalVisible(false)} contentContainerStyle={styles.modalContainer}>
                     <Text variant="titleLarge" style={{ marginBottom: 15, fontWeight: 'bold' }}>Thêm nguyên liệu</Text>

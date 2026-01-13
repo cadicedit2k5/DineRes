@@ -3,8 +3,6 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import { ref, onChildAdded, push, serverTimestamp, update } from 'firebase/database';
 import { db } from '../../utils/firebaseUtils'; 
 import { MyUserContext } from '../../utils/contexts/MyContexts';
-import { KeyboardAvoidingView } from 'react-native';
-import { Platform } from 'react-native';
 
 const CustomerSupportChat = () => {
     const [user, ] = useContext(MyUserContext);

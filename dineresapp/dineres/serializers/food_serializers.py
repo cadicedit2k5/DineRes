@@ -93,7 +93,6 @@ class DishSerializer(ImageSerializer):
             dish = super().update(instance, validated_data)
 
             if ingredients_data:
-                # Xoa tat ca nguyen lieu cu
                 dish.dish_details.all().delete()
                 details_to_update = []
                 for i in ingredients_data:

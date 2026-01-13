@@ -2,7 +2,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useContext } from "react";
 import { ViewModeContext } from "../utils/contexts/MyContexts";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Home from "../screens/Home/Home";
 import Food from "../screens/Food/Food";
 import User from "../screens/User/User";
 import Dashboard from "../screens/Dashboard/Dashboard";

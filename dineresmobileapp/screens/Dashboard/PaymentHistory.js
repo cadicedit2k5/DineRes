@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
-import { Text, Surface, IconButton, ActivityIndicator, Chip, Divider } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { View, StyleSheet, FlatList } from 'react-native';
+import { Text, Surface, IconButton, ActivityIndicator, Divider } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
@@ -10,10 +9,8 @@ import GoBack from '../../components/Layout/GoBack';
 import MyStyles from '../../styles/MyStyles';
 
 const PaymentHistory = () => {
-    const nav = useNavigation();
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
     const [page, setPage] = useState(1);
 
     const loadTransactions = async () => {  

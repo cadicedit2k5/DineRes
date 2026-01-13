@@ -11,7 +11,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import InputText from '../../components/Layout/InputText';
 import MyButton from '../../components/Layout/MyButton';
 import MyStyles from '../../styles/MyStyles';
-import GoBack from '../../components/Layout/GoBack';
 
 const Login = ({route}) => {
   const info = [{

@@ -16,9 +16,8 @@ import { MD3LightTheme, PaperProvider, configureFonts } from 'react-native-paper
 import MainNavigators from "./navigators/MainNavigators";
 import MyCartReducer from "./utils/reducers/MyCartReducer";
 
-// 2. CẤU HÌNH THEME ROBOTO
 const fontConfig = {
-  fontFamily: 'Roboto_400Regular', // Font mặc định cho toàn app
+  fontFamily: 'Roboto_400Regular',
 };
 
 const theme = {
@@ -31,7 +30,6 @@ const App = () => {
   const [cart, cartDispatch] = useReducer(MyCartReducer, []);
   const [isCustomerView, setIsCustomerView] = useState(true);
 
-  // 3. LOAD CÁC BIẾN THỂ CỦA ROBOTO
   const [fontsLoaded] = useFonts({
     Roboto_400Regular,
     Roboto_500Medium,
@@ -103,7 +101,6 @@ const App = () => {
     checkLogin();
   }, [])
 
-  // 4. CHỜ FONT TẢI XONG
   if (!fontsLoaded) {
     return null; 
   }

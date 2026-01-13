@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Apis, { endpoints } from "../utils/Apis";
-import MyStyles from "../styles/MyStyles";
 
 const Categories = ({setCate, allCate}) => {
   const [cates, setCates] = useState([]);

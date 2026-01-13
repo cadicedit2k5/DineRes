@@ -123,12 +123,7 @@ const Tables = () => {
                     isVisible={showPicker} 
                     mode="datetime" date={date} 
                     display="inline"
-                    // minimumDate={new Date()}
                     onConfirm={(d) => { 
-                        // if (d < new Date()) {
-                        //     Alert.alert("Lỗi", "Không thể chọn thời gian trong quá khứ");
-                        //     return;
-                        // }
                         if (!validate(d)) return;
                         setShowPicker(false); 
                         setDate(d); 
@@ -212,11 +207,11 @@ const style = StyleSheet.create ({
     },
     item: {
         backgroundColor: "#fff",
-        marginVertical: 6, // Khoảng cách giữa các card
+        marginVertical: 6, 
         marginHorizontal: 2,
         borderRadius: 10,
-        elevation: 3,         // Đổ bóng cho Android
-        shadowColor: "#000",  // Đổ bóng cho iOS
+        elevation: 3,    
+        shadowColor: "#000",
         shadowOpacity: 0.1,
         shadowRadius: 4,
         shadowOffset: { width: 0, height: 2 },

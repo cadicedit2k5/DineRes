@@ -90,7 +90,6 @@ const DishReviews = ({dishId}) => {
     }
   return (
     <View>
-      {/* Review */}
         <Text variant='titleMedium' style={{fontWeight: "bold", marginBottom: 10, marginTop: 20}}>Viết đánh giá</Text>
         {user === null ? 
         <ForceLogin
@@ -105,7 +104,6 @@ const DishReviews = ({dishId}) => {
                 onChangeText={(t) => setComment(t)}
                 multiline={true}
             />
-            {/* đánh giá của khách */}
             <View style={[{flexDirection: "row", justifyContent: "space-between", marginHorizontal: 50}]}>
                 {[1, 2, 3, 4, 5].map((star, key) => 
                     <IconButton 

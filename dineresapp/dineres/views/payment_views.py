@@ -51,14 +51,5 @@ class PaymentIPNViewSet(APIView):
             return Response({"return_code": 1, "return_message": "success"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"return_code": 0, "return_message": str(e)}, status=status.HTTP_200_OK)
-    #
-    # def get(self, request, method):
-    #     try:
-    #         data = request.query_params.dict()
-    #         payment = PaymentStrategyFactory.get_strategy(method)
-    #         payment.process_payment(data)
-    #         return Response({"return_code": 1, "return_message": "success"}, status=200)
-    #     except Exception as e:
-    #         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 

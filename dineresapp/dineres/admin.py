@@ -12,7 +12,6 @@ from .dao import get_dishes_quantity_stats, get_dishes_quantity_timeline, get_di
     get_total_booking_timeline, get_total_booking_count
 from .models import Category, Dish, Order, Booking, Review, Table, Ingredient, User, Chef, Transaction
 
-# Base Admin
 class BaseAdmin(admin.ModelAdmin):
     readonly_fields = ['hinh_anh']
     stat = Category.objects.annotate()
@@ -23,11 +22,9 @@ class BaseAdmin(admin.ModelAdmin):
             )
         return "Chưa có ảnh"
 
-# Inline Admin
 class DishIngredientInline(admin.TabularInline):
     model = Dish.ingredients.through
 
-# Register your models here.
 class DineResAppAdmin(admin.AdminSite):
     site_header = 'Hệ thống nhà hàng trực tuyển'
 

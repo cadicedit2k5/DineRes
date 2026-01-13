@@ -6,8 +6,6 @@ from django.db.models.functions import TruncMonth, TruncDate, TruncWeek
 
 from dineres.models import OrderDetail, Dish, Booking
 
-
-# thống kê số lượng và doanh thu từng món theo ngày, tháng, năm
 def get_dishes_quantity_stats(period='month'):
     now = timezone.now()
 
@@ -42,7 +40,6 @@ def get_dishes_quantity_stats(period='month'):
             .order_by('-total_amount')
     )
 
-# thống kê tổng doanh thu trong ngày, tháng, năm
 def get_dishes_amount_stats(period='month'):
     now = timezone.now()
 
@@ -74,7 +71,6 @@ def get_dishes_amount_stats(period='month'):
         qs.aggregate(total_amount=Sum(F('quantity') * F('price_at_order')))
     )
 
-# thống kê theo ngày, tuần, tháng bán được bao nhiêu món
 def get_dishes_quantity_timeline(period='month'):
     now = timezone.now()
 
@@ -115,7 +111,6 @@ def get_dishes_quantity_timeline(period='month'):
 def get_dishes_quantity():
     return (Dish.objects.count())
 
-# thông kê tần suất đặt bàn cho ngày, tháng, năm
 def get_total_booking_count(period='month'):
     now = timezone.now()
 
@@ -144,7 +139,6 @@ def get_total_booking_count(period='month'):
 
     return qs.count()
 
-#thống kế đặt bàn ngày trong tuần, tuần trong tháng, tháng trong năm
 def get_total_booking_timeline(period='month'):
     now = timezone.now()
 

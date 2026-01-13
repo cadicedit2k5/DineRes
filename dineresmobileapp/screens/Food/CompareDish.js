@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { IconButton, Modal, Portal, Card, Avatar } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GoBack from '../../components/Layout/GoBack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,8 +10,6 @@ import MyButton from '../../components/Layout/MyButton';
 
 
 const CompareDish = () => {
-    const nav = useNavigation();
-
     const [item1, setItem1] = useState(null);
     const [item2, setItem2] = useState(null);
 
@@ -71,39 +68,33 @@ const CompareDish = () => {
                     <IconButton icon="close" size={20} iconColor="white" />
                 </TouchableOpacity>
 
-                {/* Hình ảnh */}
                 <Image 
                     source={item.image ? { uri: item.image } : require("../../assets/DineResLoGo.png")} 
                     style={styles.image} 
                     resizeMode="cover"
                 />
 
-                {/* Tên món */}
                 <View style={styles.sectionName}>
                     <Text style={styles.nameText} numberOfLines={2}>{item.name}</Text>
                 </View>
 
-                {/* Giá */}
                 <View style={[styles.rowSection, { backgroundColor: '#f9f9f9' }]}>
                     <Text style={MyStyles.price}>
                         {parseInt(item.price).toLocaleString()}đ
                     </Text>
                 </View>
 
-                {/* Đánh giá */}
                 <Rating
                     rating={item.rating}
                     review_count={`${item.review_count} đánh giá`}
                 />
 
-                {/* Mô tả */}
                 <View style={styles.descSection}>
                     <Text style={{fontSize: 12, color: '#666'}}>
                         {item.description || "Chưa có mô tả"}
                     </Text>
                 </View>
 
-                {/* nguyên liệu */}
                 <Text variant="titleMedium" style={{ marginTop: 20 }}>Nguyên liệu chính</Text>
                 <View>
                     {item.ingredients.map((ing) => (
@@ -126,21 +117,17 @@ const CompareDish = () => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-            {/* Header */}
             <View style={styles.header}>
                 <GoBack />
                 <Text style={styles.headerTitle}>So sánh món ăn</Text>
                 <View style={{width: 40}} /> 
             </View>
 
-            {/* BODY */}
             <View style={{ flex: 1, flexDirection: 'row' }}>
-                {/* Cột Trái */}
                 <View style={{ flex: 1, borderRightWidth: 1, borderColor: '#eee' }}>
                     <RenderColumn item={item1} slot={1} />
                 </View>
 
-                {/* Cột Phải */}
                 <View style={{ flex: 1 }}>
                     <RenderColumn item={item2} slot={2} />
                 </View>

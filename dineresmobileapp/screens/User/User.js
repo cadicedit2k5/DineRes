@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { FlatList, Image, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native'
 import { Button, IconButton } from 'react-native-paper'
 import { MyUserContext, ViewModeContext } from '../../utils/contexts/MyContexts'
 import AsyncStorage from '@react-native-async-storage/async-storage'
