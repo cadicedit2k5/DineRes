@@ -19,25 +19,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 import os
-from dotenv import load_dotenv  # Thêm dòng này
+from dotenv import load_dotenv
 
-# Load biến môi trường
 load_dotenv()
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
 
 import cloudinary
 
-# Configuration
-
 cloudinary.config(
     cloud_name="dxopigima",
     api_key="949398647377574",
-    api_secret=os.getenv('CLOUDINARY_SECRET'),  # Click 'View API Keys' above to copy your API secret
+    api_secret=os.getenv('CLOUDINARY_SECRET'),
     secure=True
 )
 

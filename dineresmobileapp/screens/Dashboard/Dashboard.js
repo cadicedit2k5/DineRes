@@ -4,21 +4,14 @@ import Header from '../../components/Layout/Header'
 import { Icon, Surface, Text } from 'react-native-paper'
 import MyStyles from '../../styles/MyStyles'
 import { useNavigation } from '@react-navigation/native'
+import { useContext } from 'react'
+import { MyUserContext } from '../../utils/contexts/MyContexts'
 
 const Dashboard = () => {
   const nav = useNavigation();
+  const [user, ]  = useContext(MyUserContext);
 
   const dashboards = [
-    {
-      "icon": "food-outline",
-      "label": "Quản lý món ăn",
-      "action": () => {nav.navigate("FoodDashboard")}
-    },
-    {
-      "icon": "shaker-outline",
-      "label": "Quản lý nguyên liệu",
-      "action": () => {nav.navigate("IngredientDashboard")}
-    },
     {
       "icon": "book-open-blank-variant-outline",
       "label": "Quản lý Booking",
@@ -29,16 +22,34 @@ const Dashboard = () => {
       "label": "Quản lý Order",
       "action": () => {nav.navigate("Orders")}
     },
-    {
-      "icon": "history",
-      "label": "Lịch sử thanh toán",
-      "action": () => nav.navigate("PaymentHistory")
-    },
-     {
-      "icon": "chart-bell-curve",
-      "label": "Thống kê"
-    }
   ]
+
+  if (user) {
+    if (user.user_role !== 'customer') {
+      dashboards.unshift({
+        "icon": "food-outline",
+        "label": "Quản lý món ăn",
+        "action": () => {nav.navigate("FoodDashboard")}
+      },
+      {
+        "icon": "shaker-outline",
+        "label": "Quản lý nguyên liệu",
+        "action": () => {nav.navigate("IngredientDashboard")}
+      },)
+
+      if (user.user_role === 'admin') {
+        dashboards.push({
+        "icon": "history",
+        "label": "Lịch sử thanh toán",
+        "action": () => nav.navigate("PaymentHistory")
+      },
+      {
+        "icon": "chart-bell-curve",
+        "label": "Thống kê"
+      })
+      }
+    }
+  }
 
   return (
     <SafeAreaView>

@@ -5,14 +5,11 @@ from django.core.validators import MinValueValidator, MaxValueValidator, RegexVa
 from rest_framework.exceptions import ValidationError
 
 from dineresapp import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 from ckeditor.fields import RichTextField
 from cloudinary.models import CloudinaryField
 
-# Create your models here.
-# USER
-# Validate phone
 phone_regex = RegexValidator(
     regex=r'^0\d{9,10}$',
     message="Số điện thoại phải bắt đầu bằng số 0 và có độ dài từ 10 đến 11 số."
@@ -33,6 +30,18 @@ class User(AbstractUser):
     def __str__(self):
         return f'{self.get_user_role_display()}: {self.last_name} {self.first_name}'
 
+    def save(self, *args, **kwargs):
+        if self.user_role in [self.Role.CHEF, self.Role.ADMIN]:
+            self.is_staff = True
+        else :
+            self.is_staff = False
+        super().save(*args, **kwargs)
+
+        if self.user_role == self.Role.CHEF:
+            self.groups.add(Group.objects.get(name='Chef'))
+        elif self.user_role != self.Role.CHEF:
+            self.groups.remove(Group.objects.get(name='Chef'))
+
 class Chef(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chef')
     is_verified = models.BooleanField(default=False)
@@ -48,7 +57,6 @@ class Chef(models.Model):
     def __str__(self):
         return f'Chef: {self.user.last_name} {self.user.first_name}'
 
-# BASE MODEL
 class BaseModel(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -57,7 +65,6 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-# FOOD
 class Category(BaseModel):
     name = models.CharField(max_length=50, unique=True, null=False)
     description = RichTextField(null=True, blank=True)
@@ -99,6 +106,11 @@ class Dish(BaseModel):
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='dishes')
     ingredients = models.ManyToManyField(Ingredient, through='DishDetail')
 
+    class Meta:
+        permissions = [
+            ("view_dish_statistics", "Can view dish revenue statistics")
+        ]
+
     def __str__(self):
         return self.name
 
@@ -126,7 +138,6 @@ class ComboDetail(models.Model):
     class Meta:
         unique_together = ('dish', 'combo')
 
-# ORDER
 class Order(BaseModel):
     class Status(models.TextChoices):
         PENDING = 'pending', 'Chờ xử lý'
@@ -181,7 +192,6 @@ class OrderDetail(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
-# Booking
 class Table(BaseModel):
     name = models.CharField(max_length=50, null=False)
     capacity = models.IntegerField(validators=[MinValueValidator(1)])
@@ -214,7 +224,6 @@ class Booking(BaseModel):
         self.full_clean()
         super().save(*args, **kwargs)
 
-# Payment
 class Transaction(BaseModel):
     class Method(models.TextChoices):
         CASH = 'cash', 'Tiền mặt'
@@ -241,7 +250,6 @@ class Transaction(BaseModel):
     def __str__(self):
         return f"Transaction #{self.pk} - {self.get_status_display()} ({self.amount})"
 
-# Comment
 class Review(BaseModel):
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = RichTextField(null=True, blank=True)
@@ -256,7 +264,6 @@ class Notification(BaseModel):
     message = models.TextField()
     is_readed = models.BooleanField(default=False)
 
-    # Giaỉ pháp lưu trữ geniric foreign key
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
@@ -264,6 +271,6 @@ class Notification(BaseModel):
     class Meta:
         ordering = ['-created_date']
         indexes = [
-            models.Index(fields=['user', 'is_readed']), # Danh chi muc phuc hop vi can ca hai thang
+            models.Index(fields=['user', 'is_readed']),
         ]
 

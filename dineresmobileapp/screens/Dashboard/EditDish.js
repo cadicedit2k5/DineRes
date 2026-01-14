@@ -152,7 +152,6 @@ const EditDish = () => {
                     </View>
                     <Categories setCate={setCate} allCate={[]}/>
 
-                    {/* KHU VỰC FORM */}
                     <View style={styles.formContainer}>
                         <InputText
                             label={"Tên món ăn"}
@@ -185,7 +184,6 @@ const EditDish = () => {
                             placeholder="Nhập mô tả..."
                         />
 
-                        {/* NGUYÊN LIỆU */}
                         <View style={{ paddingHorizontal: 20, marginTop: 10 }}>
                             <IngredientManager 
                                 ingredients={ingredients} 
@@ -195,7 +193,6 @@ const EditDish = () => {
 
                         <View style={{ height: 20 }} />
 
-                        {/* NÚT ACTION */}
                         <Button 
                             mode="contained" 
                             onPress={updateDish} 

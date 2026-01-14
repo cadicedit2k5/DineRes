@@ -36,20 +36,6 @@ const Payment = () => {
             color: '#0085FF',
             desc: 'Thanh toán qua ví ZaloPay'
         },
-        // { 
-        //     value: 'paypal', 
-        //     label: 'PayPal', 
-        //     icon: 'paypal', 
-        //     color: '#003087',
-        //     desc: 'Thanh toán quốc tế'
-        // },
-        // { 
-        //     value: 'stripe', 
-        //     label: 'Thẻ tín dụng (Stripe)', 
-        //     icon: 'credit-card', 
-        //     color: '#6772E5',
-        //     desc: 'Visa, MasterCard, JCB'
-        // },
     ];
 
     if (!isCustomerView) {
@@ -187,7 +173,6 @@ const Payment = () => {
 
             </ScrollView>
 
-            {/* 3. FOOTER BUTTON */}
             <View style={styles.footer}>
                 <MyButton
                     btnLabel={"Thanh toán"}

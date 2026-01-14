@@ -48,7 +48,7 @@ const Dishes = ({mode}) => {
       "label": "Giá"
     },
     {
-      "value": "rating",
+      "value": "avg_rating",
       "label": "Đánh giá"
     },
   ]
@@ -178,11 +178,9 @@ const Dishes = ({mode}) => {
             </Button>
             <Portal>
               <Modal visible={visible} onDismiss={closeMenu} contentContainerStyle={styles.menuContainer}>
-                {/* Sắp xếp */}
                 <Text style={styles.menuHeader}>Sắp xếp theo</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10}}>
                   
-                  {/* CHỌN TRƯỜNG */}
                   <View style={{ flex: 1}}>
                     <RadioButton.Group onValueChange={value => setSortField(value)} value={sortField}>
                       {sortList.map((item, key) => <View key={key} style={styles.radioRow}><RadioButton color="#ee6a0dff" value={item.value} /><Text>{item.label}</Text></View>)}
@@ -191,7 +189,6 @@ const Dishes = ({mode}) => {
 
                   <Divider style={{ width: 1, height: '100%', marginHorizontal: 10 }} />
 
-                  {/* CHỌN CHIỀU*/}
                   <View style={{ flex: 1 }}>
                     <RadioButton.Group onValueChange={value => setSortDir(value)} value={sortDir}>
                       <View style={styles.radioRow}><RadioButton color="#ee6a0dff" value="" /><Text>Tăng dần</Text></View>
@@ -200,7 +197,6 @@ const Dishes = ({mode}) => {
                   </View>
                 </View>
 
-                {/* Lọc */}
                 <View>
                   <Text style={styles.menuHeader}>Lọc theo</Text>
                   {filterList.map((item, key) => 
@@ -248,7 +244,6 @@ const Dishes = ({mode}) => {
     
             <View style={styles.contentContainer}>
               
-              {/* Header */}
               <View style={styles.headerRow}>
                 <TouchableOpacity onPress={() => nav.navigate("DishDetail", {"dishId": item.id, "mode": mode})}>
                   <Text style={styles.title} numberOfLines={1}>{item.name}</Text>
@@ -258,7 +253,6 @@ const Dishes = ({mode}) => {
                 </Text>
               </View>
     
-              {/* Mô tả */}
               <View style={{ height: 36, overflow: 'hidden' }}> 
                   <RenderHTML
                       contentWidth={width}
@@ -271,7 +265,6 @@ const Dishes = ({mode}) => {
                   />
               </View>
     
-              {/*Đánh giá*/}
               <View style={styles.footerRow}>
                 <Rating 
                   rating={item.rating}

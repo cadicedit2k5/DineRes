@@ -2,7 +2,7 @@ import {useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import GoBack from '../../components/Layout/GoBack'
 import { ScrollView, Text, View } from 'react-native';
-import { HelperText, TextInput } from 'react-native-paper';
+import { TextInput } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authApis, endpoints } from '../../utils/Apis';
 import { useNavigation } from '@react-navigation/native';

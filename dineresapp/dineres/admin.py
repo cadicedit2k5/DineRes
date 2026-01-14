@@ -5,12 +5,13 @@ from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ngettext
 from django.urls import path
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.reverse import reverse
 
 from .dao import get_dishes_quantity_stats, get_dishes_quantity_timeline, get_dishes_amount_stats, get_dishes_quantity, \
     get_total_booking_timeline, get_total_booking_count
 from .models import Category, Dish, Order, Booking, Review, Table, Ingredient, User, Chef, Transaction
 
-# Base Admin
 class BaseAdmin(admin.ModelAdmin):
     readonly_fields = ['hinh_anh']
     stat = Category.objects.annotate()
@@ -21,20 +22,21 @@ class BaseAdmin(admin.ModelAdmin):
             )
         return "Chưa có ảnh"
 
-# Inline Admin
 class DishIngredientInline(admin.TabularInline):
     model = Dish.ingredients.through
 
-# Register your models here.
 class DineResAppAdmin(admin.AdminSite):
     site_header = 'Hệ thống nhà hàng trực tuyển'
 
     def get_urls(self):
         return [
-            path('dishes-stat/', self.dishes_stats)
+            path('dishes-stat/', self.admin_view(self.dishes_stats), name='dishes_stats'),
         ] + super().get_urls()
 
     def dishes_stats(self, request):
+        if not request.user.has_perm('dineres.view_dish_statistics'):
+            raise PermissionDenied("Bạn không có quyền xem thống kê doanh thu.")
+
         period_label = {
             'day': 'ngày',
             'week': 'tuần',
@@ -60,6 +62,26 @@ class DineResAppAdmin(admin.AdminSite):
             "total_booking_timeline": revenue_booking_quantity_timeline,
             'booking_amount': total_booking_amount
         })
+
+    def get_app_list(self, request):
+        app_list = super().get_app_list(request)
+
+        if request.user.has_perm('dineres.view_dish_statistics'):
+            stat_app = {
+                'name': 'Báo cáo & Thống kê',
+                'models': [
+                    {
+                        'name': 'Thống kê món ăn',
+                        'object_name': 'dishes_stats',
+                        'admin_url': reverse('admin:dishes_stats'),
+                        'view_only': True,
+                    }
+                ]
+            }
+
+            app_list.append(stat_app)
+
+        return app_list
 
 
 class CategoryAdmin(BaseAdmin):
@@ -132,7 +154,7 @@ class ChefAdmin(admin.ModelAdmin):
         ) % updated_count, messages.WARNING)
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['username', "first_name", "last_name", 'phone', 'email', 'is_active']
+    list_display = ['username', "first_name", "last_name", 'phone', 'email', 'user_role', 'is_active']
     search_fields = ['username', 'first_name', 'last_name']
     list_filter = ['is_active']
     list_per_page = 20

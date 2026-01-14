@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { FlatList, Image, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native'
 import { Button, IconButton } from 'react-native-paper'
 import { MyUserContext, ViewModeContext } from '../../utils/contexts/MyContexts'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -136,7 +136,7 @@ const User = () => {
         <Text style={style.profileTitle}>Hồ sơ người dùng</Text>
         {user &&
             <View style={style.profileAvatar}>
-                <Image style={MyStyles.avatar} source={{uri: (user) ? user.avatar : defaultAvatarUrl}}/>
+                <Image style={MyStyles.avatar} source={{uri: (user?.avatar) ? user.avatar : defaultAvatarUrl}}/>
                 <IconButton style={style.changeAvatarBtn}
                     icon="account-edit"
                     size={30}

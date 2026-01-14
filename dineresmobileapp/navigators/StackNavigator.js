@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useContext } from "react";
-import { MyUserContext, ViewModeContext } from "../utils/contexts/MyContexts";
+import { ViewModeContext } from "../utils/contexts/MyContexts";
 import TabNavigator from "./TabNavigator";
 import Login from "../screens/User/Login";
 import DishDetail from "../screens/Food/DishDetail";
@@ -22,7 +22,6 @@ import BookingHistory from "../screens/Booking/BookingHistory";
 import OrderDashboard from "../screens/Dashboard/OrderDashboard";
 import IngredientDashboard from "../screens/Dashboard/IngredientDashboard";
 import PaymentHistory from "../screens/Dashboard/PaymentHistory";
-import Chat from "../screens/Chat/Chat";
 import ChefChatDetail from "../screens/Chat/ChefChatDetail";
 import BookingManage from "../screens/Booking/BookingManage";
 import BookingDetail from "../screens/Booking/BookingDetail";
@@ -31,7 +30,6 @@ import BookingDashboard from "../screens/Dashboard/BookingDashboard";
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
-  const [user, ] = useContext(MyUserContext);
   const [isCustomerView, ] = useContext(ViewModeContext);
 
   return (

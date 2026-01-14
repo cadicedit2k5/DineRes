@@ -130,7 +130,7 @@ const Tables = () => {
                     display="inline"
                     onConfirm={(d) => { 
                         validate(d);
-                        setShowPicker(false); 
+                        setShowPicker(false);
                         setDate(d); 
                         setBookingtime(formatLocalDateTime(d));
                     }} 
@@ -140,11 +140,11 @@ const Tables = () => {
 
             {!user ? ( <ForceLogin /> ) :
                 (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         onPress={onSearch}
                         disabled ={ loading || !bookingtime || !!timeError }
                         style={[ style.button, (loading || !bookingtime || !!timeError) && {backgroundColor: "#ccc"} ]}>
-                        
+
                         {loading ? ( <ActivityIndicator color="#fff" />) : (
                             <Text style={{ color: "#fff", fontWeight: "bold" }}>
                                 Tìm bàn trống
@@ -216,11 +216,11 @@ const style = StyleSheet.create ({
     },
     item: {
         backgroundColor: "#fff",
-        marginVertical: 6, // Khoảng cách giữa các card
+        marginVertical: 6,
         marginHorizontal: 2,
         borderRadius: 10,
-        elevation: 3,         // Đổ bóng cho Android
-        shadowColor: "#000",  // Đổ bóng cho iOS
+        elevation: 3,
+        shadowColor: "#000",
         shadowOpacity: 0.1,
         shadowRadius: 4,
         shadowOffset: { width: 0, height: 2 },

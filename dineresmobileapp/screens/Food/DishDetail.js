@@ -67,7 +67,6 @@ const DishDetail = () => {
         </View>
       );
     }
-    // Hàm tăng giảm số lượng
     const increaseQty = () => setQuantity(q => q + 1);
     const decreaseQty = () => setQuantity(q => (q > 1 ? q - 1 : 1));
 
@@ -75,21 +74,17 @@ const DishDetail = () => {
         <View style={{ flex: 1, backgroundColor: '#fff' }}>
             <StatusBar translucent backgroundColor="transparent" />
             
-            {/* 1. HEADER ẢNH MÓN ĂN */}
             <View style={styles.headerContainer}>
                 <Image source={{ uri: dish.image }} style={styles.headerImage} resizeMode="cover" />
                 
-                {/* Nút Back đè lên ảnh */}
                 <View style={styles.headerButtons}>
                     <GoBack />
                 </View>
             </View>
 
-            {/* 2. NỘI DUNG CHI TIẾT (Kéo đè lên ảnh một chút) */}
             <View style={styles.contentContainer}>
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
                     
-                    {/* Tên và Giá */}
                     <View style={styles.titleRow}>
                         <Text variant="headlineSmall" style={styles.dishName}>{dish.name}</Text>
                         <Text variant="headlineSmall" style={styles.dishPrice}>
@@ -97,7 +92,6 @@ const DishDetail = () => {
                         </Text>
                     </View>
 
-                    {/* Rating và Thời gian */}
                     <View style={styles.metaRow}>
                         <Rating 
                             rating={dish.rating}
@@ -115,7 +109,6 @@ const DishDetail = () => {
 
                     <Divider style={{ marginVertical: 15 }} />
 
-                    {/* Thông tin Đầu bếp (Chef) */}
                     <View style={styles.chefRow}>
                         <Avatar.Image size={40} source={{ uri: dish.chef.avatar || 'https://i.pravatar.cc/150?img=12' }} />
                         <View style={{ marginLeft: 12, flex: 1 }}>
@@ -126,7 +119,6 @@ const DishDetail = () => {
 
                     <Divider style={{ marginVertical: 15 }} />
 
-                    {/* Mô tả */}
                     <Text variant="titleMedium" style={styles.sectionTitle}>Mô tả</Text>
                     <RenderHTML
                         contentWidth={width}
@@ -134,7 +126,6 @@ const DishDetail = () => {
                         baseStyle={styles.description}
                     />
 
-                    {/* Thành phần nguyên liệu */}
                     <Text variant="titleMedium" style={[styles.sectionTitle, { marginTop: 20 }]}>Nguyên liệu chính</Text>
                     <View style={styles.ingredientList}>
                         {dish.ingredients.map((ing) => (
@@ -151,7 +142,6 @@ const DishDetail = () => {
                 </ScrollView>
             </View>
 
-            {/* 3. FOOTER: ĐẶT HÀNG */}
             <View style={styles.footer}>
                 {mode === 'order' ? <>
                     <QuantityChange 

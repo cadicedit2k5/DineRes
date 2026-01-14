@@ -42,23 +42,6 @@ class CategoryViewSet(viewsets.ViewSet, ListAPIView):
     serializer_class = CategorySerializer
     parser_classes = [parsers.MultiPartParser]
 
-    # @action(methods=['get'], url_path='dishes', detail=True)
-    # def get_dishes(self, request, pk=None):
-    #     category = self.get_object()
-    #     dishes_queryset = (Dish.objects.filter(category=category, active=True).
-    #                        select_related('category', 'chef').
-    #                        prefetch_related('ingredients'))
-    #     filtered_dishes = DishFilter(request.query_params, queryset=dishes_queryset).qs
-    #     paginator = DishPagination()
-    #     page = paginator.paginate_queryset(filtered_dishes, request)
-    #
-    #     if page:
-    #         serializer = DishSerializer(page, many=True, context={'request': request})
-    #         return Response(paginator.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
-    #     else:
-    #         return Response(DishSerializer(filtered_dishes, many=True, context={'request': request}).data, status=status.HTTP_200_OK)
-
-
 class DishViewSet(viewsets.ModelViewSet):
     queryset = Dish.objects.filter(active=True).select_related('category').prefetch_related('dish_details')
     serializer_class = DishSerializer
@@ -113,7 +96,7 @@ class DishViewSet(viewsets.ModelViewSet):
                 user=dish.chef.user,
                 title="Món ăn nhận được đánh giá mới",
                 message=f"{request.user} vừa đánh giá {c.rating} sao cho món ăn {dish}",
-                target_object=c
+                target_object=dish
             )
 
             return Response(ReviewSerializer(c).data, status=status.HTTP_201_CREATED)

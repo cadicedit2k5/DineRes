@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { Text, Card, IconButton, Chip, Portal, Modal } from 'react-native-paper';
+import { Text, Card, IconButton, Chip } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Apis, { authApis, endpoints } from '../../utils/Apis';
 import GoBack from '../../components/Layout/GoBack';

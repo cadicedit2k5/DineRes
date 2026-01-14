@@ -22,6 +22,7 @@ export const endpoints = {
   "orders": "/orders/",
   "bookings": "/bookings/",
   "user-bookings": "users/bookings/",
+  "update-status": (bookingId) => `/bookings/${bookingId}/update-status/`,
 
   "orders": "/orders/",
   "done-order": (orderId) => `/orders/${orderId}/done/`,
@@ -29,6 +30,7 @@ export const endpoints = {
   "order-detail": (orderId) => `/orders/${orderId}/`,
   "user-orders": "/users/orders/",
   "payments": "/payments/",
+  "transactions": "/transactions/",
   "transactions": "/transactions/",
   "user-bookings": "users/bookings/",
   "update-status": (bookingId) => `/bookings/${bookingId}/update-status/`,

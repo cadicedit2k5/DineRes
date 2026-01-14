@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { ScrollView, Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
-import { Button, Text, HelperText } from 'react-native-paper';
+import { Button, Text } from 'react-native-paper';
 import { authApis, endpoints } from '../../utils/Apis';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -131,7 +131,3 @@ const ApplyChef = () => {
 };
 
 export default ApplyChef;
-
-const styles = StyleSheet.create({
-  
-})
