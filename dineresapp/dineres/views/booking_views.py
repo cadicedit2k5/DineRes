@@ -9,7 +9,7 @@ from dineres.models import Table, Booking
 from dineres.paginators import TablePagination, BookingPagination
 from dineres.permissions import IsEmployee
 from dineres.serializers import booking_serializers
-from dineres.serializers.booking_serializers import BookingDetailSerializer, BookingStatusSerializer
+from dineres.serializers.booking_serializers import BookingDetailSerializer, BookingStatusSerializer, BookingSerializer
 
 
 class TableViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -37,25 +37,31 @@ class TableViewSet(viewsets.ViewSet, generics.ListAPIView):
 
 class BookingView(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIView):
     queryset = Booking.objects.filter(active=True)
-    serializer_class = booking_serializers.BookingSerializer
+    serializer_class = BookingSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = BookingPagination
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        booking = serializer.save(customer=request.user)
-
-        return Response(booking_serializers.BookingDetailSerializer(booking).data,status=status.HTTP_201_CREATED)
-
-    def list(self, request, *args, **kwargs):
-        qs = (
-            self.get_queryset()
+    def get_queryset(self):
+        return (
+            self.queryset
             .select_related('customer')
             .prefetch_related('tables')
             .order_by('-booking_time')
         )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(
+            data=request.data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+
+        booking = serializer.save()
+
+        return Response(BookingDetailSerializer(booking).data, status=status.HTTP_201_CREATED)
+
+    def list(self, request, *args, **kwargs):
+        qs = self.get_queryset()
 
         page = self.paginate_queryset(qs)
         if page is not None:
@@ -66,7 +72,7 @@ class BookingView(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIView
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(methods=['patch'], detail=True, url_path='update-status', permission_classes=[IsEmployee])
-    def update_status(self, request, pk):
+    def update_status(self, request, pk=None):
         booking = self.get_object()
 
         serializer = BookingStatusSerializer(
@@ -74,7 +80,6 @@ class BookingView(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIView
             data=request.data,
             partial=True
         )
-
         serializer.is_valid(raise_exception=True)
         serializer.save()
 

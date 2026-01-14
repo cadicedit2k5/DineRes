@@ -45,10 +45,10 @@ const BookingHistory = () =>{
 
     const formatDateTime = (iso) => {
         const d = new Date(iso);
-        return d.toLocaleDateString() + " - " + d.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
+        const pad = (n) => n.toString().padStart(2, "0");
+
+        return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ` +
+            `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
     };
 
     const getStatusStyle = (status) => {

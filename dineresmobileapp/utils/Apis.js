@@ -29,7 +29,7 @@ export const endpoints = {
   "order-detail": (orderId) => `/orders/${orderId}/`,
   "user-orders": "/users/orders/",
   "payments": "/payments/",
-  "transactions": "/transactions/"
+  "transactions": "/transactions/",
   "user-bookings": "users/bookings/",
   "update-status": (bookingId) => `/bookings/${bookingId}/update-status/`,
 };

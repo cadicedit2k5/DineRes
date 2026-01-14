@@ -22,8 +22,9 @@ const User = () => {
         await AsyncStorage.removeItem("access-token");
         dispatch({
             "type": "logout",
-        })
-    }
+        }),
+        setIsCustomerView(true)
+    };
 
     const changeAvatar = async () => {
         const avatar = await pickImage();

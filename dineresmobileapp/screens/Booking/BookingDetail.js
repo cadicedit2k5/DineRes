@@ -109,6 +109,13 @@ const BookingDetail = () => {
                     </Text>
                 </View>
 
+                <View style={styles.infoRow}>
+                    <Icon source="clock-outline" size={18} color="#2eaadaff" />
+                    <Text style={styles.infoText}>
+                        Ghi chú: {booking.note}
+                    </Text>
+                </View>
+
                 <View style={styles.statusBox}>
                     <Text style={styles.statusLabel}>Trạng thái</Text>
                     <Text style={styles.status}>{status.toUpperCase()}</Text>
