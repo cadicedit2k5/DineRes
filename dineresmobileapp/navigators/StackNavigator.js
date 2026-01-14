@@ -25,6 +25,7 @@ import PaymentHistory from "../screens/Dashboard/PaymentHistory";
 import ChefChatDetail from "../screens/Chat/ChefChatDetail";
 import BookingManage from "../screens/Booking/BookingManage";
 import BookingDetail from "../screens/Booking/BookingDetail";
+import BookingDashboard from "../screens/Dashboard/BookingDashboard";
 
 const Stack = createNativeStackNavigator();
 
@@ -60,6 +61,7 @@ const StackNavigator = () => {
       <Stack.Screen name="OrderDashboard" component={OrderDashboard} options={{title: "Quan ly dat hang"}} />
       <Stack.Screen name="IngredientDashboard" component={IngredientDashboard} options={{title: "Quan ly nguyen lieu"}} />
       <Stack.Screen name="PaymentHistory" component={PaymentHistory} options={{title: "Lich su thanh toan"}} />
+      <Stack.Screen name="BookingDashboard" component={BookingDashboard} options={{title: "Quan li dat ban"}} />
 
     </>}
 

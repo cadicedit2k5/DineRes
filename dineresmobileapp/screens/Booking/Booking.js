@@ -1,31 +1,44 @@
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, Image, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import GoBack from "../../components/Layout/GoBack";
 import { authApis, endpoints } from "../../utils/Apis";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { ViewModeContext } from "../../utils/contexts/MyContexts";
+import UserFind from "../../components/UserFind";
+import ForceLogin from "../../components/Layout/ForceLogin";
+import { Button } from "react-native-paper";
 
 
 
 const Booking = () => {
     const route = useRoute();
     const nav = useNavigation();
+    const [isCustomerView, ] = useContext(ViewModeContext);
 
     const { table, booking_time } = route.params;
     const [note, setNote] = useState("");
     const [loading, setLoading] = useState(false);
+    const [customer, setCustomer] = useState(null);
+    const [visible, setVisible] = useState(false);
 
     const loadBooking = async () => {
         try {
             setLoading(true);
             const token = await AsyncStorage.getItem("access-token");
 
-            const res = await authApis(token).post(endpoints['bookings'], {
-                "booking_time": booking_time,
-                "note": note,
-                "table": table.id,
-            });
+            const payload = {
+                booking_time: booking_time,
+                note: note,
+                table: table.id,
+            };
+
+            if (!isCustomerView && customer) {
+                payload.customer_id = customer.id;
+            }
+
+            const res = await authApis(token).post(endpoints['bookings'], payload);
             if (res.status === 201)
                 Alert.alert("Thông báo:", "Đặt bàn thành công!");
                 nav.goBack();
@@ -40,7 +53,7 @@ const Booking = () => {
     return (
         <SafeAreaView style={{ flex: 1}}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <View style={styles.container}>
+                <View>
                     <GoBack />
 
                     <Text style={styles.title}>Xác nhận đặt bàn</Text>
@@ -66,11 +79,30 @@ const Booking = () => {
                         numberOfLines={3}
                     />
 
+                    <UserFind
+                        setCustomer={setCustomer}
+                        visible={visible}
+                        setVisible={setVisible} />
+
+                    {!isCustomerView && 
+                       <View style={styles.customerRow}>
+                            <Text style={styles.customerLabel}>Khách hàng</Text>
+                            <Text style={styles.customerName}>
+                                {customer ? customer.first_name + customer.last_name : "Chưa chọn"}
+                            </Text>
+                            <Button
+                                mode="outlined"
+                                compact
+                                onPress={() => setVisible(true)}>
+                                {customer ? "Đổi" : "Chọn"}
+                            </Button>
+                        </View>
+                    }
+
                     <TouchableOpacity
                         style={styles.button}
                         onPress={loadBooking}
-                        disabled={loading}
-                    >
+                        disabled={loading}>
                         <Text style={styles.buttonText}>
                             {loading ? "Đang đặt bàn..." : "Xác nhận đặt bàn"}
                         </Text>
@@ -154,5 +186,27 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         marginBottom: 12,
         borderRadius: 12
-    }
+    },
+    customerRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+        marginVertical: 12,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        backgroundColor: "#fff7f2",
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#f2c2a0",
+    },
+    customerLabel: {
+        fontWeight: "700",
+        color: "#e46921",
+        fontSize: 14,
+    },
+    customerName: {
+        flex: 1,
+        fontSize: 14,
+        color: "#333",
+    },
 });
