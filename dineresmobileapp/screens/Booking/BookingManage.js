@@ -2,16 +2,19 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context'
 import GoBack from "../../components/Layout/GoBack";
 import MyStyles from "../../styles/MyStyles";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authApis, endpoints } from "../../utils/Apis";
-import { ActivityIndicator, Icon } from "react-native-paper";
+import { ActivityIndicator, Button, Icon } from "react-native-paper";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import MyButton from "../../components/Layout/MyButton";
+import { ViewModeContext } from "../../utils/contexts/MyContexts";
 
 const BookingManage = () =>{
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [booking, setBooking] = useState([]);
+    const [isCustomerView] = useContext(ViewModeContext)
     const nav = useNavigation();
 
     const loadBookingHistoty = async() => {
@@ -49,15 +52,16 @@ const BookingManage = () =>{
         useCallback(() => {
             setBooking([]);
             setPage(1);
+            loadBookingHistoty();
         }, [])
     );
 
     const formatDateTime = (iso) => {
         const d = new Date(iso);
-        return d.toLocaleDateString() + " - " + d.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
+        const pad = (n) => n.toString().padStart(2, "0");
+
+        return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ` +
+            `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
     };
 
     const getStatusStyle = (status) => {
@@ -76,7 +80,6 @@ const BookingManage = () =>{
     return(
         <SafeAreaView style={{ flex: 1}}>
             <GoBack />
-            <View>
                 <Text style={MyStyles.title}>Quản lý đặt bàn</Text>
                 <FlatList 
                     data={booking}
@@ -148,7 +151,11 @@ const BookingManage = () =>{
                         );
                     }}
                 />
-            </View>
+                {!isCustomerView && 
+                <MyButton
+                    btnLabel={"Tạo Booking mới"}
+                    onPress={() => nav.navigate("BookingDashboard")}
+                />}
         </SafeAreaView>
     );
 }

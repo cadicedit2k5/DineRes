@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Apis, { endpoints } from "../utils/Apis";
 import { FlatList, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { ActivityIndicator, HelperText, List, Portal } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { MyUserContext } from "../utils/contexts/MyContexts";
+import ForceLogin from "./Layout/ForceLogin";
 
 const Tables = () => {
     const [tables, setTables] = useState([]);
     const [date, setDate] = useState(new Date());
-    const [bookingtime, setBookingtime] = useState("")
+    const [bookingtime, setBookingtime] = useState("");
+    const [user, ] = useContext(MyUserContext);
 
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -19,7 +21,13 @@ const Tables = () => {
     const [timeError, setTimeError] = useState("");
 
     const nav = useNavigation()
-    const tabBarHeight = useBottomTabBarHeight()
+    let tabBarHeight = 0;
+
+    try {
+        tabBarHeight = useBottomTabBarHeight();
+    } catch (ex) {
+        tabBarHeight = 0;
+    }
 
     const loadTables = async () => {
         try{
@@ -105,10 +113,7 @@ const Tables = () => {
                     mode="datetime"
                     date={date}
                     onConfirm={(d) => {
-                        if (!validate(d)){
-                            setShowPicker(false);
-                            return;
-                        } 
+                        validate(d);
                         setShowPicker(false);
                         setDate(d);
                         setBookingtime(formatLocalDateTime(d));
@@ -124,26 +129,30 @@ const Tables = () => {
                     mode="datetime" date={date} 
                     display="inline"
                     onConfirm={(d) => { 
-                        if (!validate(d)) return;
-                        setShowPicker(false); 
+                        validate(d);
+                        setShowPicker(false);
                         setDate(d); 
                         setBookingtime(formatLocalDateTime(d));
                     }} 
                     onCancel={() => setShowPicker(false)} /> 
                 </Portal>
             )}
-           
-            <TouchableOpacity 
-                onPress={onSearch}
-                disabled ={ loading || !bookingtime || !!timeError }
-                style={[ style.button, (loading || !bookingtime || !!timeError) && {backgroundColor: "#ccc"} ]}>
 
-                {loading ? ( <ActivityIndicator color="#fff" />) : (
-                    <Text style={{ color: "#fff", fontWeight: "bold" }}>
-                        Tìm bàn trống
-                    </Text>
-                )}
-            </TouchableOpacity>
+            {!user ? ( <ForceLogin /> ) :
+                (
+                    <TouchableOpacity
+                        onPress={onSearch}
+                        disabled ={ loading || !bookingtime || !!timeError }
+                        style={[ style.button, (loading || !bookingtime || !!timeError) && {backgroundColor: "#ccc"} ]}>
+
+                        {loading ? ( <ActivityIndicator color="#fff" />) : (
+                            <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                                Tìm bàn trống
+                            </Text>
+                        )}
+                    </TouchableOpacity>
+                )
+            }
 
             <FlatList 
                 data={tables} 
@@ -207,10 +216,10 @@ const style = StyleSheet.create ({
     },
     item: {
         backgroundColor: "#fff",
-        marginVertical: 6, 
+        marginVertical: 6,
         marginHorizontal: 2,
         borderRadius: 10,
-        elevation: 3,    
+        elevation: 3,
         shadowColor: "#000",
         shadowOpacity: 0.1,
         shadowRadius: 4,
