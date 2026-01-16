@@ -33,7 +33,8 @@ const PaymentHistory = () => {
             }
 
         } catch (error) {
-            console.error(error.response.data);
+            console.info(error.response.data);
+            alert("Lỗi tải danh sách");
         } finally {
             setLoading(false);
         }

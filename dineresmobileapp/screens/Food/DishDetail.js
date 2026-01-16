@@ -32,7 +32,7 @@ const DishDetail = () => {
             setDish(res.data);
         }
       } catch (error) {
-        console.error("Lỗi:", error);
+        console.iìno(error.response.data);
       }
     };
 
@@ -54,7 +54,7 @@ const DishDetail = () => {
                 }
             })
         } catch (error) {
-            console.error(error);
+            console.info(error.response.data);
         }finally {
             setLoading(false);
         }

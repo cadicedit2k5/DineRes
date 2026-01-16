@@ -42,6 +42,11 @@ class User(AbstractUser):
         elif self.user_role != self.Role.CHEF:
             self.groups.remove(Group.objects.get(name='Chef'))
 
+class Staff(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='staff')
+    is_verified = models.BooleanField(default=False)
+    verified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='verified_staff')
+
 class Chef(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chef')
     is_verified = models.BooleanField(default=False)
@@ -67,14 +72,7 @@ class BaseModel(models.Model):
 
 class Category(BaseModel):
     name = models.CharField(max_length=50, unique=True, null=False)
-    description = RichTextField(null=True, blank=True)
     image = CloudinaryField(null=True)
-
-    def __str__(self):
-        return self.name
-
-class IngredientType(BaseModel):
-    name = models.CharField(max_length=50, unique=True, null=False)
 
     def __str__(self):
         return self.name
@@ -89,7 +87,6 @@ class Ingredient(BaseModel):
 
     name = models.CharField(max_length=50, unique=True)
     unit = models.CharField(max_length=50, choices=Unit.choices, default=Unit.GRAM)
-    type = models.ForeignKey(IngredientType, on_delete=models.PROTECT, related_name='ingredients', null=True)
 
     def __str__(self):
         return self.name
@@ -100,7 +97,6 @@ class Dish(BaseModel):
     image = CloudinaryField(null=True)
     price = models.DecimalField(max_digits=10, decimal_places=0, validators=[MinValueValidator(0)], db_index=True)
     prep_time = models.IntegerField(validators=[MinValueValidator(1)])
-    is_available = models.BooleanField(default=True)
 
     chef = models.ForeignKey(Chef, on_delete=models.PROTECT, related_name='dishes', null=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='dishes')
@@ -123,21 +119,6 @@ class DishDetail(models.Model):
     class Meta:
         unique_together = ('dish', 'ingredient')
 
-class Combo(BaseModel):
-    name = models.CharField(max_length=50, unique=True, null=False)
-    price = models.DecimalField(max_digits=10, decimal_places=0, validators=[MinValueValidator(0)])
-
-    dishes = models.ManyToManyField(Dish, through='ComboDetail')
-
-class ComboDetail(models.Model):
-    quantity = models.IntegerField(default=1, validators=[MinValueValidator(1)])
-
-    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, related_name='details')
-    combo = models.ForeignKey(Combo, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('dish', 'combo')
-
 class Order(BaseModel):
     class Status(models.TextChoices):
         PENDING = 'pending', 'Chờ xử lý'
@@ -149,7 +130,7 @@ class Order(BaseModel):
     total_amount = models.DecimalField(max_digits=12, decimal_places=0, default=0, validators=[MinValueValidator(0)])
 
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name='orders')
-    staff = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name='staff')
+    staff = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name='processed_orders')
     booking = models.ForeignKey('Booking', null=True, blank=True, on_delete=models.SET_NULL, related_name='orders')
 
     class Meta:
@@ -185,7 +166,7 @@ class OrderDetail(models.Model):
         unique_together = ('order', 'dish')
 
     def clean(self):
-        if not self.dish.is_available:
+        if not self.dish.active:
             raise ValidationError("Món ăn đã ngưng phục vụ!")
 
     def save(self, *args, **kwargs):

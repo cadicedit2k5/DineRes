@@ -105,7 +105,7 @@ const Orders = () => {
                 }
             }
         } catch (error) {
-            console.error(error.response.data)
+            console.info(error.response.data)
            Alert.alert("Thông báo", "Cancel thất bại");
         }finally {
             setLoading(false);
@@ -126,7 +126,7 @@ const Orders = () => {
                 }
             }
         } catch (error) {
-            console.error(error.response.data)
+            console.info(error.response.data)
            Alert.alert("Thông báo", "Có vẻ là tay nghề của bạn hơi kém.");
         }finally {
             setLoading(false);

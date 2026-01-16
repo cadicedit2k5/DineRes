@@ -16,6 +16,7 @@ export const endpoints = {
   "current-user": "/users/current-user/",
   "change-password": "/users/change-password/",
   "apply-chef": "/users/apply-chef/",
+  "apply-staff": "/users/apply-staff/",
   "user-notify": "/notifications/",
 
   "tables": "/tables/",

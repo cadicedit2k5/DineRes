@@ -109,7 +109,8 @@ const Dishes = ({mode}) => {
         setDishes([...dishes, ...res.data.results]);
       }
     } catch (error) {
-      console.error(error)
+      console.info(error.response.data);
+      alert("Lỗi tải danh sách");
     }finally {
       setLoading(false);
     }
@@ -124,11 +125,6 @@ const Dishes = ({mode}) => {
 
     return () => clearTimeout(timer);
   }, [q, cate, page, refreshTrigger]);
-
-  useEffect(() => {
-    console.log("field", sortField);
-    console.log("sortDir", sortDir);
-  }, [sortDir, sortField])
 
   useEffect(()=> {
     setPage(1);
@@ -295,7 +291,7 @@ const Dishes = ({mode}) => {
           </View>
           }>
         </FlatList>
-        {mode === "order" &&
+        {(mode === "order" && !isCustomerView) &&
         <MyButton
           btnLabel={"Xong"}
           onPress={() => {nav.navigate("Cart")}}

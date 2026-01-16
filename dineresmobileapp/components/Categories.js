@@ -55,7 +55,7 @@ const Categories = ({setCate, allCate}) => {
           backgroundColor: selectedIndex === index ? "white": "#fcf4e7ff"
         }} 
         onPress={() => handlePress(item, index)}>
-          {item.image && <Image style={{width: 20, height: 20, marginRight: 7}} source={{uri: item.image}}/>}
+          {/* {item.image && <Image style={{width: 20, height: 20, marginRight: 7}} source={{uri: item.image}}/>} */}
           <Text style={{
             fontWeight: 500,
             color: selectedIndex === index ? "#d25801ff" : "#111"

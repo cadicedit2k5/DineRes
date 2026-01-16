@@ -45,7 +45,7 @@ const ChefChatList = () => {
 
             setConversations(sortedList);
         }, (error) => {
-            console.error(error);
+            console.info(error);
         });
 
         return () => unsubscribe();

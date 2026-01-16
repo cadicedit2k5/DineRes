@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "dineresmobileapp",
+    "name": "DineRes",
     "slug": "dineresmobileapp",
     "scheme": "dineres",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/DineResLoGo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/DineResLoGo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/DineResLoGo.png",
         "backgroundColor": "#ffffff",
         "softwareKeyboardLayoutMode": "pan"
       },

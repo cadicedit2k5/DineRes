@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Touchable, TouchableOpacity, View} from 'react-native'
+import { Alert, StyleSheet, TouchableOpacity, View} from 'react-native'
 import { useContext, useEffect, useState } from 'react'
 import ForceLogin from './Layout/ForceLogin'
 import InputText from './Layout/InputText'
@@ -35,7 +35,8 @@ const DishReviews = ({dishId}) => {
                 setComments([...comments, ...res.data.results]);
             }
         } catch (error) {
-            console.error("Lỗi:", error);
+            console.info(error.response.data);
+            alert("Loi tai danh sach comment");
         }
         finally {
             setLoading(false);
@@ -56,7 +57,7 @@ const DishReviews = ({dishId}) => {
         if (page > 0 && !loading && comments.length > 0) {
             setPage(page + 1);
         }else {
-            Alert.alert("thông não", "Hết đánh giá rồi!!!");
+            Alert.alert("Thông báo", "Hết đánh giá rồi!!!");
         }
     }
     const handleReview = async () => {
@@ -83,7 +84,7 @@ const DishReviews = ({dishId}) => {
                 }
             }
         } catch (error) {
-            console.error(error);
+            console.info(error.response.data);
         }finally {
             setLoading(false);
         }

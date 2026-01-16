@@ -68,7 +68,7 @@ const ApplyChef = () => {
               nav.goBack();
           }
         } catch (error) {
-            console.error(error);
+            console.info(error);
             if (error.response && error.response.status === 400) {
                 Alert.alert(error.response.data.message);
             } else {

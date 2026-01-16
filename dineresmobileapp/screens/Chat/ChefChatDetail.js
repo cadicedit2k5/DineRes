@@ -7,6 +7,7 @@ import { useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GoBack from '../../components/Layout/GoBack';
 import { Text } from 'react-native-paper';
+import MyStyles from '../../styles/MyStyles';
 
 const ChefChatDetail = () => {
     const [user, ] = useContext(MyUserContext);
@@ -62,7 +63,7 @@ const ChefChatDetail = () => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
             <GoBack title={`Chat với ${customerName}`} />
-            <Text>{customerName}</Text>
+            <Text style={MyStyles.subTitle}>{customerName}</Text>
             <GiftedChat
                 messages={messages}
                 onSend={onSend}

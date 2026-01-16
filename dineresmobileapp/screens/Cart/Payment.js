@@ -87,7 +87,7 @@ const Payment = () => {
                 Alert.alert("Thông báo", "Giao dịch đang xử lý hoặc chưa hoàn tất.");
             }
         } catch (error) {
-            console.error(error);
+            console.info(error.response.data);
         } finally {
             setLoading(false);
         }
@@ -121,7 +121,7 @@ const Payment = () => {
             }
 
         } catch (error) {
-            console.error(error.response.data);
+            console.info(error.response.data);
             Alert.alert("Lỗi", "Thanh toán thất bại. Vui lòng thử lại.");
         } finally {
             setLoading(false);

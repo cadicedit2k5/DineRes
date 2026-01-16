@@ -77,7 +77,7 @@ const EditProfile = () => {
                     nav.goBack();
                 }
             } catch (error) {
-                console.error(error.response.data);
+                console.info(error.response.data);
             }finally {
                 setLoading(false);
             }

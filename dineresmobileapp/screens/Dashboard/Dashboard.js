@@ -25,7 +25,7 @@ const Dashboard = () => {
   ]
 
   if (user) {
-    if (user.user_role !== 'customer') {
+    if (user.user_role === 'chef') {
       dashboards.unshift({
         "icon": "food-outline",
         "label": "Quản lý món ăn",
@@ -44,8 +44,8 @@ const Dashboard = () => {
         "action": () => nav.navigate("PaymentHistory")
       },
       {
-        "icon": "chart-bell-curve",
-        "label": "Thống kê"
+        "icon": "account-group-outline",
+        "label": "Quản lý nhân viên"
       })
       }
     }

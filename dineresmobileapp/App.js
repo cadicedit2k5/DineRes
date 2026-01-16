@@ -50,10 +50,10 @@ const App = () => {
         console.info("Token oke! Dang nhap thanh cong");
       }
     } catch (error) {
-        console.error("Lỗi check login:", error.message);
+        console.info("Lỗi check login:", error.message);
 
         if (error.response.status == 401) {
-          console.error("Token hết hạn, đang thử refresh...");
+          console.info("Token hết hạn, đang thử refresh...");
           await tryRefreshToken();
         }
     }
@@ -90,7 +90,7 @@ const App = () => {
       }
     }
     catch (error) {
-      console.error(error);
+      console.info(error);
       await AsyncStorage.removeItem('access-token');
       await AsyncStorage.removeItem('refresh-token');
       dispatch({ "type": "logout" });

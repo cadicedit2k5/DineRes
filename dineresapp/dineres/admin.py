@@ -10,7 +10,8 @@ from rest_framework.reverse import reverse
 
 from .dao import get_dishes_quantity_stats, get_dishes_quantity_timeline, get_dishes_amount_stats, get_dishes_quantity, \
     get_total_booking_timeline, get_total_booking_count
-from .models import Category, Dish, Order, Booking, Review, Table, Ingredient, User, Chef, Transaction
+from .models import Category, Dish, Order, Booking, Review, Table, Ingredient, User, Chef, Transaction, Staff
+
 
 class BaseAdmin(admin.ModelAdmin):
     readonly_fields = ['hinh_anh']
@@ -119,6 +120,7 @@ class ChefAdmin(admin.ModelAdmin):
         for chef in queryset:
             if not chef.is_verified:
                 chef.is_verified = True
+                chef.verified_by = request.user
                 chef.save()
 
                 if chef.user.user_role != User.Role.CHEF:
@@ -140,10 +142,61 @@ class ChefAdmin(admin.ModelAdmin):
         for chef in queryset:
             if chef.is_verified:
                 chef.is_verified = False
+                chef.verified_by = None
                 chef.save()
 
                 chef.user.user_role = User.Role.CUSTOMER
                 chef.user.save()
+
+                updated_count += 1
+
+        self.message_user(request, ngettext(
+            '%d hồ sơ đã bị hủy trạng thái xác thực.',
+            '%d hồ sơ đã bị hủy trạng thái xác thực.',
+            updated_count,
+        ) % updated_count, messages.WARNING)
+
+class StaffAdmin(admin.ModelAdmin):
+    list_display = ['user__first_name', 'is_verified']
+    list_filter = ['is_verified']
+    search_fields = ['user__first_name', 'user__last_name']
+    list_per_page = 20
+    actions = ['verify_staffs', 'reject_staffs']
+
+    @admin.action(description='Duyệt hồ sơ')
+    def verify_staffs(self, request, queryset):
+        updated_count = 0
+
+        for staff in queryset:
+            if not staff.is_verified:
+                staff.is_verified = True
+                staff.verified_by = request.user
+                staff.save()
+
+                if staff.user.user_role != User.Role.STAFF:
+                    staff.user.user_role = User.Role.STAFF
+                    staff.user.save()
+
+                updated_count += 1
+
+        self.message_user(request, ngettext(
+            '%d hồ sơ đã được duyệt thành công.',
+            '%d hồ sơ đã được duyệt thành công.',
+            updated_count,
+        ) % updated_count, messages.SUCCESS)
+
+    @admin.action(description='Hủy tư cách Nhân viên')
+    def reject_staffs(self, request, queryset):
+        updated_count = 0
+
+        for staff in queryset:
+            if staff.is_verified:
+                staff.is_verified = False
+                staff.verified_by = None
+                staff.save()
+
+                staff.user.user_role = User.Role.CUSTOMER
+                staff.user.save()
 
                 updated_count += 1
 
@@ -166,6 +219,7 @@ admin_site.register(Category, CategoryAdmin)
 admin_site.register(Dish, DishAdmin)
 admin_site.register(User, UserAdmin)
 admin_site.register(Chef, ChefAdmin)
+admin_site.register(Staff, StaffAdmin)
 admin_site.register(Ingredient, IngredientAdmin)
 admin_site.register(Booking)
 admin_site.register(Table)

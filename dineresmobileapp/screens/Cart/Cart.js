@@ -64,11 +64,10 @@ const Cart = () => {
                     }
                 }
             } catch (error) {
-                console.error(error.response.data);
+                console.info(error.response.data);
                 Alert.alert("Thông báo", error.response.data.message, [
                     {
-                        text: "Đặt bàn ngay",
-                        onPress: () => nav.navigate("Home", {screen: "Table"})
+                        text: "OK",
                     }
                 ])
             }finally {

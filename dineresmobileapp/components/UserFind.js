@@ -26,7 +26,8 @@ const UserFind = ({setCustomer, visible, setVisible}) => {
             }            
 
         } catch (error) {
-            console.error(error);
+            console.info(error.response.data);
+            alert("Lỗi tải danh sách người dùng.")
         } finally {
             setLoading(false);
         }

@@ -6,7 +6,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.response import Response
 from yaml import serialize
 
-from dineres.models import User, Chef, Order, Booking
+from dineres.models import User, Chef, Order, Booking, Staff
 from dineres.paginators import BookingPagination
 from dineres.permissions import IsVerifiedChef
 from dineres.serializers.booking_serializers import BookingDetailSerializer
@@ -80,6 +80,18 @@ class UserViewSet(viewsets.ViewSet, CreateAPIView, ListAPIView):
 
         Chef.objects.create(user=u, bio=bio, specialty=specialty, experience=experience)
         return Response({"message": "Gửi yêu cầu đăng ký đầu bếp thành công!!!"}, status=status.HTTP_201_CREATED)
+
+    @action(methods=['post'], url_path='apply-staff', detail=False)
+    def apply_staff(self, request):
+        u = request.user
+
+        if hasattr(u, 'staff'):
+            if u.user_role == User.Role.STAFF and u.staff.is_verified:
+                return Response({'message': "Bạn đã là nhân viên!!!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Đã gửi yêu cầu trở thành nhân viên trc đó!!!"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        Staff.objects.create(user=u)
+        return Response({"message": "Gửi yêu cầu đăng ký nhân viên thành công!!!"}, status=status.HTTP_201_CREATED)
 
     @action(methods=['get'], url_path='pending-chefs', detail=False)
     def get_pending_chefs(self, request):

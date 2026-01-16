@@ -22,7 +22,7 @@ class OrderDetailSerializer(ModelSerializer):
 
 class OrderSerializer(ModelSerializer):
     details = OrderInputSerializer(many=True)
-    customer_id = serializers.IntegerField(required=False, write_only=True)
+    customer_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
     take_away = serializers.BooleanField(default=True, write_only=True)
 
     class Meta:
@@ -59,9 +59,11 @@ class OrderSerializer(ModelSerializer):
                        .exclude(status__in=[Booking.Status.COMPLETED, Booking.Status.CANCELLED]))
             if not booking.exists():
                 raise ValidationError({"message": "Đặt bàn trước khi Gọi món"})
+
+            if not booking.filter(status=Booking.Status.DINING).exists():
+                raise ValidationError({"message": "Bàn chưa sẵn sàng"})
             booking = booking.first()
 
-        # Su dung rollback de phong truong hop co loi
         with transaction.atomic():
             order = Order.objects.create(customer=order_customer, staff=order_staff, booking=booking)
             total_amount = 0
@@ -84,10 +86,11 @@ class OrderSerializer(ModelSerializer):
 
             order.total_amount = total_amount
             order.save()
-            NotificationService.create_notification(user=order_customer,
-                                                    message="Vui lòng theo dõi đơn hàng của bạn.",
-                                                    title=f"Đã gọi món thành công!!! #{order.id}",
-                                                    target_object=order)
+            if order_customer:
+                NotificationService.create_notification(user=order_customer,
+                                                        message="Vui lòng theo dõi đơn hàng của bạn.",
+                                                        title=f"Đã gọi món thành công!!! #{order.id}",
+                                                        target_object=order)
 
         return order
     def update(self, instance, validated_data):
@@ -95,6 +98,9 @@ class OrderSerializer(ModelSerializer):
 
         if details_data:
             with transaction.atomic():
+                incoming_dish_ids = [item['dish_id'] for item in details_data]
+                OrderDetail.objects.filter(order=instance).exclude(dish_id__in=incoming_dish_ids).delete()
+
                 total_amount = 0
 
                 for item in details_data:

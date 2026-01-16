@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from dineres.models import Chef, User
+from dineres.models import Chef, User, Staff
+
 
 class ChefSerializer(ModelSerializer):
     class Meta:

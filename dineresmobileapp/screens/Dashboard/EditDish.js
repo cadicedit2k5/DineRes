@@ -85,7 +85,7 @@ const EditDish = () => {
                 ]);
             }
         } catch (error) {
-            console.error(error.response.data);
+            console.info(error.response.data);
             if (error.response.data.name) {
                 Alert.alert("Lỗi", error.response.data.name[0]);
             } else {

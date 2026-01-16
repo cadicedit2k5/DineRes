@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { IconButton, Modal, Portal, Card, Avatar } from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import GoBack from '../../components/Layout/GoBack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MyStyles from '../../styles/MyStyles';
 import Rating from '../../components/Layout/Rating';
 import MyButton from '../../components/Layout/MyButton';
+import { useContext } from 'react';
+import { MyCartContext } from '../../utils/contexts/MyContexts';
 
 
 const CompareDish = () => {
@@ -16,22 +17,7 @@ const CompareDish = () => {
     const [visible, setVisible] = useState(false);
     const [selectingSlot, setSelectingSlot] = useState(1);
     
-    const [selectionList, setSelectionList] = useState([]);
-
-    const loadSelectionData = async () => {
-        try {
-            const cartData = await AsyncStorage.getItem("cart");
-            if (cartData) {
-                setSelectionList(JSON.parse(cartData));
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    useEffect(() => {
-        loadSelectionData();
-    }, []);
+    const [cart] = useContext(MyCartContext);
 
     const openSelection = (slot) => {
         setSelectingSlot(slot);
@@ -138,10 +124,10 @@ const CompareDish = () => {
                 <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={styles.modalContent}>
                     <Text style={{fontSize: 18, fontWeight: 'bold', marginBottom: 10}}>Chọn món thay thế</Text>
                     <ScrollView style={{maxHeight: 400}}>
-                        {selectionList.length === 0 ? (
+                        {cart.length === 0 ? (
                             <Text>Giỏ hàng trống hoặc chưa tải danh sách.</Text>
                         ) : (
-                            selectionList.map((d, index) => (
+                            cart.map((d, index) => (
                                 <TouchableOpacity key={index} onPress={() => selectItem(d)}>
                                     <Card.Title
                                         title={d.name}

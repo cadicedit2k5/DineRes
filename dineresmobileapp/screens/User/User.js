@@ -53,8 +53,22 @@ const User = () => {
                     alert("Cập nhật thành công!");
                 }
             } catch (error) {
-                console.error("Lỗi API:", error);
+                console.info(error.response.data);
             }
+        }
+    }
+
+    const applyStaff = async () => {
+        try {
+            const token = await AsyncStorage.getItem("access-token");
+            const res = await authApis(token).post(endpoints['apply-staff']);
+
+            if (res.status === 201) {
+                alert(res.data.message);
+            }
+        } catch (error) {
+            console.info(error.response.data)
+            alert(error.response.data.message);
         }
     }
 
@@ -114,6 +128,11 @@ const User = () => {
                 icon: "chef-hat",
                 name: "Ứng tuyển đầu bếp",
                 action: () => nav.navigate("ApplyChef"),
+            },
+            {
+                icon: "file-upload-outline",
+                name: "Ứng tuyển Nhân viên",
+                action: applyStaff,
             })
         icons.push(
             {

@@ -33,7 +33,8 @@ const IngredientDashboard = () => {
                 setIngredients([...ingredients, ...res.data.results]);
             }
         } catch (error) {
-            console.error(error.response.data);
+            console.info(error.response.data);
+            alert("Lỗi tải danh sách")
         } finally {
             setLoading(false);
         }
@@ -80,7 +81,7 @@ const IngredientDashboard = () => {
                     setIngredients(current => current.filter(item => item.id !== id));
                 }
             }catch (error) {
-                console.error(error.response.data);
+                console.info(error.response.data);
             }
         }
     }

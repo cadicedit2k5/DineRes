@@ -35,7 +35,8 @@ const IngredientManager = ({ ingredients, setIngredients }) => {
             }
             console.log(url);
         } catch (error) {
-            console.error("Lỗi tìm nguyên liệu", error);
+            console.info(error.response.data);
+            alert("Lỗi tìm nguyên liệu")
         } finally {
             setLoading(false);
         }
