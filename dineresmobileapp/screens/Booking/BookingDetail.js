@@ -31,7 +31,8 @@ const BookingDetail = () => {
                 nav.goBack();
 
         } catch (err) {
-            console.error(err);
+            console.info(err.response.data);
+            Alert.alert(err.response.data.message);
         } finally {
             setLoading(false)
         };

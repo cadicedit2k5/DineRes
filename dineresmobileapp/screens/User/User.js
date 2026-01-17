@@ -96,23 +96,23 @@ const User = () => {
                 action: () => nav.navigate("BookingHistory"),
             })
         }
-        if (user.user_role !== 'customer') {
-            if (isCustomerView) {
-                icons.unshift(
-                {
-                    icon: "account-switch-outline",
-                    name: "Giao diện quản lý",
-                    action: () => {setIsCustomerView(false)},
-                })
-            }else {
-                icons.unshift(
-                {
-                    icon: "account-switch-outline",
-                    name: "Giao diện người dùng",
-                    action: () => {setIsCustomerView(true)},
-                })
-            }
-        }
+        // if (user.user_role !== 'customer') {
+        //     // if (isCustomerView) {
+        //     //     // icons.unshift(
+        //     //     // {
+        //     //     //     icon: "account-switch-outline",
+        //     //     //     name: "Giao diện quản lý",
+        //     //     //     action: () => {setIsCustomerView(false)},
+        //     //     // })
+        //     // }else {
+        //     //     icons.unshift(
+        //     //     {
+        //     //         icon: "account-switch-outline",
+        //     //         name: "Giao diện người dùng",
+        //     //         action: () => {setIsCustomerView(true)},
+        //     //     })
+        //     // }
+        // }
         icons.unshift(
             {
                 icon: "square-edit-outline",

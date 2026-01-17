@@ -11,7 +11,7 @@ const Table = () => {
     <SafeAreaView  style={{ flex: 1}}>
         <Header />
         {user ? <Tables /> :
-        <ForceLogin />}
+        <ForceLogin next_screen={""} />}
     </SafeAreaView>
   )
 }

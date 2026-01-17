@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import {CLIENT_ID, CLIENT_SECRET} from "@env"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native';
-import { MyUserContext } from '../../utils/contexts/MyContexts';
+import { MyUserContext, ViewModeContext } from '../../utils/contexts/MyContexts';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import InputText from '../../components/Layout/InputText';
 import MyButton from '../../components/Layout/MyButton';
@@ -29,6 +29,7 @@ const Login = ({route}) => {
     const [err, setErr] = useState({});
     const nav = useNavigation();
     const [, dispatch] = useContext(MyUserContext);
+    const [, setIsCustomerView] = useContext(ViewModeContext);
 
     const validate = () => {
       let tmpError = {};
@@ -60,6 +61,11 @@ const Login = ({route}) => {
 
           setTimeout(async () => {
             let u = await authApis(res.data.access_token).get(endpoints['current-user']);
+            if (u.data.user_role === 'customer') {
+              setIsCustomerView(true);
+            }else {
+              setIsCustomerView(false);
+            }
             dispatch({
               "type": "login",
               "payload": u.data,

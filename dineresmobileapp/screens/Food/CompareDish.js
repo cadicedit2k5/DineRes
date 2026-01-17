@@ -82,14 +82,13 @@ const CompareDish = () => {
                 </View>
 
                 <Text variant="titleMedium" style={{ marginTop: 20 }}>Nguyên liệu chính</Text>
-                <View>
-                    {item.ingredients.map((ing) => (
+                <View style={{flex: 1}}>
+                    {item.ingredients.map((ing) => 
                         <View key={ing.id}>
-                            <View />
-                            <Text style={{ flex: 1, fontSize: 15 }}>{ing.name}</Text>
-                            <Text style={{ fontWeight: 'bold', color: '#666' }}>{ing.amount} {ing.unit}</Text>
+                            <Text style={{ fontSize: 15 }}>{ing.name}</Text>
+                            {/* <Text style={{ fontWeight: 'bold', color: '#666' }}>{ing.amount} {ing.unit}</Text> */}
                         </View>
-                    ))}
+                    )}
                 </View>
 
                  <View style={{marginTop: 10}}>

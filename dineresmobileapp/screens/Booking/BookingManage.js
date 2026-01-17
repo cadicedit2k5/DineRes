@@ -32,7 +32,7 @@ const BookingManage = () =>{
                 setBooking([...booking, ...res.data.results])
 
         } catch (ex) {
-            console.error(ex)
+            console.info(ex.response.data)
         } finally{
             setLoading(false)
         }
@@ -44,7 +44,7 @@ const BookingManage = () =>{
     }, [page]);
 
     const loadMore = () => {
-        if (page > 0 && !loading)
+        if (page > 0 && !loading && booking.length > 0)
             setPage(page + 1);
     }
 

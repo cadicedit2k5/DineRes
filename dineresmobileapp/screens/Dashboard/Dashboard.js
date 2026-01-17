@@ -25,7 +25,7 @@ const Dashboard = () => {
   ]
 
   if (user) {
-    if (user.user_role === 'chef') {
+    if (user.user_role === 'chef' || user.user_role === 'admin') {
       dashboards.unshift({
         "icon": "food-outline",
         "label": "Quản lý món ăn",

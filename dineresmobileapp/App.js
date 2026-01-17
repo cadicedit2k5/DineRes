@@ -99,7 +99,12 @@ const App = () => {
 
   useEffect(() => {
     checkLogin();
-  }, [])
+    if (user && user.user_role === 'customer') {
+      setIsCustomerView(true);
+    }else {
+      setIsCustomerView(false);
+    }
+  }, [user])
 
   if (!fontsLoaded) {
     return null; 
