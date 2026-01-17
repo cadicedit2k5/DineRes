@@ -8,7 +8,7 @@ from yaml import serialize
 
 from dineres.models import User, Chef, Order, Booking, Staff
 from dineres.paginators import BookingPagination
-from dineres.permissions import IsVerifiedChef
+from dineres.permissions import IsVerifiedChef, IsEmployee
 from dineres.serializers.booking_serializers import BookingDetailSerializer
 from dineres.serializers.order_serializers import OrderSerializer
 from dineres.serializers.user_serializers import UserSerializer, ChefSerializer
@@ -23,7 +23,7 @@ class UserViewSet(viewsets.ViewSet, CreateAPIView, ListAPIView):
         if self.action in ['verify_chef', 'get_pending_chefs']:
             return [permissions.IsAdminUser()]
         if self.action in ['list']:
-            return [IsVerifiedChef()]
+            return [IsEmployee()]
         if self.action == 'create':
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]

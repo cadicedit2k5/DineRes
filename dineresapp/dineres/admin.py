@@ -107,7 +107,7 @@ class ReviewAdmin(BaseAdmin):
     search_fields = ['dish__name']
 
 class ChefAdmin(admin.ModelAdmin):
-    list_display = ['user__first_name','specialty', 'experience', 'is_verified']
+    list_display = ['user__username','user__first_name', 'user__last_name','specialty', 'experience', 'is_verified']
     list_filter = ['is_verified']
     search_fields = ['user__first_name', 'user__last_name', 'specialty']
     list_per_page = 20

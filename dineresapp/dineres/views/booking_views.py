@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, timezone, datetime
 
 from django.utils.dateparse import parse_datetime
 from rest_framework import viewsets, generics, permissions, status
@@ -74,7 +74,8 @@ class BookingView(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIView
     @action(methods=['patch'], detail=True, url_path='update-status', permission_classes=[IsEmployee])
     def update_status(self, request, pk=None):
         booking = self.get_object()
-
+        if booking.booking_time < datetime.now(timezone.utc) + timedelta(minutes=30):
+            return Response({"message": "Booking đã quá thời hạn."} ,status=status.HTTP_400_BAD_REQUEST)
         serializer = BookingStatusSerializer(
             booking,
             data=request.data,

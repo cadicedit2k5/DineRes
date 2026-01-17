@@ -45,7 +45,7 @@ class User(AbstractUser):
 class Staff(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='staff')
     is_verified = models.BooleanField(default=False)
-    verified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='verified_staff')
+    verified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, related_name='verified_staff')
 
 class Chef(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chef')
@@ -196,14 +196,6 @@ class Booking(BaseModel):
 
     def __str__(self):
         return f'Booking #{self.pk} by {self.customer}'
-
-    def clean(self):
-        if self.booking_time and self.booking_time < timezone.now():
-            raise ValidationError({'booking_time': "Thời gian đặt bàn không thể ở trong quá khứ!"})
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
 
 class Transaction(BaseModel):
     class Method(models.TextChoices):

@@ -30,6 +30,21 @@ admin_user.first_name = "Super"
 admin_user.last_name = "Manager"
 admin_user.save()
 
+CUSTOM_PERMISSION_CODENAME = 'view_dish_statistics'
+chef_group, _ = Group.objects.get_or_create(name='Chef')
+
+# 3. Lấy ContentType của Dish (vì quyền này gắn vào Dish)
+content_type = ContentType.objects.get_for_model(Dish)
+
+# 4. Tìm quyền trong database
+perm = Permission.objects.get(
+    codename=CUSTOM_PERMISSION_CODENAME,
+    content_type=content_type
+)
+
+# 5. Gán vào nhóm
+chef_group.permissions.add(perm)
+
 #Chef.objects.create(
 #            user=admin_user,
 #            bio="Quản trị hệ thống cũng biết nấu ăn.",
